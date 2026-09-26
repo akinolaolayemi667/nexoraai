@@ -1,24 +1,7 @@
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-const FREE_EMAIL_DOMAINS = new Set([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "hotmail.com",
-  "outlook.com",
-  "live.com",
-  "icloud.com",
-  "aol.com",
-  "proton.me",
-  "protonmail.com",
-]);
-
 export function isEmail(value: string) {
   return EMAIL_PATTERN.test(value.trim());
-}
-
-export function isFreeEmail(value: string) {
-  return FREE_EMAIL_DOMAINS.has(value.trim().toLowerCase().split("@")[1] ?? "");
 }
 
 export const passwordRules = [

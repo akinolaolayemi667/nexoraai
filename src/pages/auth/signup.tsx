@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { AuthError } from "@/lib/auth/mock-auth";
 import { fadeUp, motionStates } from "@/lib/motion";
 import { routes } from "@/lib/routes";
-import { isEmail, isFreeEmail, passwordStrength } from "@/lib/validation";
+import { isEmail, passwordStrength } from "@/lib/validation";
 import { useForm } from "@/hooks/use-form";
 import { AuthDivider, AuthHeader, GoogleButton, PasswordInput, PasswordStrength } from "@/components/auth/auth-ui";
 import { Alert, Button, Input } from "@/components/ui";
@@ -20,9 +20,8 @@ const STEP_MS = 650;
 function validate(values: Values) {
   const errors: Partial<Values> = {};
   if (values.name.trim().length < 2) errors.name = "Enter your full name.";
-  if (!values.email.trim()) errors.email = "Enter your work email.";
-  else if (!isEmail(values.email)) errors.email = "Enter a valid email address, like name@company.com.";
-  else if (isFreeEmail(values.email)) errors.email = "Use your work email so your team can find your workspace.";
+  if (!values.email.trim()) errors.email = "Enter your email address.";
+  else if (!isEmail(values.email)) errors.email = "Enter a valid email address, like name@example.com.";
   if (values.company.trim().length < 2) errors.company = "Enter your company name.";
   if (!values.password) errors.password = "Create a password.";
   else if (!passwordStrength(values.password).meetsRequirements) {
@@ -156,7 +155,7 @@ export default function SignupPage() {
                 description={
                   formError === "email_taken" ? (
                     <>
-                      Sign in to your existing workspace, or use a different work email.{" "}
+                      Sign in to your existing workspace, or use a different email.{" "}
                       <Link to={loginHref} className="font-medium text-primary hover:text-primary-hover">
                         Log in instead
                       </Link>
@@ -183,8 +182,9 @@ export default function SignupPage() {
                 <Input
                   {...form.register("email")}
                   type="email"
-                  label="Work Email"
-                  placeholder="ada@company.com"
+                  label="Email"
+                  placeholder="ada@example.com"
+                  hint="Work or personal email both work."
                   autoComplete="email"
                   leftIcon={<Mail />}
                   size="lg"
