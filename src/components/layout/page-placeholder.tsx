@@ -60,19 +60,3 @@ export function MarketingPagePlaceholder({
     </section>
   );
 }
-
-export function AuthPagePlaceholder({ title, description }: { title: string; description: string }) {
-  return (
-    <Card className="p-8">
-      <title>{`${title} · NEXORA AI`}</title>
-      <h1 className="type-h2">{title}</h1>
-      <p className="type-body-sm mt-1.5">{description}</p>
-      <div className="mt-6 rounded-md border border-dashed border-border-strong bg-canvas px-4 py-6 text-center text-sm text-muted">
-        Authentication form ships in an upcoming phase.
-      </div>
-      <Link to={routes.app.root} className={buttonVariants({ className: "mt-6 w-full" })}>
-        Continue to app
-      </Link>
-    </Card>
-  );
-}

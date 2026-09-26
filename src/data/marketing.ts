@@ -1,7 +1,6 @@
 import {
   BarChart3,
   BookOpen,
-  Bot,
   Briefcase,
   Headphones,
   History,
@@ -12,9 +11,10 @@ import {
   PlayCircle,
   Quote,
   Settings2,
-  ShieldCheck,
   Sparkles,
   Target,
+  Users,
+  UsersRound,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
@@ -36,10 +36,13 @@ export const marketingNavigation: MarketingNavEntry[] = [
   {
     label: "Product",
     items: [
-      { label: "CRM & Leads", href: "/#crm", description: "Every lead, contact and deal in one place", icon: Kanban },
-      { label: "Automation", href: "/#automation", description: "Workflows that run while you sleep", icon: Workflow },
-      { label: "AI Assistant", href: "/#ai", description: "Answers, drafts and next best actions", icon: Sparkles },
-      { label: "Analytics", href: "/#analytics", description: "Live revenue and pipeline reporting", icon: BarChart3 },
+      { label: "CRM", href: "/#crm", description: "Customers and leads in one workspace", icon: Users },
+      { label: "AI Assistant", href: "/#ai", description: "Recommendations and summaries", icon: Sparkles },
+      { label: "Automations", href: "/#automation", description: "Workflows that do the repetitive work", icon: Workflow },
+      { label: "Pipeline", href: "/#pipeline", description: "Every opportunity, every stage", icon: Kanban },
+      { label: "Analytics", href: "/#analytics", description: "Understand business performance", icon: BarChart3 },
+      { label: "Conversations", href: "/#conversations", description: "Every customer interaction in one inbox", icon: MessagesSquare },
+      { label: "Team", href: "/#team", description: "Collaborate across departments", icon: UsersRound },
     ],
   },
   {
@@ -90,15 +93,6 @@ export const overviewSteps = [
       "Live dashboards and an AI analyst tell you what changed, why it matters and what to do next.",
     icon: Sparkles,
   },
-];
-
-export const capabilities = [
-  { title: "Lead management", description: "Capture, enrich and score leads from every channel.", icon: Target, href: "/#crm" },
-  { title: "Visual pipeline", description: "Drag deals through stages with forecasts that update live.", icon: Kanban, href: "/#crm" },
-  { title: "Workflow automation", description: "Trigger actions on any event, with branching and delays.", icon: Workflow, href: "/#automation" },
-  { title: "AI assistant", description: "Ask questions in plain English and delegate the follow-up.", icon: Bot, href: "/#ai" },
-  { title: "Unified inbox", description: "Email, chat and SMS threads tied to the right customer.", icon: MessagesSquare, href: "/#crm" },
-  { title: "Security & roles", description: "SSO, granular permissions and a full audit trail.", icon: ShieldCheck, href: routes.features },
 ];
 
 export const solutions = [
@@ -258,10 +252,12 @@ export const footerColumns = [
   {
     title: "Product",
     links: [
-      { label: "CRM & Leads", href: "/#crm" },
-      { label: "Automation", href: "/#automation" },
+      { label: "CRM", href: "/#crm" },
       { label: "AI Assistant", href: "/#ai" },
+      { label: "Automations", href: "/#automation" },
+      { label: "Pipeline", href: "/#pipeline" },
       { label: "Analytics", href: "/#analytics" },
+      { label: "Conversations", href: "/#conversations" },
     ],
   },
   {

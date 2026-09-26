@@ -6,6 +6,7 @@ import {
   createBrowserRouter,
   type RouteObject,
 } from "react-router";
+import { RequireAuth } from "@/components/auth/auth-provider";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { MarketingLayout } from "@/components/layout/marketing-layout";
@@ -77,7 +78,11 @@ const router = createBrowserRouter([
       },
       {
         path: "app",
-        element: <AppLayout />,
+        element: (
+          <RequireAuth>
+            <AppLayout />
+          </RequireAuth>
+        ),
         children: [
           { index: true, element: <DashboardPage /> },
           { path: "leads", element: <LeadsPage /> },

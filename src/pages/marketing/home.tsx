@@ -1,9 +1,7 @@
 import {
-  Capabilities,
   Hero,
-  Integrations,
-  Platform,
   PricingCta,
+  ProductCapabilities,
   ProductOverview,
   Solutions,
   Testimonials,
@@ -19,10 +17,8 @@ export default function HomePage() {
       />
       <Hero />
       <ProductOverview />
-      <Capabilities />
-      <Platform />
+      <ProductCapabilities />
       <Solutions />
-      <Integrations />
       <Testimonials />
       <PricingCta />
     </>

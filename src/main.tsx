@@ -6,6 +6,7 @@ import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/600.css";
 import "@/styles/globals.css";
+import { AuthProvider } from "@/components/auth/auth-provider";
 import { MotionProvider, ToastProvider } from "@/components/ui";
 import App from "./App";
 
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MotionProvider>
       <ToastProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ToastProvider>
     </MotionProvider>
   </StrictMode>,

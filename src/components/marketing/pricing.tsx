@@ -16,7 +16,7 @@ function planPrice(plan: Plan, billing: Billing) {
 
 export function PricingCta() {
   return (
-    <section className="bg-white pb-24">
+    <section className="bg-white py-24">
       <div className="mx-auto max-w-6xl px-6">
         <FadeIn inView className="grid grid-cols-1 gap-10 overflow-hidden rounded-2xl bg-ink p-8 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:p-14">
           <div className="flex flex-col justify-center">

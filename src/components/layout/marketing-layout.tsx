@@ -1,11 +1,12 @@
 import { Suspense, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { useReducedMotion } from "framer-motion";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useAuth } from "@/lib/auth/auth-context";
 import { routes } from "@/lib/routes";
 import { footerColumns, marketingNavigation, type MarketingMenuItem } from "@/data/marketing";
-import { Badge, Button, Dropdown, PageLoader, TopNavLink, buttonVariants } from "@/components/ui";
+import { Avatar, Badge, Button, Dropdown, PageLoader, TopNavLink, buttonVariants } from "@/components/ui";
 import { Logo } from "./logo";
 
 const navLinkClass =
@@ -117,20 +118,43 @@ function MobileMenu() {
         )}
       </nav>
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Link to={routes.login} className={buttonVariants({ variant: "secondary" })}>
-          Log In
-        </Link>
-        <Link to={routes.signup} className={buttonVariants()}>
-          Start Free
-        </Link>
+        <AccountActions stacked />
       </div>
     </div>
+  );
+}
+
+function AccountActions({ stacked = false }: { stacked?: boolean }) {
+  const { user } = useAuth();
+
+  if (user) {
+    return (
+      <>
+        {!stacked && <Avatar name={user.name} size="sm" />}
+        <Link to={routes.app.root} className={buttonVariants({ className: cn(stacked && "col-span-2") })}>
+          Open app
+          <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Link to={routes.login} className={buttonVariants({ variant: stacked ? "secondary" : "ghost" })}>
+        Log In
+      </Link>
+      <Link to={routes.signup} className={buttonVariants()}>
+        Start Free
+      </Link>
+    </>
   );
 }
 
 function MarketingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { key } = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => setMenuOpen(false), [key]);
 
@@ -156,16 +180,14 @@ function MarketingHeader() {
           </nav>
         </div>
         <div className="hidden items-center gap-2 lg:flex">
-          <Link to={routes.login} className={buttonVariants({ variant: "ghost" })}>
-            Log In
-          </Link>
-          <Link to={routes.signup} className={buttonVariants()}>
-            Start Free
-          </Link>
+          <AccountActions />
         </div>
         <div className="flex items-center gap-2 lg:hidden">
-          <Link to={routes.signup} className={buttonVariants({ size: "sm", className: "hidden sm:inline-flex" })}>
-            Start Free
+          <Link
+            to={user ? routes.app.root : routes.signup}
+            className={buttonVariants({ size: "sm", className: "hidden sm:inline-flex" })}
+          >
+            {user ? "Open app" : "Start Free"}
           </Link>
           <Button
             variant="ghost"

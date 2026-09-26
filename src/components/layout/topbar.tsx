@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { routes } from "@/lib/routes";
-import { currentUser, findNavItem } from "@/data/navigation";
+import { useAuth, useUser } from "@/lib/auth/auth-context";
+import { findNavItem } from "@/data/navigation";
 import { Avatar, Breadcrumbs, Button, Dropdown, Tooltip } from "@/components/ui";
 
 export function Topbar({
@@ -24,6 +25,8 @@ export function Topbar({
 }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { signOut } = useAuth();
+  const user = useUser();
   const current = findNavItem(pathname);
   const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
@@ -42,7 +45,7 @@ export function Topbar({
       <Breadcrumbs
         className="hidden sm:block"
         items={[
-          { label: currentUser.workspace, to: routes.app.root },
+          { label: user.company, to: routes.app.root },
           { label: current?.label ?? "Page" },
         ]}
       />
@@ -87,8 +90,8 @@ export function Topbar({
           align="end"
           header={
             <div>
-              <p className="text-sm font-medium text-ink">{currentUser.name}</p>
-              <p className="text-xs text-muted">{currentUser.email}</p>
+              <p className="text-sm font-medium text-ink">{user.name}</p>
+              <p className="text-xs text-muted">{user.email}</p>
             </div>
           }
           items={[
@@ -96,7 +99,7 @@ export function Topbar({
             { label: "Settings", icon: <Settings />, onSelect: () => navigate(routes.app.settings) },
             { label: "Billing", icon: <CreditCard />, onSelect: () => navigate(routes.app.billing) },
             { type: "separator" },
-            { label: "Log out", icon: <LogOut />, danger: true, onSelect: () => navigate(routes.login) },
+            { label: "Log out", icon: <LogOut />, danger: true, onSelect: signOut },
           ]}
           trigger={({ open, ...props }) => (
             <button
@@ -108,7 +111,7 @@ export function Topbar({
               )}
               aria-label="Account menu"
             >
-              <Avatar name={currentUser.name} size="sm" status="online" />
+              <Avatar name={user.name} size="sm" status="online" />
               <ChevronDown
                 className={cn("hidden size-3.5 text-subtle transition-transform duration-150 sm:block", open && "rotate-180")}
               />

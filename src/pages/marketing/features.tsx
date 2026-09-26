@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { routes } from "@/lib/routes";
-import { Capabilities, Integrations, Platform, PricingCta } from "@/components/marketing";
+import { PricingCta, ProductCapabilities, Solutions } from "@/components/marketing";
 import { FadeIn, buttonVariants } from "@/components/ui";
 
 export default function FeaturesPage() {
@@ -29,12 +29,9 @@ export default function FeaturesPage() {
           </div>
         </FadeIn>
       </section>
-      <Capabilities />
-      <Platform />
-      <Integrations />
-      <div className="pt-24">
-        <PricingCta />
-      </div>
+      <ProductCapabilities />
+      <Solutions />
+      <PricingCta />
     </>
   );
 }
