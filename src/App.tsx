@@ -7,6 +7,7 @@ import {
   type RouteObject,
 } from "react-router";
 import { RequireAuth } from "@/components/auth/auth-provider";
+import { CrmProvider } from "@/components/crm/crm-provider";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { MarketingLayout } from "@/components/layout/marketing-layout";
@@ -22,6 +23,7 @@ const SignupPage = lazy(() => import("@/pages/auth/signup"));
 const DashboardPage = lazy(() => import("@/pages/app/dashboard"));
 const LeadsPage = lazy(() => import("@/pages/app/leads"));
 const ContactsPage = lazy(() => import("@/pages/app/contacts"));
+const ContactProfilePage = lazy(() => import("@/pages/app/contact-profile"));
 const PipelinePage = lazy(() => import("@/pages/app/pipeline"));
 const ConversationsPage = lazy(() => import("@/pages/app/conversations"));
 const AutomationsPage = lazy(() => import("@/pages/app/automations"));
@@ -80,13 +82,17 @@ const router = createBrowserRouter([
         path: "app",
         element: (
           <RequireAuth>
-            <AppLayout />
+            <CrmProvider>
+              <AppLayout />
+            </CrmProvider>
           </RequireAuth>
         ),
         children: [
           { index: true, element: <DashboardPage /> },
           { path: "leads", element: <LeadsPage /> },
+          { path: "leads/:leadId", element: <ContactProfilePage /> },
           { path: "contacts", element: <ContactsPage /> },
+          { path: "contacts/:leadId", element: <ContactProfilePage /> },
           { path: "pipeline", element: <PipelinePage /> },
           { path: "conversations", element: <ConversationsPage /> },
           { path: "automations", element: <AutomationsPage /> },

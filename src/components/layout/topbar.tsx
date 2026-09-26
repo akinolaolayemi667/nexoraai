@@ -18,6 +18,7 @@ import { cn } from "@/lib/cn";
 import { routes } from "@/lib/routes";
 import { useAuth, useUser } from "@/lib/auth/auth-context";
 import { findNavLocation } from "@/data/navigation";
+import { usePageCrumb } from "@/hooks/use-page-crumb";
 import { Avatar, Breadcrumbs, Button, Dropdown, useToast, type BreadcrumbItem } from "@/components/ui";
 import { LogoMark } from "./logo";
 import { NotificationsMenu } from "./notifications-menu";
@@ -27,15 +28,18 @@ const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigat
 
 function useBreadcrumbs(): { title: string; crumbs: BreadcrumbItem[] } {
   const { pathname } = useLocation();
+  const pageCrumb = usePageCrumb();
   const location = findNavLocation(pathname);
-  const title = location?.item.label ?? "Page";
-  if (!location || location.item.href === routes.app.root) return { title, crumbs: [{ label: title }] };
+  const sectionTitle = location?.item.label ?? "Page";
+  if (!location || location.item.href === routes.app.root) return { title: sectionTitle, crumbs: [{ label: sectionTitle }] };
+  const isDetail = pathname.replace(/\/$/, "") !== location.item.href;
   return {
-    title,
+    title: isDetail && pageCrumb ? pageCrumb : sectionTitle,
     crumbs: [
       { label: "Overview", to: routes.app.root },
       ...(location.section.label ? [{ label: location.section.label }] : []),
-      { label: title },
+      { label: sectionTitle, to: isDetail ? location.item.href : undefined },
+      ...(isDetail ? [{ label: pageCrumb ?? "Details" }] : []),
     ],
   };
 }

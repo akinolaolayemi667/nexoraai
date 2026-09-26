@@ -34,6 +34,9 @@ export type TableProps<T> = {
   onSelectionChange?: (ids: Set<string>) => void;
   isRowDisabled?: (row: T) => boolean;
   defaultSort?: SortState;
+  /** Controlled sort. When `onSortChange` is set, rows are rendered in the order given. */
+  sort?: SortState;
+  onSortChange?: (sort: SortState) => void;
   density?: "compact" | "comfortable";
   stickyHeader?: boolean;
   className?: string;
@@ -57,16 +60,20 @@ export function Table<T>({
   onSelectionChange,
   isRowDisabled,
   defaultSort = null,
+  sort: sortProp,
+  onSortChange,
   density = "comfortable",
   stickyHeader = false,
   className,
 }: TableProps<T>) {
-  const [sort, setSort] = useState<SortState>(defaultSort);
+  const [internalSort, setInternalSort] = useState<SortState>(defaultSort);
+  const controlled = onSortChange !== undefined;
+  const sort = controlled ? (sortProp ?? null) : internalSort;
   const selected = selectedIds ?? new Set<string>();
 
   const sortedRows = useMemo(() => {
     const column = sort && columns.find((c) => c.key === sort.key);
-    if (!sort || !column?.sortValue) return rows;
+    if (controlled || !sort || !column?.sortValue) return rows;
     const getValue = column.sortValue;
     return [...rows].sort((a, b) => {
       const av = getValue(a);
@@ -75,14 +82,19 @@ export function Table<T>({
         typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
       return sort.direction === "asc" ? result : -result;
     });
-  }, [rows, columns, sort]);
+  }, [rows, columns, sort, controlled]);
 
   const selectableRows = rows.filter((row) => !isRowDisabled?.(row));
   const allSelected = selectableRows.length > 0 && selectableRows.every((row) => selected.has(getRowId(row)));
   const someSelected = !allSelected && selectableRows.some((row) => selected.has(getRowId(row)));
 
   function toggleAll() {
-    onSelectionChange?.(allSelected ? new Set() : new Set(selectableRows.map(getRowId)));
+    const next = new Set(selected);
+    for (const row of selectableRows) {
+      if (allSelected) next.delete(getRowId(row));
+      else next.add(getRowId(row));
+    }
+    onSelectionChange?.(next);
   }
 
   function toggleRow(id: string) {
@@ -93,11 +105,16 @@ export function Table<T>({
   }
 
   function toggleSort(key: string) {
-    setSort((current) => {
-      if (current?.key !== key) return { key, direction: "asc" };
-      if (current.direction === "asc") return { key, direction: "desc" };
-      return null;
-    });
+    const next: SortState =
+      sort?.key !== key
+        ? { key, direction: "asc" }
+        : sort.direction === "asc"
+          ? { key, direction: "desc" }
+          : controlled
+            ? { key, direction: "asc" }
+            : null;
+    if (controlled) onSortChange(next);
+    else setInternalSort(next);
   }
 
   const cellPadding = density === "compact" ? "px-3 py-2" : "px-4 py-3";
@@ -105,7 +122,7 @@ export function Table<T>({
   const showBody = !loading && !error;
 
   return (
-    <div className={cn("scrollbar-thin overflow-auto", className)}>
+    <div className={cn("scrollbar-thin relative overflow-auto", className)}>
       <table className="w-full border-collapse text-sm">
         <thead className={cn(stickyHeader && "sticky top-0 z-10")}>
           <tr className="border-b border-border bg-canvas">
@@ -131,7 +148,8 @@ export function Table<T>({
                   style={{ width: column.width }}
                   aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined}
                   className={cn(
-                    "type-overline whitespace-nowrap px-4 py-2.5 text-muted",
+                    "type-overline whitespace-nowrap py-2.5 text-muted",
+                    density === "compact" ? "px-3" : "px-4",
                     alignClass[column.align ?? "left"],
                   )}
                 >

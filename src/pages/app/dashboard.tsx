@@ -7,7 +7,10 @@ import { useUser } from "@/lib/auth/auth-context";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { Button, buttonVariants, useToast } from "@/components/ui";
 import { AiInsightsCard, InsightsDrawer } from "@/components/dashboard/ai-insights";
-import { leadSeries, metrics, pipelineStages } from "@/components/dashboard/dashboard-data";
+import { leadSeries, metrics, summarizePipeline } from "@/components/dashboard/dashboard-data";
+import { downloadCsv } from "@/lib/csv";
+import { useCrm } from "@/lib/crm/crm-context";
+import type { Deal } from "@/lib/crm/types";
 import { LeadPerformance } from "@/components/dashboard/lead-performance";
 import { LeadSources } from "@/components/dashboard/lead-sources";
 import { MetricCards } from "@/components/dashboard/metric-cards";
@@ -21,22 +24,18 @@ function greeting(date: Date) {
   return "Good evening";
 }
 
-function downloadReport() {
-  const rows = [
+function downloadReport(deals: Deal[]) {
+  downloadCsv("nexora-overview.csv", [
     ["Section", "Label", "Value"],
     ...metrics.map((m) => ["Metric", m.label, String(m.value)]),
-    ...pipelineStages.map((s) => ["Pipeline", `${s.name} (${s.deals} deals)`, String(s.value)]),
+    ...summarizePipeline(deals).stages.map((s) => ["Pipeline", `${s.name} (${s.deals} deals)`, String(s.value)]),
     ...leadSeries("30d").map((p) => ["Leads", p.label, `${p.leads} leads / ${p.qualified} qualified / ${p.converted} converted`]),
-  ];
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\n");
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-  const link = Object.assign(document.createElement("a"), { href: url, download: "nexora-overview.csv" });
-  link.click();
-  URL.revokeObjectURL(url);
+  ]);
 }
 
 export default function DashboardPage() {
   const user = useUser();
+  const { state } = useCrm();
   const { toast } = useToast();
   const reduceMotion = useReducedMotion();
   const insightsDrawer = useDisclosure();
@@ -64,12 +63,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!exporting) return;
     const timer = window.setTimeout(() => {
-      downloadReport();
+      downloadReport(state.deals);
       setExporting(false);
       toast({ variant: "success", title: "Report exported", description: "nexora-overview.csv is in your downloads." });
     }, 900);
     return () => window.clearTimeout(timer);
-  }, [exporting, toast]);
+  }, [exporting, toast, state.deals]);
 
   return (
     <>

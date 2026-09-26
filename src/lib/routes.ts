@@ -7,7 +7,9 @@ export const routes = {
   app: {
     root: "/app",
     leads: "/app/leads",
+    lead: (id: string) => `/app/leads/${id}`,
     contacts: "/app/contacts",
+    contact: (id: string) => `/app/contacts/${id}`,
     pipeline: "/app/pipeline",
     conversations: "/app/conversations",
     automations: "/app/automations",

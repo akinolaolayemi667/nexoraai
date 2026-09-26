@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { routes } from "@/lib/routes";
+import type { Deal, DealStage } from "@/lib/crm/types";
 
 /* Metrics ----------------------------------------------------------------- */
 
@@ -169,17 +170,46 @@ export type PipelineStage = {
   name: string;
   deals: number;
   value: number;
+  /** Average win probability, 0–100. */
   probability: number;
   color: string;
 };
 
-export const pipelineStages: PipelineStage[] = [
-  { id: "new", name: "New", deals: 64, value: 182400, probability: 0.1, color: "var(--color-chart-6)" },
-  { id: "qualified", name: "Qualified", deals: 38, value: 146900, probability: 0.25, color: "var(--color-chart-3)" },
-  { id: "proposal", name: "Proposal", deals: 21, value: 98500, probability: 0.5, color: "var(--color-chart-1)" },
-  { id: "negotiation", name: "Negotiation", deals: 12, value: 71200, probability: 0.75, color: "var(--color-chart-2)" },
-  { id: "won", name: "Won", deals: 9, value: 84250, probability: 1, color: "var(--color-success)" },
+const summaryStages: { id: string; name: string; from: DealStage[]; color: string }[] = [
+  { id: "new", name: "New", from: ["new"], color: "var(--color-chart-6)" },
+  { id: "qualified", name: "Qualified", from: ["qualified", "discovery"], color: "var(--color-chart-3)" },
+  { id: "proposal", name: "Proposal", from: ["proposal"], color: "var(--color-chart-1)" },
+  { id: "negotiation", name: "Negotiation", from: ["negotiation"], color: "var(--color-chart-2)" },
+  { id: "won", name: "Won", from: ["won"], color: "var(--color-success)" },
 ];
+
+const WON_WINDOW = 30 * 24 * 3600_000;
+
+export function summarizePipeline(deals: Deal[], now = Date.now()) {
+  const recent = (d: Deal) => (d.closedAt ?? d.lastActivityAt) >= now - WON_WINDOW;
+  const stages: PipelineStage[] = summaryStages.map((stage) => {
+    const inStage = deals.filter((d) => stage.from.includes(d.stage) && (stage.id !== "won" || recent(d)));
+    const value = inStage.reduce((sum, d) => sum + d.value, 0);
+    return {
+      id: stage.id,
+      name: stage.name,
+      color: stage.color,
+      deals: inStage.length,
+      value,
+      probability: inStage.length ? Math.round(inStage.reduce((sum, d) => sum + d.probability, 0) / inStage.length) : 0,
+    };
+  });
+  const open = deals.filter((d) => d.stage !== "won" && d.stage !== "lost");
+  const won = deals.filter((d) => d.stage === "won" && recent(d)).length;
+  const lost = deals.filter((d) => d.stage === "lost" && recent(d)).length;
+  return {
+    stages,
+    openValue: open.reduce((sum, d) => sum + d.value, 0),
+    openDeals: open.length,
+    weighted: open.reduce((sum, d) => sum + (d.value * d.probability) / 100, 0),
+    winRate: won + lost > 0 ? (won / (won + lost)) * 100 : 0,
+  };
+}
 
 /* Lead sources ------------------------------------------------------------ */
 
@@ -226,7 +256,7 @@ export const insights: Insight[] = [
     detail:
       "Each scored above 80 after visiting pricing at least twice, but nobody on the team has replied in the last 24 hours.",
     impact: "$38,400 potential pipeline",
-    action: { type: "navigate", label: "Review leads", href: routes.app.leads },
+    action: { type: "navigate", label: "Review leads", href: `${routes.app.leads}?score=hot&sort=score` },
   },
   {
     id: "inactive",
@@ -236,8 +266,8 @@ export const insights: Insight[] = [
     icon: Hourglass,
     title: "3 opportunities have been inactive for more than 7 days.",
     detail:
-      "Brightline Logistics, Aurora Retail and Northwind Health have had no calls, emails or stage changes since Sep 18.",
-    impact: "$94,200 at risk",
+      "Aurora Retail, Pinecrest Finance and Northwind Health have had no calls, emails or stage changes in over a week.",
+    impact: "$49,500 at risk",
     action: { type: "run", label: "Draft follow-ups", runningLabel: "Drafting…", doneLabel: "3 drafts ready" },
   },
   {
