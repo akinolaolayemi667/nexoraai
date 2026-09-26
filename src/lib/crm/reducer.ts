@@ -2,6 +2,7 @@ import { ownerById, stageMeta, statusMeta } from "./constants";
 import type { Activity, CrmState, Deal, DealStage, Lead, Message, Note, Task } from "./types";
 
 export type LeadPatch = Partial<Pick<Lead, "status" | "ownerId">>;
+export type TaskPatch = Partial<Pick<Task, "title" | "dueAt" | "priority" | "ownerId" | "leadId" | "status">>;
 export type DealPatch = Partial<Pick<Deal, "name" | "company" | "value" | "probability" | "ownerId" | "expectedClose" | "contactId">>;
 
 export type CrmAction =
@@ -12,6 +13,7 @@ export type CrmAction =
   | { type: "notes/delete"; id: string }
   | { type: "tasks/add"; task: Task }
   | { type: "tasks/toggle"; id: string; at: number; actor: string }
+  | { type: "tasks/update"; id: string; patch: TaskPatch; at: number; actor: string }
   | { type: "tasks/delete"; id: string }
   | { type: "activity/log"; activity: Activity }
   | { type: "threads/reply"; threadId: string; leadId: string; message: Message }
@@ -91,13 +93,38 @@ export function crmReducer(state: CrmState, action: CrmAction): CrmState {
         ],
       };
 
+    case "tasks/update": {
+      const task = state.tasks.find((t) => t.id === action.id);
+      if (!task) return state;
+      const { status, ...rest } = action.patch;
+      const next: Task = { ...task, ...rest };
+      if (status) {
+        next.status = status;
+        next.done = status === "done";
+        next.completedAt = status === "done" ? (task.done ? task.completedAt : action.at) : undefined;
+      }
+      const completed = next.done && !task.done;
+      return {
+        ...state,
+        tasks: state.tasks.map((t) => (t.id === action.id ? next : t)),
+        activities: completed
+          ? [...state.activities, activity(next.leadId, "task", `Completed task: ${next.title}`, action.at, action.actor)]
+          : state.activities,
+        leads: completed ? touch(state.leads, next.leadId, "Completed a task", action.at) : state.leads,
+      };
+    }
+
     case "tasks/toggle": {
       const task = state.tasks.find((t) => t.id === action.id);
       if (!task) return state;
       const done = !task.done;
       return {
         ...state,
-        tasks: state.tasks.map((t) => (t.id === action.id ? { ...t, done } : t)),
+        tasks: state.tasks.map((t) =>
+          t.id === action.id
+            ? { ...t, done, status: done ? "done" : "todo", completedAt: done ? action.at : undefined }
+            : t,
+        ),
         activities: done
           ? [...state.activities, activity(task.leadId, "task", `Completed task: ${task.title}`, action.at, action.actor)]
           : state.activities,

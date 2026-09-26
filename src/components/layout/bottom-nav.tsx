@@ -4,9 +4,12 @@ import { cn } from "@/lib/cn";
 import { transitions } from "@/lib/motion";
 import { routes } from "@/lib/routes";
 import { mobileNavigation } from "@/data/navigation";
+import { useUser } from "@/lib/auth/auth-context";
+import { useInboxUnread } from "@/lib/inbox/use-inbox";
 
 export function BottomNav() {
   const reduceMotion = useReducedMotion();
+  const unread = useInboxUnread(useUser().id);
 
   return (
     <nav
@@ -14,7 +17,9 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
     >
       <ul className="grid h-14 grid-cols-5">
-        {mobileNavigation.map((item) => (
+        {mobileNavigation.map((item) => {
+          const badge = item.href === routes.app.conversations ? unread || undefined : item.badge;
+          return (
           <li key={item.href} className="flex">
             <NavLink
               to={item.href}
@@ -38,9 +43,9 @@ export function BottomNav() {
                   )}
                   <span className="relative">
                     <item.icon className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
-                    {item.badge !== undefined && (
+                    {badge !== undefined && (
                       <span className="absolute -right-2 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-0.5 font-mono text-[0.5625rem] font-semibold leading-none text-white ring-2 ring-white">
-                        {item.badge}
+                        {badge}
                       </span>
                     )}
                   </span>
@@ -49,7 +54,8 @@ export function BottomNav() {
               )}
             </NavLink>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </nav>
   );

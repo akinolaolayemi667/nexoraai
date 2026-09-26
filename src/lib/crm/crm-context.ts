@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
-import type { DealPatch, LeadPatch } from "./reducer";
-import type { ActivityType, CrmState, Deal, DealStage, Lead, LeadSource, LeadStatus } from "./types";
+import type { DealPatch, LeadPatch, TaskPatch } from "./reducer";
+import type { ActivityType, CrmState, Deal, DealStage, Lead, LeadSource, LeadStatus, TaskPriority, TaskStatus } from "./types";
 
 export type NewLeadInput = {
   name: string;
@@ -30,7 +30,14 @@ export type CrmActions = {
   addLead: (input: NewLeadInput) => Lead;
   addNote: (leadId: string, body: string) => void;
   deleteNote: (id: string) => void;
-  addTask: (leadId: string, title: string, dueAt: number, ownerId: string) => void;
+  addTask: (
+    leadId: string,
+    title: string,
+    dueAt: number,
+    ownerId: string,
+    extra?: { priority?: TaskPriority; status?: Exclude<TaskStatus, "done"> },
+  ) => void;
+  updateTask: (id: string, patch: TaskPatch) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
   logActivity: (leadId: string, type: ActivityType, title: string, detail?: string) => void;

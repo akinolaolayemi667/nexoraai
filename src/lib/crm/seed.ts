@@ -10,6 +10,8 @@ import type {
   Message,
   Note,
   Task,
+  TaskPriority,
+  TaskStatus,
   Thread,
 } from "./types";
 import { ownerById, sourceLabel, statusMeta } from "./constants";
@@ -294,29 +296,75 @@ function buildNotes(now: number): Note[] {
   return notes.map(([leadId, body, author, ago], i) => ({ id: `nt_${i + 1}`, leadId, body, author, createdAt: now - ago }));
 }
 
-function buildTasks(now: number): Task[] {
-  const tasks: [leadId: string, title: string, due: number, ownerId: string, done?: boolean][] = [
-    ["ld_001", "Send revised proposal with annual pricing", 3 * HOUR, "james"],
-    ["ld_001", "Book security review with Acme IT", 2 * DAY, "james"],
-    ["ld_001", "Share Harbor & Co case study", -DAY, "james", true],
-    ["ld_002", "Prepare close plan for Brightline", DAY, "maya"],
-    ["ld_003", "Confirm demo attendees", 5 * HOUR, "daniel"],
-    ["ld_004", "Follow up on pricing guide download", -DAY, "sofia"],
-    ["ld_005", "Qualify budget and timeline", DAY, "liam"],
-    ["ld_006", "Call Priya about intake volumes", 2 * HOUR, "sofia"],
-    ["ld_008", "Re-engage Hannah with ROI summary", -2 * DAY, "daniel"],
-    ["ld_009", "Send compliance checklist", -DAY, "maya"],
-    ["ld_013", "Send pen-test summary and SSO docs", 6 * HOUR, "james"],
-  ];
-  return tasks.map(([leadId, title, due, ownerId, done], i) => ({
-    id: `tk_${i + 1}`,
-    leadId,
-    title,
-    dueAt: now + due,
-    done: Boolean(done),
-    ownerId,
-    createdAt: now - 4 * DAY,
-  }));
+const TASK_SCHEMA = 2;
+/** Tasks up to this index existed before priorities; later ones are added to stored workspaces on upgrade. */
+const ORIGINAL_TASKS = 11;
+
+type SeedTask = [leadId: string, title: string, due: number, ownerId: string, priority: TaskPriority, status: TaskStatus];
+
+const seedTasks: SeedTask[] = [
+  ["ld_001", "Send revised proposal with annual pricing", 3 * HOUR, "james", "high", "in_progress"],
+  ["ld_001", "Book security review with Acme IT", 2 * DAY, "james", "medium", "todo"],
+  ["ld_001", "Share Harbor & Co case study", -DAY, "james", "low", "done"],
+  ["ld_002", "Prepare close plan for Brightline", DAY, "maya", "high", "in_progress"],
+  ["ld_003", "Confirm demo attendees", 5 * HOUR, "daniel", "medium", "todo"],
+  ["ld_004", "Follow up on pricing guide download", -DAY, "sofia", "low", "todo"],
+  ["ld_005", "Qualify budget and timeline", DAY, "liam", "medium", "todo"],
+  ["ld_006", "Call Priya about intake volumes", 2 * HOUR, "sofia", "high", "todo"],
+  ["ld_008", "Re-engage Hannah with ROI summary", -2 * DAY, "daniel", "high", "todo"],
+  ["ld_009", "Send compliance checklist", -DAY, "maya", "medium", "todo"],
+  ["ld_013", "Send pen-test summary and SSO docs", 6 * HOUR, "james", "high", "todo"],
+  ["ld_007", "Send onboarding checklist to Kestrel Labs", 4 * HOUR, "maya", "medium", "todo"],
+  ["ld_010", "Prepare demo workspace for Fieldnote", 90 * MIN, "liam", "high", "in_progress"],
+  ["ld_011", "Follow up on Quillstone proposal", 7 * HOUR, "sofia", "medium", "todo"],
+  ["ld_006", "Send Northwind Health case study", -3 * HOUR, "sofia", "medium", "todo"],
+  ["ld_012", "Review Cobalt Health contract redlines", 3 * DAY, "james", "high", "todo"],
+  ["ld_002", "Send fleet dashboard mockups", 2 * DAY + 2 * HOUR, "maya", "medium", "todo"],
+  ["ld_003", "Share analytics workspace pricing", 4 * DAY, "daniel", "medium", "todo"],
+  ["ld_014", "Schedule quarterly review with Stackfield", 6 * DAY, "james", "low", "todo"],
+  ["ld_015", "Collect testimonial from Meridian Co", 9 * DAY, "daniel", "low", "todo"],
+  ["ld_016", "Offer AI credits pack to Lumos", 12 * DAY, "maya", "low", "todo"],
+  ["ld_012", "Send proposal to Cobalt Health", -4 * HOUR, "james", "high", "done"],
+  ["ld_013", "Intro call with Orbit Systems IT", -2 * DAY, "james", "medium", "done"],
+  ["ld_005", "Send welcome email sequence", -DAY - 3 * HOUR, "liam", "low", "done"],
+  ["ld_002", "Write discovery call recap", -3 * DAY, "maya", "medium", "done"],
+];
+
+function buildTasks(now: number, from = 0): Task[] {
+  return seedTasks.slice(from).map(([leadId, title, due, ownerId, priority, status], index) => {
+    const done = status === "done";
+    return {
+      id: `tk_${from + index + 1}`,
+      leadId,
+      title,
+      dueAt: now + due,
+      done,
+      ownerId,
+      createdAt: now - 4 * DAY,
+      priority,
+      status,
+      completedAt: done ? now + Math.min(due, -30 * MIN) : undefined,
+    };
+  });
+}
+
+/** Adds priorities, statuses and the newer demo tasks to a workspace stored before they existed. */
+export function upgradeState(state: CrmState, now = Date.now()): CrmState {
+  if ((state.taskSchema ?? 1) >= TASK_SCHEMA) return state;
+  const seeded = new Map(buildTasks(state.seededAt).map((t) => [t.id, t]));
+  const tasks = state.tasks.map((task) => {
+    const seed = seeded.get(task.id);
+    if (task.priority || !seed) return task;
+    return {
+      ...task,
+      priority: seed.priority,
+      status: task.done ? "done" : seed.status === "done" ? "todo" : seed.status,
+      completedAt: task.done ? (task.completedAt ?? seed.completedAt ?? task.dueAt) : undefined,
+    } satisfies Task;
+  });
+  const existing = new Set(tasks.map((t) => t.id));
+  const added = buildTasks(now, ORIGINAL_TASKS).filter((t) => !existing.has(t.id));
+  return { ...state, tasks: [...tasks, ...added], taskSchema: TASK_SCHEMA };
 }
 
 export function createSeed(now = Date.now()): CrmState {
@@ -329,6 +377,7 @@ export function createSeed(now = Date.now()): CrmState {
     tasks: buildTasks(now),
     activities: [],
     replies: {},
+    taskSchema: TASK_SCHEMA,
   };
 }
 

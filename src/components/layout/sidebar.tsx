@@ -5,6 +5,8 @@ import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
 import { routes } from "@/lib/routes";
 import { appNavigation } from "@/data/navigation";
+import { useUser } from "@/lib/auth/auth-context";
+import { useInboxUnread } from "@/lib/inbox/use-inbox";
 import { Progress, SidebarItem, SidebarPanel, SidebarSection, Tooltip } from "@/components/ui";
 import { Logo } from "./logo";
 
@@ -17,6 +19,7 @@ export function SidebarNav({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
+  const unread = useInboxUnread(useUser().id);
   return (
     <nav className="flex flex-col gap-3" aria-label="Main">
       {appNavigation.map((section, index) => (
@@ -31,7 +34,7 @@ export function SidebarNav({
                 to={item.href}
                 label={item.label}
                 icon={item.icon}
-                badge={item.badge}
+                badge={item.href === routes.app.conversations ? unread || undefined : item.badge}
                 end={item.href === routes.app.root}
                 collapsed={collapsed}
                 onNavigate={onNavigate}

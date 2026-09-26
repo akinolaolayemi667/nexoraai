@@ -51,6 +51,10 @@ export type Note = {
   createdAt: number;
 };
 
+export type TaskPriority = "high" | "medium" | "low";
+
+export type TaskStatus = "todo" | "in_progress" | "done";
+
 export type Task = {
   id: string;
   leadId: string;
@@ -59,6 +63,10 @@ export type Task = {
   done: boolean;
   ownerId: string;
   createdAt: number;
+  priority?: TaskPriority;
+  /** `done` stays the source of truth for completion; this only distinguishes to-do from in-progress. */
+  status?: TaskStatus;
+  completedAt?: number;
 };
 
 export type ActivityType = "email" | "call" | "meeting" | "note" | "task" | "status" | "deal" | "web" | "form";
@@ -98,4 +106,6 @@ export type CrmState = {
   tasks: Task[];
   activities: Activity[];
   replies: Record<string, Message[]>;
+  /** Bumped when seeded tasks gain new fields, so stored workspaces can be upgraded in place. */
+  taskSchema?: number;
 };

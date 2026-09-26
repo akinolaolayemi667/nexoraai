@@ -4,6 +4,7 @@ import {
   CreditCard,
   Kanban,
   LayoutDashboard,
+  ListChecks,
   MessagesSquare,
   Settings,
   Sparkles,
@@ -63,6 +64,12 @@ const conversations: AppNavItem = {
   description: "Email, chat and SMS threads with customers, unified.",
   badge: 4,
 };
+const tasks: AppNavItem = {
+  label: "Tasks",
+  href: routes.app.tasks,
+  icon: ListChecks,
+  description: "Follow-ups, calls and to-dos for every lead, by due date.",
+};
 const automations: AppNavItem = {
   label: "Automations",
   href: routes.app.automations,
@@ -86,7 +93,7 @@ const analytics: AppNavItem = {
 export const appNavigation: AppNavSection[] = [
   {
     id: "main",
-    items: [overview, leads, contacts, pipeline, conversations, automations, ai, analytics],
+    items: [overview, leads, contacts, pipeline, conversations, tasks, automations, ai, analytics],
   },
   {
     id: "workspace",

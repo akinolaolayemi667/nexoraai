@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { useUser } from "@/lib/auth/auth-context";
 import { CrmContext, type CrmActions } from "@/lib/crm/crm-context";
 import { crmReducer, uid } from "@/lib/crm/reducer";
-import { CRM_VERSION, createSeed, domainFor } from "@/lib/crm/seed";
+import { CRM_VERSION, createSeed, domainFor, upgradeState } from "@/lib/crm/seed";
 import type { CrmState, LeadSource } from "@/lib/crm/types";
 
 const storageKey = (userId: string) => `nexora:crm:v${CRM_VERSION}:${userId}`;
@@ -12,7 +12,7 @@ function load(userId: string): CrmState {
     const raw = localStorage.getItem(storageKey(userId));
     if (raw) {
       const parsed = JSON.parse(raw) as CrmState;
-      if (parsed.version === CRM_VERSION && Array.isArray(parsed.leads)) return parsed;
+      if (parsed.version === CRM_VERSION && Array.isArray(parsed.leads)) return upgradeState(parsed);
     }
   } catch {
     // Corrupt or unavailable storage falls back to fresh demo data.
@@ -58,11 +58,22 @@ function Provider({ userId, actor, children }: { userId: string; actor: string; 
       addNote: (leadId, body) =>
         dispatch({ type: "notes/add", note: { id: uid("nt"), leadId, body, author: actor, createdAt: Date.now() } }),
       deleteNote: (id) => dispatch({ type: "notes/delete", id }),
-      addTask: (leadId, title, dueAt, ownerId) =>
+      addTask: (leadId, title, dueAt, ownerId, extra) =>
         dispatch({
           type: "tasks/add",
-          task: { id: uid("tk"), leadId, title, dueAt, ownerId, done: false, createdAt: Date.now() },
+          task: {
+            id: uid("tk"),
+            leadId,
+            title,
+            dueAt,
+            ownerId,
+            done: false,
+            createdAt: Date.now(),
+            priority: extra?.priority ?? "medium",
+            status: extra?.status ?? "todo",
+          },
         }),
+      updateTask: (id, patch) => dispatch({ type: "tasks/update", id, patch, at: Date.now(), actor }),
       toggleTask: (id) => dispatch({ type: "tasks/toggle", id, at: Date.now(), actor }),
       deleteTask: (id) => dispatch({ type: "tasks/delete", id }),
       logActivity: (leadId, type, title, detail) =>

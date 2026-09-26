@@ -26,6 +26,7 @@ const ContactsPage = lazy(() => import("@/pages/app/contacts"));
 const ContactProfilePage = lazy(() => import("@/pages/app/contact-profile"));
 const PipelinePage = lazy(() => import("@/pages/app/pipeline"));
 const ConversationsPage = lazy(() => import("@/pages/app/conversations"));
+const TasksPage = lazy(() => import("@/pages/app/tasks"));
 const AutomationsPage = lazy(() => import("@/pages/app/automations"));
 const AutomationBuilderPage = lazy(() => import("@/pages/app/automation-builder"));
 const AiAssistantPage = lazy(() => import("@/pages/app/ai-assistant"));
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
           { path: "contacts/:leadId", element: <ContactProfilePage /> },
           { path: "pipeline", element: <PipelinePage /> },
           { path: "conversations", element: <ConversationsPage /> },
+          { path: "tasks", element: <TasksPage /> },
           { path: "automations", element: <AutomationsPage /> },
           { path: "automations/:workflowId", element: <AutomationBuilderPage /> },
           { path: "ai", element: <AiAssistantPage /> },

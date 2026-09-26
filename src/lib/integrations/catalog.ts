@@ -1,0 +1,505 @@
+export type IntegrationCategory = "crm" | "communication" | "marketing" | "payments" | "automation" | "analytics" | "calendar";
+
+export type IntegrationStatus = "connected" | "available" | "coming_soon";
+
+export type SyncOption = { id: string; label: string; description: string; defaultOn: boolean };
+
+export type Integration = {
+  id: string;
+  name: string;
+  category: IntegrationCategory;
+  developer: string;
+  description: string;
+  about: string;
+  features: string[];
+  syncs: SyncOption[];
+  permissions: string[];
+  auth: "oauth" | "apikey";
+  comingSoon?: boolean;
+  eta?: string;
+  popular?: boolean;
+  teams: string;
+  docs: string;
+  /** Workspace account shown once connected, e.g. a portal or domain. */
+  account: string;
+};
+
+export const categories: { id: IntegrationCategory; label: string; description: string }[] = [
+  { id: "crm", label: "CRM", description: "Keep contacts, companies and deals in sync." },
+  { id: "communication", label: "Communication", description: "Reach customers and your team where they talk." },
+  { id: "marketing", label: "Marketing", description: "Turn campaigns and ads into qualified leads." },
+  { id: "payments", label: "Payments", description: "See revenue and billing next to every customer." },
+  { id: "automation", label: "Automation", description: "Trigger workflows across thousands of apps." },
+  { id: "analytics", label: "Analytics", description: "Send events and attribution to your data stack." },
+  { id: "calendar", label: "Calendar", description: "Book meetings and log them automatically." },
+];
+
+export const categoryLabel = Object.fromEntries(categories.map((c) => [c.id, c.label])) as Record<IntegrationCategory, string>;
+
+const sync = (id: string, label: string, description: string, defaultOn = true): SyncOption => ({ id, label, description, defaultOn });
+
+export const integrations: Integration[] = [
+  {
+    id: "hubspot",
+    name: "HubSpot",
+    category: "crm",
+    developer: "HubSpot, Inc.",
+    description: "Two-way sync of contacts, companies and deals with your HubSpot portal.",
+    about:
+      "Keep HubSpot and Nexora in lockstep. New leads captured by Nexora appear in HubSpot within seconds, deal stages stay aligned in both directions, and AI qualification scores are written back to a custom HubSpot property.",
+    features: ["Two-way contact and company sync", "Deal stage mapping to your pipeline", "AI lead score written to HubSpot", "Emails and calls logged on the timeline"],
+    syncs: [
+      sync("contacts", "Contacts and companies", "Create and update records in both directions."),
+      sync("deals", "Deals", "Keep stages and amounts aligned."),
+      sync("activity", "Activity", "Log Nexora emails, calls and meetings in HubSpot."),
+      sync("scores", "AI lead score", "Write scores to the nexora_score property.", false),
+    ],
+    permissions: ["Read and write contacts, companies and deals", "Read owners and pipelines", "Create timeline events"],
+    auth: "oauth",
+    popular: true,
+    teams: "18k+ teams",
+    docs: "docs.nexora.ai/integrations/hubspot",
+    account: "Portal 44182093",
+  },
+  {
+    id: "salesforce",
+    name: "Salesforce",
+    category: "crm",
+    developer: "Salesforce, Inc.",
+    description: "Sync leads, accounts and opportunities with Sales Cloud.",
+    about:
+      "Connect Sales Cloud to route Nexora leads to the right owner, keep opportunities up to date and give reps AI summaries directly on Salesforce records.",
+    features: ["Lead and contact sync with field mapping", "Opportunity stage and amount updates", "Owner assignment rules respected", "AI summaries on Salesforce records"],
+    syncs: [
+      sync("leads", "Leads and contacts", "Create and update in both directions."),
+      sync("opps", "Opportunities", "Mirror stages, amounts and close dates."),
+      sync("tasks", "Tasks", "Push Nexora tasks to Salesforce.", false),
+    ],
+    permissions: ["Access and manage your data (api)", "Perform requests at any time (refresh_token)"],
+    auth: "oauth",
+    popular: true,
+    teams: "9k+ teams",
+    docs: "docs.nexora.ai/integrations/salesforce",
+    account: "acme.my.salesforce.com",
+  },
+  {
+    id: "pipedrive",
+    name: "Pipedrive",
+    category: "crm",
+    developer: "Pipedrive OÜ",
+    description: "Bring Pipedrive deals and people into Nexora pipelines.",
+    about: "Import people, organizations and deals from Pipedrive and keep them updated. Nexora automations can move Pipedrive deals when leads reply or book meetings.",
+    features: ["People and organization import", "Deal sync with stage mapping", "Automations can move Pipedrive deals", "Activity logging"],
+    syncs: [
+      sync("people", "People and organizations", "Keep records current in both tools."),
+      sync("deals", "Deals", "Sync stages and values."),
+      sync("activity", "Activities", "Log calls, emails and meetings."),
+    ],
+    permissions: ["Read and write deals, people and organizations", "Read users and pipelines"],
+    auth: "oauth",
+    teams: "4k+ teams",
+    docs: "docs.nexora.ai/integrations/pipedrive",
+    account: "acme.pipedrive.com",
+  },
+  {
+    id: "zoho",
+    name: "Zoho CRM",
+    category: "crm",
+    developer: "Zoho Corporation",
+    description: "Sync modules, leads and deals with Zoho CRM.",
+    about: "A native Zoho CRM connector with module mapping and two-way sync is in development.",
+    features: ["Lead and contact sync", "Deal pipeline mapping", "Custom module support"],
+    syncs: [],
+    permissions: ["ZohoCRM.modules.ALL", "ZohoCRM.users.READ"],
+    auth: "oauth",
+    comingSoon: true,
+    eta: "Planned for Q4 2026",
+    teams: "Early access",
+    docs: "docs.nexora.ai/roadmap",
+    account: "",
+  },
+  {
+    id: "slack",
+    name: "Slack",
+    category: "communication",
+    developer: "Slack Technologies",
+    description: "Get hot-lead alerts and deal updates in the channels your team uses.",
+    about: "Post real-time alerts to Slack when a hot lead arrives, a deal moves or an automation fails. Reply to leads and assign owners straight from the message.",
+    features: ["Hot-lead and deal alerts", "Assign owners from Slack", "Daily pipeline digest", "Automation failure notifications"],
+    syncs: [
+      sync("alerts", "Hot-lead alerts", "Post to #sales-alerts when a lead scores 80 or more."),
+      sync("deals", "Deal updates", "Share stage changes and wins."),
+      sync("digest", "Daily digest", "A pipeline summary every weekday at 9:00 AM.", false),
+      sync("failures", "Automation failures", "Notify #ops when a workflow run fails."),
+    ],
+    permissions: ["Post messages to channels you choose", "Read channel names", "Add slash commands"],
+    auth: "oauth",
+    popular: true,
+    teams: "22k+ teams",
+    docs: "docs.nexora.ai/integrations/slack",
+    account: "acme-corp.slack.com",
+  },
+  {
+    id: "twilio",
+    name: "Twilio",
+    category: "communication",
+    developer: "Twilio Inc.",
+    description: "Send SMS reminders and log calls with your Twilio numbers.",
+    about: "Use your own Twilio numbers for SMS reminders, two-way texting in the inbox and call logging. Messages and delivery receipts sync to each contact.",
+    features: ["Two-way SMS in the inbox", "Appointment reminders", "Call logging and recordings", "Delivery receipts on the timeline"],
+    syncs: [
+      sync("sms", "SMS conversations", "Show texts in the unified inbox."),
+      sync("calls", "Call logs", "Attach calls and recordings to contacts."),
+    ],
+    permissions: ["Send and receive messages on selected numbers", "Read call logs"],
+    auth: "apikey",
+    teams: "6k+ teams",
+    docs: "docs.nexora.ai/integrations/twilio",
+    account: "+1 (512) 555-0142",
+  },
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    category: "communication",
+    developer: "Meta Platforms",
+    description: "Answer WhatsApp Business messages from the Nexora inbox.",
+    about: "Connect a WhatsApp Business number so customer messages land in the shared inbox. The AI assistant can reply instantly using approved templates.",
+    features: ["WhatsApp chats in the unified inbox", "AI replies with approved templates", "Media and document support", "Opt-in tracking"],
+    syncs: [
+      sync("inbox", "Inbox messages", "Route chats to the shared inbox."),
+      sync("ai", "AI auto-replies", "Let the AI answer common questions.", false),
+    ],
+    permissions: ["Manage WhatsApp Business messages", "Read business phone numbers"],
+    auth: "oauth",
+    popular: true,
+    teams: "7k+ teams",
+    docs: "docs.nexora.ai/integrations/whatsapp",
+    account: "+44 20 7946 0958",
+  },
+  {
+    id: "gmail",
+    name: "Gmail",
+    category: "communication",
+    developer: "Google",
+    description: "Log emails automatically and send tracked messages from Gmail.",
+    about: "Emails with your leads are logged to their timeline automatically. Send from Nexora through your Gmail account with open and reply tracking.",
+    features: ["Automatic email logging", "Send from your own address", "Open and reply tracking", "Thread view on contact profiles"],
+    syncs: [
+      sync("log", "Email logging", "Log emails with known contacts."),
+      sync("track", "Open tracking", "Track opens on emails sent from Nexora."),
+    ],
+    permissions: ["Read, compose and send email", "Read contacts"],
+    auth: "oauth",
+    teams: "25k+ teams",
+    docs: "docs.nexora.ai/integrations/gmail",
+    account: "sales@acme-corp.com",
+  },
+  {
+    id: "teams",
+    name: "Microsoft Teams",
+    category: "communication",
+    developer: "Microsoft",
+    description: "Lead alerts and deal updates in Microsoft Teams channels.",
+    about: "A Teams app with channel alerts and adaptive-card actions is in development.",
+    features: ["Channel alerts", "Adaptive-card actions", "Meeting notes sync"],
+    syncs: [],
+    permissions: ["ChannelMessage.Send", "Team.ReadBasic.All"],
+    auth: "oauth",
+    comingSoon: true,
+    eta: "Planned for Q1 2027",
+    teams: "Early access",
+    docs: "docs.nexora.ai/roadmap",
+    account: "",
+  },
+  {
+    id: "mailchimp",
+    name: "Mailchimp",
+    category: "marketing",
+    developer: "Intuit Mailchimp",
+    description: "Sync audiences and see campaign engagement on every lead.",
+    about: "Push qualified segments to Mailchimp audiences and pull opens and clicks back into Nexora so lead scores reflect campaign engagement.",
+    features: ["Audience and tag sync", "Campaign engagement on timelines", "Engagement boosts lead score", "Unsubscribe sync"],
+    syncs: [
+      sync("audiences", "Audiences", "Keep segments in sync with Mailchimp tags."),
+      sync("engagement", "Campaign engagement", "Log opens and clicks."),
+    ],
+    permissions: ["Manage audiences and tags", "Read campaign reports"],
+    auth: "oauth",
+    teams: "11k+ teams",
+    docs: "docs.nexora.ai/integrations/mailchimp",
+    account: "Acme Newsletter",
+  },
+  {
+    id: "google-ads",
+    name: "Google Ads",
+    category: "marketing",
+    developer: "Google",
+    description: "Import lead-form leads and send conversions back to Google Ads.",
+    about: "Leads from Google Ads lead forms arrive in Nexora instantly. Won deals are sent back as offline conversions so bidding optimizes for revenue.",
+    features: ["Lead-form import", "Offline conversion upload", "Campaign attribution on leads", "Cost per lead reporting"],
+    syncs: [
+      sync("leads", "Lead-form leads", "Create leads from form submissions."),
+      sync("conversions", "Offline conversions", "Send won deals back to Google Ads."),
+    ],
+    permissions: ["Manage Google Ads campaigns (read)", "Upload conversions"],
+    auth: "oauth",
+    teams: "5k+ teams",
+    docs: "docs.nexora.ai/integrations/google-ads",
+    account: "Customer ID 482-110-9931",
+  },
+  {
+    id: "meta-ads",
+    name: "Meta Ads",
+    category: "marketing",
+    developer: "Meta Platforms",
+    description: "Instant-form leads from Facebook and Instagram ads.",
+    about: "Lead-ad import and Conversions API support for Facebook and Instagram are in development.",
+    features: ["Instant-form import", "Conversions API", "Audience sync"],
+    syncs: [],
+    permissions: ["leads_retrieval", "ads_read"],
+    auth: "oauth",
+    comingSoon: true,
+    eta: "Planned for Q4 2026",
+    teams: "Early access",
+    docs: "docs.nexora.ai/roadmap",
+    account: "",
+  },
+  {
+    id: "stripe",
+    name: "Stripe",
+    category: "payments",
+    developer: "Stripe, Inc.",
+    description: "See payments, subscriptions and MRR on every customer.",
+    about: "Match Stripe customers to Nexora contacts to show lifetime value, subscription status and failed payments. Won deals can create Stripe invoices automatically.",
+    features: ["Revenue and MRR on contacts", "Subscription status and renewals", "Failed-payment alerts", "Create invoices from won deals"],
+    syncs: [
+      sync("customers", "Customers", "Match Stripe customers to contacts."),
+      sync("payments", "Payments and invoices", "Show charges, refunds and invoices."),
+      sync("invoices", "Invoices from deals", "Draft an invoice when a deal is won.", false),
+    ],
+    permissions: ["Read customers, charges and subscriptions", "Create invoices"],
+    auth: "oauth",
+    popular: true,
+    teams: "14k+ teams",
+    docs: "docs.nexora.ai/integrations/stripe",
+    account: "acct_1N8vQ2Acme",
+  },
+  {
+    id: "paypal",
+    name: "PayPal",
+    category: "payments",
+    developer: "PayPal Holdings",
+    description: "Track PayPal payments and invoices against customers.",
+    about: "Sync PayPal transactions and invoices so revenue from every channel shows up on the customer profile and in analytics.",
+    features: ["Transaction sync", "Invoice status tracking", "Revenue in analytics"],
+    syncs: [
+      sync("transactions", "Transactions", "Import payments and refunds."),
+      sync("invoices", "Invoices", "Track invoice status."),
+    ],
+    permissions: ["Read transactions", "Read invoices"],
+    auth: "oauth",
+    teams: "3k+ teams",
+    docs: "docs.nexora.ai/integrations/paypal",
+    account: "billing@acme-corp.com",
+  },
+  {
+    id: "square",
+    name: "Square",
+    category: "payments",
+    developer: "Block, Inc.",
+    description: "In-person and online Square payments on customer profiles.",
+    about: "A Square connector for payments, customers and appointments is in development.",
+    features: ["Payment sync", "Customer directory", "Appointments"],
+    syncs: [],
+    permissions: ["PAYMENTS_READ", "CUSTOMERS_READ"],
+    auth: "oauth",
+    comingSoon: true,
+    eta: "Planned for Q1 2027",
+    teams: "Early access",
+    docs: "docs.nexora.ai/roadmap",
+    account: "",
+  },
+  {
+    id: "zapier",
+    name: "Zapier",
+    category: "automation",
+    developer: "Zapier, Inc.",
+    description: "Connect Nexora to 6,000+ apps with triggers and actions.",
+    about: "Use Nexora triggers such as new lead, deal won or task completed in any Zap, and create leads, notes or tasks from other apps.",
+    features: ["12 triggers and 9 actions", "New lead and deal-won triggers", "Create leads, notes and tasks", "Works with 6,000+ apps"],
+    syncs: [sync("triggers", "Triggers", "Allow Zaps to subscribe to Nexora events.")],
+    permissions: ["Read leads, deals and tasks", "Create leads, notes and tasks"],
+    auth: "apikey",
+    popular: true,
+    teams: "10k+ teams",
+    docs: "docs.nexora.ai/integrations/zapier",
+    account: "Acme workspace",
+  },
+  {
+    id: "make",
+    name: "Make",
+    category: "automation",
+    developer: "Celonis",
+    description: "Build visual scenarios that react to Nexora events.",
+    about: "The Make app gives you instant triggers and modules for leads, deals, tasks and conversations, so complex multi-step scenarios stay in sync.",
+    features: ["Instant webhooks triggers", "Modules for leads, deals and tasks", "Search and update records"],
+    syncs: [sync("webhooks", "Instant triggers", "Send events to Make scenarios.")],
+    permissions: ["Read and write leads, deals and tasks", "Manage webhooks"],
+    auth: "oauth",
+    teams: "4k+ teams",
+    docs: "docs.nexora.ai/integrations/make",
+    account: "Acme organization",
+  },
+  {
+    id: "n8n",
+    name: "n8n",
+    category: "automation",
+    developer: "n8n GmbH",
+    description: "Self-hosted or cloud workflows with the Nexora node.",
+    about: "Use the Nexora node in n8n cloud or your self-hosted instance. Authenticate with an API key and trigger workflows from webhooks.",
+    features: ["Nexora trigger and action nodes", "Works self-hosted or in the cloud", "Webhook triggers"],
+    syncs: [sync("webhooks", "Webhook triggers", "Send events to your n8n instance.")],
+    permissions: ["Read and write leads, deals and tasks", "Manage webhooks"],
+    auth: "apikey",
+    teams: "2k+ teams",
+    docs: "docs.nexora.ai/integrations/n8n",
+    account: "n8n.acme-corp.com",
+  },
+  {
+    id: "google-analytics",
+    name: "Google Analytics",
+    category: "analytics",
+    developer: "Google",
+    description: "Attribute leads to channels and send conversions to GA4.",
+    about: "Capture the GA4 client ID with every form so leads carry source and campaign data. Qualified leads and won deals are sent to GA4 as conversion events.",
+    features: ["Source and campaign on every lead", "Conversion events to GA4", "Revenue attribution reports"],
+    syncs: [
+      sync("attribution", "Attribution", "Store source, medium and campaign on leads."),
+      sync("events", "Conversion events", "Send qualified and won events to GA4."),
+    ],
+    permissions: ["Read analytics properties", "Send measurement events"],
+    auth: "oauth",
+    teams: "12k+ teams",
+    docs: "docs.nexora.ai/integrations/google-analytics",
+    account: "Property G-8XK21LMN0Q",
+  },
+  {
+    id: "segment",
+    name: "Segment",
+    category: "analytics",
+    developer: "Twilio Segment",
+    description: "Stream Nexora events to your warehouse and tools via Segment.",
+    about: "Send identify and track calls for leads, deals and conversations to Segment, and receive product events to enrich lead scores.",
+    features: ["Identify and track calls", "Product events enrich lead scores", "Warehouse-ready schema"],
+    syncs: [
+      sync("outbound", "Send events", "Stream Nexora events to Segment."),
+      sync("inbound", "Receive events", "Use product events in lead scoring.", false),
+    ],
+    permissions: ["Write key for your source"],
+    auth: "apikey",
+    teams: "2k+ teams",
+    docs: "docs.nexora.ai/integrations/segment",
+    account: "Source: nexora-prod",
+  },
+  {
+    id: "mixpanel",
+    name: "Mixpanel",
+    category: "analytics",
+    developer: "Mixpanel, Inc.",
+    description: "Product analytics events alongside your sales data.",
+    about: "A Mixpanel integration for product-qualified lead scoring is in development.",
+    features: ["Product-qualified lead scoring", "Cohort sync", "Event timelines"],
+    syncs: [],
+    permissions: ["Read project events", "Export cohorts"],
+    auth: "apikey",
+    comingSoon: true,
+    eta: "Planned for Q4 2026",
+    teams: "Early access",
+    docs: "docs.nexora.ai/roadmap",
+    account: "",
+  },
+  {
+    id: "google-calendar",
+    name: "Google Calendar",
+    category: "calendar",
+    developer: "Google",
+    description: "Book meetings from Nexora and log them on the lead timeline.",
+    about: "Show your availability on booking links, create calendar events from the pipeline and log every meeting with a lead automatically.",
+    features: ["Availability on booking links", "Meetings logged on timelines", "Reminders before meetings", "Round-robin scheduling"],
+    syncs: [
+      sync("availability", "Availability", "Use free/busy for booking links."),
+      sync("meetings", "Meeting logging", "Log meetings with known contacts."),
+    ],
+    permissions: ["View and edit events on your calendars", "See free/busy information"],
+    auth: "oauth",
+    popular: true,
+    teams: "20k+ teams",
+    docs: "docs.nexora.ai/integrations/google-calendar",
+    account: "james@acme-corp.com",
+  },
+  {
+    id: "calendly",
+    name: "Calendly",
+    category: "calendar",
+    developer: "Calendly LLC",
+    description: "Create leads and tasks when prospects book on Calendly.",
+    about: "Every Calendly booking creates or updates a lead, adds the meeting to the timeline and can start an automation like the Appointment Reminder.",
+    features: ["Leads from new bookings", "Cancellations and reschedules synced", "Start automations on booking"],
+    syncs: [sync("bookings", "Bookings", "Create leads and log meetings.")],
+    permissions: ["Read scheduled events", "Manage webhook subscriptions"],
+    auth: "oauth",
+    teams: "8k+ teams",
+    docs: "docs.nexora.ai/integrations/calendly",
+    account: "calendly.com/acme-sales",
+  },
+  {
+    id: "outlook",
+    name: "Outlook Calendar",
+    category: "calendar",
+    developer: "Microsoft",
+    description: "Sync Microsoft 365 calendars for booking and meeting logs.",
+    about: "Use Outlook availability for booking links and log Microsoft 365 meetings with leads automatically.",
+    features: ["Availability on booking links", "Meeting logging", "Teams meeting links"],
+    syncs: [
+      sync("availability", "Availability", "Use free/busy for booking links."),
+      sync("meetings", "Meeting logging", "Log meetings with known contacts."),
+    ],
+    permissions: ["Calendars.ReadWrite", "User.Read"],
+    auth: "oauth",
+    teams: "6k+ teams",
+    docs: "docs.nexora.ai/integrations/outlook",
+    account: "sales@acme-corp.com",
+  },
+];
+
+export const integrationById = (id: string) => integrations.find((i) => i.id === id);
+
+export type Connection = { connectedAt: number; lastSync: number; account: string; options: Record<string, boolean> };
+
+export type IntegrationState = { connections: Record<string, Connection>; notify: string[] };
+
+const HOUR = 3_600_000;
+
+export function defaultIntegrationState(now: number): IntegrationState {
+  const connect = (id: string, daysAgo: number, syncMinutes: number): [string, Connection] => {
+    const integration = integrationById(id)!;
+    return [
+      id,
+      {
+        connectedAt: now - daysAgo * 24 * HOUR,
+        lastSync: now - syncMinutes * 60_000,
+        account: integration.account,
+        options: Object.fromEntries(integration.syncs.map((s) => [s.id, s.defaultOn])),
+      },
+    ];
+  };
+  return {
+    connections: Object.fromEntries([connect("hubspot", 64, 4), connect("slack", 120, 1), connect("gmail", 210, 2), connect("stripe", 88, 12), connect("google-calendar", 150, 6)]),
+    notify: [],
+  };
+}
+
+export function statusOf(integration: Integration, state: IntegrationState): IntegrationStatus {
+  if (integration.comingSoon) return "coming_soon";
+  return state.connections[integration.id] ? "connected" : "available";
+}
