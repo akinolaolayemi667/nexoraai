@@ -1,11 +1,30 @@
-import { MarketingPagePlaceholder } from "@/components/layout/page-placeholder";
+import {
+  Capabilities,
+  Hero,
+  Integrations,
+  Platform,
+  PricingCta,
+  ProductOverview,
+  Solutions,
+  Testimonials,
+} from "@/components/marketing";
 
 export default function HomePage() {
   return (
-    <MarketingPagePlaceholder
-      eyebrow="NEXORA AI"
-      title="The AI operating system for your business"
-      description="CRM, pipeline, conversations, automation and analytics — unified in one workspace and powered by AI."
-    />
+    <>
+      <title>NEXORA AI — AI-Powered Operations. One Intelligent Workspace.</title>
+      <meta
+        name="description"
+        content="Manage leads, automate workflows, understand your customers and move your business forward from one intelligent platform."
+      />
+      <Hero />
+      <ProductOverview />
+      <Capabilities />
+      <Platform />
+      <Solutions />
+      <Integrations />
+      <Testimonials />
+      <PricingCta />
+    </>
   );
 }

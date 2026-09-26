@@ -130,11 +130,6 @@ export function findNavItem(pathname: string) {
   return allAppNavItems.find((item) => item.href === pathname);
 }
 
-export const marketingNavigation = [
-  { label: "Features", href: routes.features },
-  { label: "Pricing", href: routes.pricing },
-];
-
 export const currentUser = {
   name: "Olayemi Akinola",
   email: "olayemi@nexora.ai",
