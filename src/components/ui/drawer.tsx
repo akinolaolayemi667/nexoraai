@@ -1,8 +1,9 @@
-import { useId, useRef, type ReactNode } from "react";
+import { useId, useMemo, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { fadeIn, motionStates, slideIn } from "@/lib/motion";
 import { useOverlay } from "@/hooks/use-overlay";
 import { Button } from "./button";
 
@@ -36,19 +37,17 @@ export function Drawer({
 }: DrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  const variants = useMemo(() => slideIn(side === "right" ? "right" : "left", "100%"), [side]);
   useOverlay(open, onClose, panelRef);
-  const offset = side === "right" ? "100%" : "-100%";
 
   return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50">
           <motion.div
-            className="absolute inset-0 bg-ink/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-overlay"
+            variants={fadeIn}
+            {...motionStates}
             onClick={onClose}
             aria-hidden
           />
@@ -58,31 +57,28 @@ export function Drawer({
             aria-modal="true"
             aria-labelledby={titleId}
             tabIndex={-1}
+            variants={variants}
+            {...motionStates}
             className={cn(
-              "absolute inset-y-0 flex w-full flex-col bg-white shadow-overlay outline-none",
+              "absolute inset-y-0 flex w-full flex-col border-border bg-white shadow-xl outline-none",
               side === "right" ? "right-0 border-l" : "left-0 border-r",
-              "border-border",
               widths[size],
             )}
-            initial={{ x: offset }}
-            animate={{ x: 0 }}
-            exit={{ x: offset }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
-              <div>
-                <h2 id={titleId} className="text-base font-semibold">
+              <div className="min-w-0">
+                <h2 id={titleId} className="type-h3">
                   {title}
                 </h2>
-                {description && <p className="mt-1 text-[13px] text-muted">{description}</p>}
+                {description && <p className="mt-1 text-sm text-muted">{description}</p>}
               </div>
-              <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close panel">
+              <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close panel" className="-mr-2 -mt-1">
                 <X />
               </Button>
             </div>
             <div className="scrollbar-thin flex-1 overflow-y-auto px-6 py-5">{children}</div>
             {footer && (
-              <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-3">
+              <div className="flex items-center justify-end gap-2 border-t border-border bg-canvas px-6 py-3">
                 {footer}
               </div>
             )}

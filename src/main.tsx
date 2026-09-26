@@ -6,13 +6,15 @@ import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/600.css";
 import "@/styles/globals.css";
-import { ToastProvider } from "@/components/ui";
+import { MotionProvider, ToastProvider } from "@/components/ui";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ToastProvider>
-      <App />
-    </ToastProvider>
+    <MotionProvider>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </MotionProvider>
   </StrictMode>,
 );

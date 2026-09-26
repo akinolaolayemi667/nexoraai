@@ -6,21 +6,21 @@ type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Status = "online" | "away" | "offline";
 
 const sizes: Record<Size, string> = {
-  xs: "size-5 text-[9px]",
-  sm: "size-7 text-[11px]",
+  xs: "size-5 text-[0.5625rem]",
+  sm: "size-7 text-2xs",
   md: "size-8 text-xs",
   lg: "size-10 text-sm",
-  xl: "size-14 text-base",
+  xl: "size-14 text-lg",
 };
 
 const palette = [
-  "bg-primary-soft text-primary",
-  "bg-accent-soft text-accent",
-  "bg-emerald-50 text-emerald-700",
-  "bg-amber-50 text-amber-700",
-  "bg-rose-50 text-rose-700",
+  "bg-primary-soft text-primary-active",
+  "bg-accent-soft text-accent-hover",
+  "bg-success-soft text-success-text",
+  "bg-warning-soft text-warning-text",
+  "bg-danger-soft text-danger-text",
   "bg-sky-50 text-sky-700",
-  "bg-slate-100 text-slate-700",
+  "bg-sunken text-muted",
 ];
 
 const statusColors: Record<Status, string> = {
@@ -100,7 +100,7 @@ export function AvatarGroup({
       {rest > 0 && (
         <span
           className={cn(
-            "inline-flex items-center justify-center rounded-full bg-canvas font-medium text-muted ring-2 ring-white",
+            "inline-flex items-center justify-center rounded-full bg-sunken font-medium text-muted ring-2 ring-white",
             sizes[size],
           )}
         >

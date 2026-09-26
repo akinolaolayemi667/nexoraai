@@ -1,43 +1,98 @@
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import type { Tone } from "@/lib/tokens";
 
-export type BadgeVariant = "neutral" | "primary" | "accent" | "success" | "warning" | "danger";
+export type BadgeVariant = Tone;
 
-const variants: Record<BadgeVariant, { badge: string; dot: string }> = {
-  neutral: { badge: "bg-canvas text-muted ring-border", dot: "bg-subtle" },
-  primary: { badge: "bg-primary-soft/60 text-primary ring-primary/15", dot: "bg-primary" },
-  accent: { badge: "bg-accent-soft text-accent ring-accent/15", dot: "bg-accent" },
-  success: { badge: "bg-success-soft text-success ring-success/20", dot: "bg-success" },
-  warning: { badge: "bg-warning-soft text-amber-700 ring-warning/25", dot: "bg-warning" },
-  danger: { badge: "bg-danger-soft text-danger ring-danger/20", dot: "bg-danger" },
+const tones: Record<Tone, { soft: string; outline: string; solid: string; dot: string }> = {
+  neutral: {
+    soft: "bg-sunken text-muted ring-border",
+    outline: "bg-white text-muted ring-border-strong",
+    solid: "bg-ink text-white ring-ink",
+    dot: "bg-subtle",
+  },
+  primary: {
+    soft: "bg-primary-soft/60 text-primary-active ring-primary-border",
+    outline: "bg-white text-primary ring-primary-border",
+    solid: "bg-primary text-white ring-primary",
+    dot: "bg-primary",
+  },
+  accent: {
+    soft: "bg-accent-soft text-accent ring-accent-border",
+    outline: "bg-white text-accent ring-accent-border",
+    solid: "bg-accent text-white ring-accent",
+    dot: "bg-accent",
+  },
+  success: {
+    soft: "bg-success-soft text-success-text ring-success-border",
+    outline: "bg-white text-success-text ring-success-border",
+    solid: "bg-success text-white ring-success",
+    dot: "bg-success",
+  },
+  warning: {
+    soft: "bg-warning-soft text-warning-text ring-warning-border",
+    outline: "bg-white text-warning-text ring-warning-border",
+    solid: "bg-warning text-ink ring-warning",
+    dot: "bg-warning",
+  },
+  danger: {
+    soft: "bg-danger-soft text-danger-text ring-danger-border",
+    outline: "bg-white text-danger-text ring-danger-border",
+    solid: "bg-danger text-white ring-danger",
+    dot: "bg-danger",
+  },
 };
 
 export type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  variant?: BadgeVariant;
-  dot?: boolean;
+  variant?: Tone;
+  appearance?: "soft" | "outline" | "solid";
   size?: "sm" | "md";
+  dot?: boolean;
+  icon?: ReactNode;
+  onRemove?: () => void;
 };
 
 export function Badge({
   variant = "neutral",
-  dot = false,
+  appearance = "soft",
   size = "sm",
+  dot = false,
+  icon,
+  onRemove,
   className,
   children,
   ...props
 }: BadgeProps) {
+  const tone = tones[variant];
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 whitespace-nowrap rounded font-medium ring-1 ring-inset",
-        size === "sm" ? "h-5 px-1.5 text-[11px]" : "h-6 px-2 text-xs",
-        variants[variant].badge,
+        "inline-flex items-center gap-1 whitespace-nowrap rounded-sm font-medium ring-1 ring-inset [&_svg]:size-3 [&_svg]:shrink-0",
+        size === "sm" ? "h-5 px-1.5 text-2xs" : "h-6 px-2 text-xs",
+        tone[appearance],
         className,
       )}
       {...props}
     >
-      {dot && <span className={cn("size-1.5 rounded-full", variants[variant].dot)} aria-hidden />}
+      {dot && (
+        <span
+          className={cn("size-1.5 rounded-full", appearance === "solid" ? "bg-current" : tone.dot)}
+          aria-hidden
+        />
+      )}
+      {icon}
       {children}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="-mr-0.5 ml-0.5 rounded-xs opacity-60 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+          aria-label="Remove"
+        >
+          <X />
+        </button>
+      )}
     </span>
   );
 }

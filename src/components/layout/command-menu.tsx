@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { CornerDownLeft, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { fadeIn, motionStates, scaleIn } from "@/lib/motion";
 import { allAppNavItems } from "@/data/navigation";
 import { useOverlay } from "@/hooks/use-overlay";
 
@@ -43,11 +44,9 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[12vh]">
           <motion.div
-            className="absolute inset-0 bg-ink/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
+            className="absolute inset-0 bg-overlay"
+            variants={fadeIn}
+            {...motionStates}
             onClick={onClose}
             aria-hidden
           />
@@ -56,11 +55,9 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
             role="dialog"
             aria-modal="true"
             aria-label="Command menu"
-            initial={{ opacity: 0, scale: 0.98, y: -6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.14, ease: "easeOut" }}
-            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-border bg-white shadow-overlay"
+            variants={scaleIn}
+            {...motionStates}
+            className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-white shadow-xl"
           >
             <div className="flex items-center gap-3 border-b border-border px-4">
               <Search className="size-4 text-subtle" />
@@ -90,13 +87,13 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
                 aria-controls="command-results"
                 aria-activedescendant={results[active] ? `command-${results[active].href}` : undefined}
               />
-              <kbd className="rounded border border-border px-1.5 font-mono text-[11px] text-subtle">
+              <kbd className="rounded-xs border border-border px-1.5 font-mono text-2xs text-subtle">
                 ESC
               </kbd>
             </div>
             <ul id="command-results" role="listbox" className="scrollbar-thin max-h-80 overflow-y-auto p-1.5">
               {results.length === 0 && (
-                <li className="px-3 py-8 text-center text-[13px] text-muted">No matching pages.</li>
+                <li className="px-3 py-8 text-center text-sm text-muted">No matching pages.</li>
               )}
               {results.map((item, index) => (
                 <li
@@ -108,14 +105,19 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
                   onClick={() => go(index)}
                   className={cn(
                     "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2",
-                    index === active ? "bg-canvas" : "",
+                    index === active ? "bg-sunken/70" : "",
                   )}
                 >
-                  <span className="flex size-7 items-center justify-center rounded-md border border-border bg-white">
-                    <item.icon className="size-3.5 text-muted" />
+                  <span
+                    className={cn(
+                      "flex size-7 items-center justify-center rounded-md border bg-white transition-colors duration-100",
+                      index === active ? "border-primary-border text-primary" : "border-border text-muted",
+                    )}
+                  >
+                    <item.icon className="size-3.5" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[13px] font-medium text-ink">{item.label}</span>
+                    <span className="block text-sm font-medium text-ink">{item.label}</span>
                     <span className="block truncate text-xs text-muted">{item.description}</span>
                   </span>
                   {index === active && <CornerDownLeft className="size-3.5 text-subtle" />}

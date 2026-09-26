@@ -1,7 +1,9 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Button } from "./button";
 import { Checkbox } from "./checkbox";
+import { EmptyState } from "./empty-state";
 import { Skeleton } from "./loading-state";
 
 export type Column<T> = {
@@ -14,20 +16,26 @@ export type Column<T> = {
   className?: string;
 };
 
-type SortState = { key: string; direction: "asc" | "desc" } | null;
+export type SortState = { key: string; direction: "asc" | "desc" } | null;
 
 export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
   getRowId: (row: T) => string;
   onRowClick?: (row: T) => void;
+  activeRowId?: string;
   loading?: boolean;
+  loadingRows?: number;
+  error?: ReactNode;
+  onRetry?: () => void;
   empty?: ReactNode;
   selectable?: boolean;
   selectedIds?: Set<string>;
   onSelectionChange?: (ids: Set<string>) => void;
+  isRowDisabled?: (row: T) => boolean;
   defaultSort?: SortState;
   density?: "compact" | "comfortable";
+  stickyHeader?: boolean;
   className?: string;
 };
 
@@ -38,13 +46,19 @@ export function Table<T>({
   rows,
   getRowId,
   onRowClick,
+  activeRowId,
   loading = false,
+  loadingRows = 5,
+  error,
+  onRetry,
   empty,
   selectable = false,
   selectedIds,
   onSelectionChange,
+  isRowDisabled,
   defaultSort = null,
   density = "comfortable",
+  stickyHeader = false,
   className,
 }: TableProps<T>) {
   const [sort, setSort] = useState<SortState>(defaultSort);
@@ -57,18 +71,18 @@ export function Table<T>({
     return [...rows].sort((a, b) => {
       const av = getValue(a);
       const bv = getValue(b);
-      const result = typeof av === "number" && typeof bv === "number"
-        ? av - bv
-        : String(av).localeCompare(String(bv));
+      const result =
+        typeof av === "number" && typeof bv === "number" ? av - bv : String(av).localeCompare(String(bv));
       return sort.direction === "asc" ? result : -result;
     });
   }, [rows, columns, sort]);
 
-  const allSelected = rows.length > 0 && rows.every((row) => selected.has(getRowId(row)));
-  const someSelected = !allSelected && rows.some((row) => selected.has(getRowId(row)));
+  const selectableRows = rows.filter((row) => !isRowDisabled?.(row));
+  const allSelected = selectableRows.length > 0 && selectableRows.every((row) => selected.has(getRowId(row)));
+  const someSelected = !allSelected && selectableRows.some((row) => selected.has(getRowId(row)));
 
   function toggleAll() {
-    onSelectionChange?.(allSelected ? new Set() : new Set(rows.map(getRowId)));
+    onSelectionChange?.(allSelected ? new Set() : new Set(selectableRows.map(getRowId)));
   }
 
   function toggleRow(id: string) {
@@ -88,18 +102,20 @@ export function Table<T>({
 
   const cellPadding = density === "compact" ? "px-3 py-2" : "px-4 py-3";
   const colCount = columns.length + (selectable ? 1 : 0);
+  const showBody = !loading && !error;
 
   return (
-    <div className={cn("scrollbar-thin overflow-x-auto", className)}>
-      <table className="w-full border-collapse text-[13px]">
-        <thead>
-          <tr className="border-b border-border bg-canvas/70">
+    <div className={cn("scrollbar-thin overflow-auto", className)}>
+      <table className="w-full border-collapse text-sm">
+        <thead className={cn(stickyHeader && "sticky top-0 z-10")}>
+          <tr className="border-b border-border bg-canvas">
             {selectable && (
-              <th className="w-10 px-4 py-2.5">
+              <th scope="col" className="w-10 px-4 py-2.5">
                 <Checkbox
                   checked={allSelected}
                   indeterminate={someSelected}
                   onChange={toggleAll}
+                  disabled={loading || selectableRows.length === 0}
                   aria-label="Select all rows"
                 />
               </th>
@@ -115,7 +131,7 @@ export function Table<T>({
                   style={{ width: column.width }}
                   aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined}
                   className={cn(
-                    "whitespace-nowrap px-4 py-2.5 text-[11px] font-medium uppercase tracking-wide text-muted",
+                    "type-overline whitespace-nowrap px-4 py-2.5 text-muted",
                     alignClass[column.align ?? "left"],
                   )}
                 >
@@ -124,12 +140,12 @@ export function Table<T>({
                       type="button"
                       onClick={() => toggleSort(column.key)}
                       className={cn(
-                        "inline-flex items-center gap-1 uppercase transition-colors hover:text-ink",
+                        "-mx-1 inline-flex items-center gap-1 rounded-xs px-1 uppercase outline-none transition-colors hover:text-ink focus-visible:shadow-focus",
                         active && "text-ink",
                       )}
                     >
                       {column.header}
-                      <SortIcon className={cn("size-3", !active && "text-subtle")} />
+                      <SortIcon className={cn("size-3", !active && "text-subtle")} aria-hidden />
                     </button>
                   ) : (
                     column.header
@@ -141,40 +157,79 @@ export function Table<T>({
         </thead>
         <tbody>
           {loading &&
-            Array.from({ length: 5 }).map((_, i) => (
-              <tr key={`skeleton-${i}`} className="border-b border-border last:border-0">
+            Array.from({ length: loadingRows }).map((_, i) => (
+              <tr key={`skeleton-${i}`} className="border-b border-border-subtle last:border-0">
                 {Array.from({ length: colCount }).map((__, j) => (
                   <td key={j} className={cellPadding}>
-                    <Skeleton className="h-4 w-full max-w-[160px]" />
+                    <Skeleton className={cn("h-4", j === 0 && selectable ? "w-4" : "w-full max-w-40")} />
                   </td>
                 ))}
               </tr>
             ))}
 
-          {!loading && sortedRows.length === 0 && (
+          {!loading && error && (
+            <tr>
+              <td colSpan={colCount}>
+                <EmptyState
+                  tone="error"
+                  icon={<AlertTriangle />}
+                  title="Couldn't load data"
+                  description={error}
+                  action={
+                    onRetry && (
+                      <Button variant="secondary" size="sm" onClick={onRetry}>
+                        Try again
+                      </Button>
+                    )
+                  }
+                  size="sm"
+                />
+              </td>
+            </tr>
+          )}
+
+          {showBody && sortedRows.length === 0 && (
             <tr>
               <td colSpan={colCount}>{empty ?? <p className="py-12 text-center text-muted">No results.</p>}</td>
             </tr>
           )}
 
-          {!loading &&
+          {showBody &&
             sortedRows.map((row) => {
               const id = getRowId(row);
               const isSelected = selected.has(id);
+              const isActive = activeRowId === id;
+              const disabled = isRowDisabled?.(row) ?? false;
+              const clickable = Boolean(onRowClick) && !disabled;
               return (
                 <tr
                   key={id}
-                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  tabIndex={clickable ? 0 : undefined}
+                  aria-selected={selectable ? isSelected : undefined}
+                  aria-disabled={disabled || undefined}
+                  data-active={isActive || undefined}
+                  onClick={clickable ? () => onRowClick?.(row) : undefined}
+                  onKeyDown={
+                    clickable
+                      ? (event) => {
+                          if (event.key === "Enter" && event.target === event.currentTarget) onRowClick?.(row);
+                        }
+                      : undefined
+                  }
                   className={cn(
-                    "border-b border-border transition-colors last:border-0",
-                    onRowClick && "cursor-pointer",
-                    isSelected ? "bg-primary-soft/30" : "hover:bg-canvas/70",
+                    "border-b border-border-subtle outline-none transition-colors duration-100 last:border-0",
+                    clickable && "cursor-pointer focus-visible:bg-primary-soft/30 focus-visible:shadow-[inset_2px_0_0_var(--color-primary)]",
+                    isActive && "bg-primary-soft/40 shadow-[inset_2px_0_0_var(--color-primary)]",
+                    !isActive && isSelected && "bg-primary-soft/25",
+                    !isActive && !isSelected && !disabled && "hover:bg-canvas active:bg-sunken/60",
+                    disabled && "opacity-50",
                   )}
                 >
                   {selectable && (
                     <td className="w-10 px-4" onClick={(event) => event.stopPropagation()}>
                       <Checkbox
                         checked={isSelected}
+                        disabled={disabled}
                         onChange={() => toggleRow(id)}
                         aria-label="Select row"
                       />

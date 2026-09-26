@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { transitions } from "@/lib/motion";
 
 export type TabItem = {
   value: string;
@@ -66,7 +67,7 @@ export function Tabs({
         className={cn(
           "flex items-center",
           segmented
-            ? "inline-flex gap-0.5 rounded-md border border-border bg-canvas p-0.5"
+            ? "inline-flex gap-0.5 rounded-md border border-border bg-sunken p-0.5"
             : "gap-5 border-b border-border",
         )}
       >
@@ -87,14 +88,18 @@ export function Tabs({
               disabled={item.disabled}
               onClick={() => select(item.value)}
               className={cn(
-                "relative inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium outline-none transition-colors disabled:opacity-40 [&_svg]:size-4",
+                "relative inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium outline-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4",
                 segmented
                   ? cn(
-                      "h-7 rounded px-3",
-                      selected ? "bg-white text-ink shadow-xs" : "text-muted hover:text-ink",
+                      "h-7 rounded-sm px-3 focus-visible:shadow-focus",
+                      selected
+                        ? "bg-white text-ink shadow-xs ring-1 ring-border"
+                        : "text-muted hover:text-ink active:bg-white/60",
                     )
-                  : cn("h-10", selected ? "text-ink" : "text-muted hover:text-ink"),
-                "focus-visible:ring-2 focus-visible:ring-primary/40",
+                  : cn(
+                      "h-10 rounded-xs focus-visible:shadow-focus",
+                      selected ? "text-ink" : "text-muted hover:text-ink active:text-ink",
+                    ),
               )}
             >
               {item.icon}
@@ -102,8 +107,8 @@ export function Tabs({
               {item.count !== undefined && (
                 <span
                   className={cn(
-                    "rounded px-1.5 font-mono text-[11px] tabular-nums",
-                    selected ? "bg-primary-soft text-primary" : "bg-canvas text-muted",
+                    "rounded-sm px-1.5 font-mono text-2xs tabular-nums",
+                    selected ? "bg-primary-soft text-primary-active" : "bg-sunken text-muted",
                   )}
                 >
                   {item.count}
@@ -113,7 +118,7 @@ export function Tabs({
                 <motion.span
                   layoutId={`${baseId}-indicator`}
                   className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
-                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                  transition={transitions.spring}
                 />
               )}
             </button>

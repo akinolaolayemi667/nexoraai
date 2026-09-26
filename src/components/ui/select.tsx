@@ -1,20 +1,29 @@
 import { useId, type ReactNode, type SelectHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { Field, controlBase, controlState, describedBy } from "./field";
+import {
+  Field,
+  controlBase,
+  controlState,
+  describedBy,
+  fieldStatus,
+  type FieldMessageProps,
+} from "./field";
 
 export type SelectOption = { value: string; label: string; disabled?: boolean };
 
-export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> & {
-  options: SelectOption[];
-  label?: ReactNode;
-  hint?: ReactNode;
-  error?: ReactNode;
-  placeholder?: string;
-  size?: "sm" | "md";
-  containerClassName?: string;
-  ref?: React.Ref<HTMLSelectElement>;
-};
+export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> &
+  FieldMessageProps & {
+    options: SelectOption[];
+    label?: ReactNode;
+    optional?: boolean;
+    placeholder?: string;
+    size?: "sm" | "md" | "lg";
+    containerClassName?: string;
+    ref?: React.Ref<HTMLSelectElement>;
+  };
+
+const sizes = { sm: "h-8 pl-2.5 text-sm", md: "h-9 pl-3", lg: "h-10 pl-3.5" };
 
 export function Select({
   id,
@@ -22,6 +31,8 @@ export function Select({
   label,
   hint,
   error,
+  success,
+  optional,
   placeholder,
   size = "md",
   required,
@@ -31,6 +42,7 @@ export function Select({
 }: SelectProps) {
   const autoId = useId();
   const selectId = id ?? autoId;
+  const status = fieldStatus({ error, success });
 
   return (
     <Field
@@ -38,20 +50,22 @@ export function Select({
       label={label}
       hint={hint}
       error={error}
+      success={success}
       required={required}
+      optional={optional}
       className={containerClassName}
     >
       <div className="relative">
         <select
           id={selectId}
           required={required}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={describedBy(selectId, error, hint)}
+          aria-invalid={status === "error" || undefined}
+          aria-describedby={describedBy(selectId, { error, hint, success })}
           className={cn(
             controlBase,
-            controlState(error),
+            controlState(status),
             "cursor-pointer appearance-none pr-9",
-            size === "sm" ? "h-8 pl-2.5 text-xs" : "h-9 pl-3",
+            sizes[size],
             className,
           )}
           {...props}

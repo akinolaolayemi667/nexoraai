@@ -9,19 +9,26 @@ import {
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { duration, ease } from "@/lib/motion";
 import { useClickOutside } from "@/hooks/use-click-outside";
 
+export type DropdownActionItem = {
+  type?: "item";
+  label: ReactNode;
+  description?: ReactNode;
+  icon?: ReactNode;
+  shortcut?: string;
+  danger?: boolean;
+  disabled?: boolean;
+  selected?: boolean;
+  keepOpen?: boolean;
+  onSelect?: () => void;
+};
+
 export type DropdownItem =
-  | {
-      type?: "item";
-      label: ReactNode;
-      icon?: ReactNode;
-      shortcut?: string;
-      danger?: boolean;
-      disabled?: boolean;
-      onSelect?: () => void;
-    }
+  | DropdownActionItem
   | { type: "separator" }
   | { type: "label"; label: ReactNode };
 
@@ -41,7 +48,12 @@ export type DropdownProps = {
   side?: "bottom" | "top";
   width?: string;
   header?: ReactNode;
+  selectable?: boolean;
 };
+
+function isAction(item: DropdownItem): item is DropdownActionItem {
+  return (item.type ?? "item") === "item";
+}
 
 export function Dropdown({
   trigger,
@@ -50,6 +62,7 @@ export function Dropdown({
   side = "bottom",
   width = "w-56",
   header,
+  selectable = false,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -58,10 +71,11 @@ export function Dropdown({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const refs = useMemo(() => [rootRef], []);
+  const showChecks = selectable || items.some((item) => isAction(item) && item.selected !== undefined);
 
   const actionable = items
     .map((item, index) => ({ item, index }))
-    .filter(({ item }) => (item.type ?? "item") === "item" && !("disabled" in item && item.disabled))
+    .filter(({ item }) => isAction(item) && !item.disabled)
     .map(({ index }) => index);
 
   const close = useCallback((restoreFocus = true) => {
@@ -78,34 +92,36 @@ export function Dropdown({
 
   function openMenu(focusFirst: boolean) {
     setOpen(true);
-    setActiveIndex(focusFirst ? (actionable[0] ?? -1) : -1);
+    const selectedIndex = items.findIndex((item) => isAction(item) && item.selected);
+    setActiveIndex(focusFirst ? (selectedIndex >= 0 ? selectedIndex : (actionable[0] ?? -1)) : -1);
   }
 
   function move(delta: number) {
     if (actionable.length === 0) return;
     const position = actionable.indexOf(activeIndex);
-    const next = (position + delta + actionable.length) % actionable.length;
-    setActiveIndex(actionable[position === -1 && delta < 0 ? actionable.length - 1 : next]);
+    if (position === -1) {
+      setActiveIndex(delta > 0 ? actionable[0] : actionable[actionable.length - 1]);
+      return;
+    }
+    setActiveIndex(actionable[(position + delta + actionable.length) % actionable.length]);
   }
 
   function onMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      move(1);
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      move(-1);
-    } else if (event.key === "Home") {
-      event.preventDefault();
-      setActiveIndex(actionable[0] ?? -1);
-    } else if (event.key === "End") {
-      event.preventDefault();
-      setActiveIndex(actionable.at(-1) ?? -1);
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      close();
-    } else if (event.key === "Tab") {
+    const keys: Record<string, () => void> = {
+      ArrowDown: () => move(1),
+      ArrowUp: () => move(-1),
+      Home: () => setActiveIndex(actionable[0] ?? -1),
+      End: () => setActiveIndex(actionable.at(-1) ?? -1),
+      Escape: () => close(),
+    };
+    if (event.key === "Tab") {
       close(false);
+      return;
+    }
+    const handler = keys[event.key];
+    if (handler) {
+      event.preventDefault();
+      handler();
     }
   }
 
@@ -131,32 +147,32 @@ export function Dropdown({
             id={menuId}
             role="menu"
             onKeyDown={onMenuKeyDown}
-            initial={{ opacity: 0, y: side === "bottom" ? -4 : 4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.12, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.98, y: side === "bottom" ? -4 : 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0, transition: { duration: duration.fast, ease: ease.emphasized } }}
+            exit={{ opacity: 0, scale: 0.98, transition: { duration: duration.instant, ease: ease.exit } }}
             className={cn(
-              "absolute z-40 rounded-lg border border-border bg-white p-1 shadow-popover",
+              "absolute z-40 rounded-lg border border-border bg-white p-1 shadow-lg",
               side === "bottom" ? "top-full mt-1.5" : "bottom-full mb-1.5",
-              align === "start" ? "left-0 origin-top-left" : "right-0 origin-top-right",
+              align === "start" ? "left-0" : "right-0",
+              side === "bottom"
+                ? align === "start" ? "origin-top-left" : "origin-top-right"
+                : align === "start" ? "origin-bottom-left" : "origin-bottom-right",
               width,
             )}
           >
-            {header && <div className="border-b border-border px-2.5 pb-2 pt-1.5">{header}</div>}
+            {header && <div className="mb-1 border-b border-border px-2.5 pb-2 pt-1.5">{header}</div>}
             {items.map((item, index) => {
               if (item.type === "separator") {
-                return <div key={index} role="separator" className="my-1 h-px bg-border" />;
+                return <div key={index} role="separator" className="-mx-1 my-1 h-px bg-border" />;
               }
               if (item.type === "label") {
                 return (
-                  <div
-                    key={index}
-                    className="px-2.5 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-subtle"
-                  >
+                  <div key={index} className="type-overline px-2.5 pb-1 pt-2">
                     {item.label}
                   </div>
                 );
               }
+              const role = showChecks ? "menuitemcheckbox" : "menuitem";
               return (
                 <button
                   key={index}
@@ -164,25 +180,36 @@ export function Dropdown({
                     itemRefs.current[index] = el;
                   }}
                   type="button"
-                  role="menuitem"
+                  role={role}
+                  aria-checked={showChecks ? Boolean(item.selected) : undefined}
                   tabIndex={activeIndex === index ? 0 : -1}
                   disabled={item.disabled}
                   onMouseEnter={() => setActiveIndex(index)}
                   onClick={() => {
                     item.onSelect?.();
-                    close();
+                    if (!item.keepOpen) close();
                   }}
                   className={cn(
-                    "flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[13px] outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+                    "flex w-full items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left text-sm outline-none transition-colors duration-100 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4 [&_svg]:shrink-0",
                     item.danger
-                      ? "text-danger focus:bg-danger-soft"
-                      : "text-ink focus:bg-canvas [&_svg]:text-muted",
+                      ? "text-danger-text focus:bg-danger-soft active:bg-danger-soft"
+                      : "text-ink focus:bg-sunken/70 active:bg-sunken [&>svg]:text-muted",
                   )}
                 >
-                  {item.icon}
-                  <span className="flex-1 truncate">{item.label}</span>
+                  {showChecks && (
+                    <span className="mt-0.5 flex size-4 items-center justify-center">
+                      {item.selected && <Check className="text-primary" aria-hidden />}
+                    </span>
+                  )}
+                  {item.icon && <span className="mt-0.5 flex text-muted [&_svg]:size-4">{item.icon}</span>}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate">{item.label}</span>
+                    {item.description && (
+                      <span className="block text-xs text-muted">{item.description}</span>
+                    )}
+                  </span>
                   {item.shortcut && (
-                    <kbd className="font-mono text-[11px] text-subtle">{item.shortcut}</kbd>
+                    <kbd className="mt-0.5 font-mono text-2xs text-subtle">{item.shortcut}</kbd>
                   )}
                 </button>
               );

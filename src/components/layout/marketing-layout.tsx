@@ -1,10 +1,9 @@
 import { Suspense, useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/cn";
 import { routes } from "@/lib/routes";
 import { marketingNavigation } from "@/data/navigation";
-import { Button, PageLoader, buttonVariants } from "@/components/ui";
+import { Button, PageLoader, TopNavLink, buttonVariants } from "@/components/ui";
 import { Logo } from "./logo";
 
 function MarketingHeader() {
@@ -14,24 +13,15 @@ function MarketingHeader() {
   useEffect(() => setMenuOpen(false), [pathname]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-border bg-white/95">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-10">
           <Logo />
           <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
             {marketingNavigation.map((item) => (
-              <NavLink
-                key={item.href}
-                to={item.href}
-                className={({ isActive }) =>
-                  cn(
-                    "text-[13px] font-medium transition-colors",
-                    isActive ? "text-ink" : "text-muted hover:text-ink",
-                  )
-                }
-              >
+              <TopNavLink key={item.href} to={item.href}>
                 {item.label}
-              </NavLink>
+              </TopNavLink>
             ))}
           </nav>
         </div>
@@ -61,7 +51,7 @@ function MarketingHeader() {
               <Link
                 key={item.href}
                 to={item.href}
-                className="rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-canvas"
+                className="rounded-md px-2 py-2 text-md font-medium text-ink outline-none transition-colors hover:bg-canvas active:bg-sunken focus-visible:shadow-focus"
               >
                 {item.label}
               </Link>
@@ -105,17 +95,20 @@ function MarketingFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <Logo />
-          <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-muted">
+          <p className="mt-4 max-w-xs text-sm text-muted">
             The AI-powered operating system for modern businesses.
           </p>
         </div>
         {footerColumns.map((column) => (
           <div key={column.title}>
-            <h4 className="text-[13px] font-semibold">{column.title}</h4>
+            <h4 className="type-overline text-ink">{column.title}</h4>
             <ul className="mt-3 space-y-2">
               {column.links.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="text-[13px] text-muted transition-colors hover:text-ink">
+                  <Link
+                    to={link.href}
+                    className="rounded-xs text-sm text-muted outline-none transition-colors hover:text-ink focus-visible:shadow-focus"
+                  >
                     {link.label}
                   </Link>
                 </li>

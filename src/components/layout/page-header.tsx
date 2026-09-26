@@ -20,8 +20,8 @@ export function PageHeader({
       )}
     >
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold leading-8">{title}</h1>
-        {description && <p className="mt-1 text-[13px] text-muted">{description}</p>}
+        <h1 className="type-h2">{title}</h1>
+        {description && <p className="type-body-sm mt-1">{description}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </div>

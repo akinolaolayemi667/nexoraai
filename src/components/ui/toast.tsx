@@ -12,6 +12,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { transitions } from "@/lib/motion";
 
 type ToastVariant = "info" | "success" | "warning" | "error";
 
@@ -95,17 +96,16 @@ function ToastItem({
   return (
     <motion.div
       layout
-      role="status"
+      role={toast.variant === "error" ? "alert" : "status"}
       initial={{ opacity: 0, y: 12, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 24, transition: { duration: 0.15 } }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-auto flex items-start gap-3 rounded-lg border border-border bg-white p-4 shadow-popover"
+      animate={{ opacity: 1, y: 0, scale: 1, transition: transitions.emphasized }}
+      exit={{ opacity: 0, x: 24, transition: transitions.exit }}
+      className="pointer-events-auto flex items-start gap-3 rounded-lg border border-border bg-white p-4 shadow-lg"
     >
       <Icon className={cn("mt-0.5 size-4 shrink-0", className)} />
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-medium text-ink">{toast.title}</p>
-        {toast.description && <p className="mt-0.5 text-[13px] text-muted">{toast.description}</p>}
+        <p className="text-sm font-medium text-ink">{toast.title}</p>
+        {toast.description && <p className="mt-0.5 text-sm text-muted">{toast.description}</p>}
         {toast.action && (
           <button
             type="button"
@@ -113,7 +113,7 @@ function ToastItem({
               toast.action?.onClick();
               onDismiss();
             }}
-            className="mt-2 text-[13px] font-medium text-primary hover:underline"
+            className="mt-2 text-sm font-medium text-primary hover:underline"
           >
             {toast.action.label}
           </button>

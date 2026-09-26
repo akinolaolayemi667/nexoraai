@@ -9,8 +9,8 @@ export default function NotFoundPage() {
       <title>Page not found · NEXORA AI</title>
       <Logo />
       <p className="text-metric mt-10 text-sm font-medium text-primary">404</p>
-      <h1 className="mt-2 text-2xl font-semibold">Page not found</h1>
-      <p className="mt-2 max-w-sm text-[13px] text-muted">
+      <h1 className="type-h1 mt-2">Page not found</h1>
+      <p className="type-body-sm mt-2 max-w-sm">
         The page you're looking for doesn't exist or has been moved.
       </p>
       <div className="mt-6 flex gap-2">

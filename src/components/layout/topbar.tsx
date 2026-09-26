@@ -10,9 +10,10 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { routes } from "@/lib/routes";
 import { currentUser, findNavItem } from "@/data/navigation";
-import { Avatar, Button, Dropdown, Tooltip } from "@/components/ui";
+import { Avatar, Breadcrumbs, Button, Dropdown, Tooltip } from "@/components/ui";
 
 export function Topbar({
   onOpenMobileNav,
@@ -27,7 +28,7 @@ export function Topbar({
   const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-white/90 px-4 backdrop-blur-sm sm:px-6">
+    <header className="sticky top-0 z-30 flex h-topbar items-center gap-3 border-b border-border bg-white/95 px-4 sm:px-6">
       <Button
         variant="ghost"
         size="icon-sm"
@@ -38,21 +39,23 @@ export function Topbar({
         <Menu />
       </Button>
 
-      <nav aria-label="Breadcrumb" className="hidden min-w-0 items-center gap-1.5 text-[13px] sm:flex">
-        <span className="text-muted">{currentUser.workspace}</span>
-        <span className="text-subtle">/</span>
-        <span className="truncate font-medium text-ink">{current?.label ?? "Page"}</span>
-      </nav>
+      <Breadcrumbs
+        className="hidden sm:block"
+        items={[
+          { label: currentUser.workspace, to: routes.app.root },
+          { label: current?.label ?? "Page" },
+        ]}
+      />
 
       <div className="ml-auto flex items-center gap-1.5">
         <button
           type="button"
           onClick={onOpenCommand}
-          className="hidden h-8 w-64 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-[13px] text-subtle transition-colors hover:border-border-strong md:flex"
+          className="hidden h-8 w-64 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-sm text-subtle outline-none transition-[border-color,box-shadow,color] duration-150 hover:border-border-strong hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex"
         >
           <Search className="size-3.5" />
           <span className="flex-1 text-left">Search or jump to…</span>
-          <kbd className="rounded border border-border bg-white px-1.5 font-mono text-[10px] text-muted">
+          <kbd className="rounded-xs border border-border bg-white px-1.5 font-mono text-2xs text-muted">
             {isMac ? "⌘K" : "Ctrl K"}
           </kbd>
         </button>
@@ -84,7 +87,7 @@ export function Topbar({
           align="end"
           header={
             <div>
-              <p className="text-[13px] font-medium text-ink">{currentUser.name}</p>
+              <p className="text-sm font-medium text-ink">{currentUser.name}</p>
               <p className="text-xs text-muted">{currentUser.email}</p>
             </div>
           }
@@ -99,12 +102,15 @@ export function Topbar({
             <button
               type="button"
               {...props}
-              className="flex items-center gap-2 rounded-md py-1 pl-1 pr-1.5 transition-colors hover:bg-canvas"
+              className={cn(
+                "flex items-center gap-2 rounded-md py-1 pl-1 pr-1.5 outline-none transition-colors duration-150 hover:bg-canvas active:bg-sunken focus-visible:shadow-focus",
+                open && "bg-canvas",
+              )}
               aria-label="Account menu"
             >
               <Avatar name={currentUser.name} size="sm" status="online" />
               <ChevronDown
-                className={`hidden size-3.5 text-subtle transition-transform sm:block ${open ? "rotate-180" : ""}`}
+                className={cn("hidden size-3.5 text-subtle transition-transform duration-150 sm:block", open && "rotate-180")}
               />
             </button>
           )}

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { duration, ease } from "@/lib/motion";
 
 type Side = "top" | "bottom" | "left" | "right";
 
@@ -23,10 +24,20 @@ export type TooltipProps = {
   children: ReactNode;
   side?: Side;
   delay?: number;
+  shortcut?: string;
+  disabled?: boolean;
   className?: string;
 };
 
-export function Tooltip({ content, children, side = "top", delay = 250, className }: TooltipProps) {
+export function Tooltip({
+  content,
+  children,
+  side = "top",
+  delay = 300,
+  shortcut,
+  disabled = false,
+  className,
+}: TooltipProps) {
   const [open, setOpen] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   const id = useId();
@@ -34,6 +45,7 @@ export function Tooltip({ content, children, side = "top", delay = 250, classNam
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   function show() {
+    if (disabled) return;
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setOpen(true), delay);
   }
@@ -46,8 +58,8 @@ export function Tooltip({ content, children, side = "top", delay = 250, classNam
   return (
     <span
       className={cn("relative inline-flex", className)}
-      onMouseEnter={show}
-      onMouseLeave={hide}
+      onPointerEnter={show}
+      onPointerLeave={hide}
       onFocus={show}
       onBlur={hide}
       onKeyDown={(event) => event.key === "Escape" && hide()}
@@ -60,15 +72,17 @@ export function Tooltip({ content, children, side = "top", delay = 250, classNam
             id={id}
             role="tooltip"
             initial={{ opacity: 0, ...offsets[side] }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
+            animate={{ opacity: 1, x: 0, y: 0, transition: { duration: duration.fast, ease: ease.standard } }}
+            exit={{ opacity: 0, transition: { duration: duration.instant } }}
             className={cn(
-              "pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-ink px-2 py-1 text-xs font-medium text-white shadow-popover",
+              "pointer-events-none absolute z-50 flex w-max max-w-xs items-center gap-2 rounded-md bg-ink px-2 py-1 text-xs font-medium text-white shadow-lg",
               positions[side],
             )}
           >
             {content}
+            {shortcut && (
+              <kbd className="rounded-xs bg-white/15 px-1 font-mono text-2xs text-white/80">{shortcut}</kbd>
+            )}
           </motion.span>
         )}
       </AnimatePresence>

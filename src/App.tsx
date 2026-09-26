@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
 import {
   Outlet,
   RouterProvider,
@@ -9,6 +9,7 @@ import {
 import { AppLayout } from "@/components/layout/app-layout";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { MarketingLayout } from "@/components/layout/marketing-layout";
+import { PageLoader } from "@/components/ui";
 import NotFoundPage from "@/pages/not-found";
 import RouteErrorPage from "@/pages/route-error";
 
@@ -42,7 +43,16 @@ function RootLayout() {
 function getDevRoutes(): RouteObject[] {
   if (!import.meta.env.DEV) return [];
   const UiGalleryPage = lazy(() => import("@/pages/dev/ui-gallery"));
-  return [{ element: <MarketingLayout />, children: [{ path: "ui", element: <UiGalleryPage /> }] }];
+  return [
+    {
+      path: "ui",
+      element: (
+        <Suspense fallback={<PageLoader />}>
+          <UiGalleryPage />
+        </Suspense>
+      ),
+    },
+  ];
 }
 
 const router = createBrowserRouter([

@@ -20,6 +20,7 @@ export type AppNavItem = {
   href: string;
   icon: LucideIcon;
   description: string;
+  badge?: number;
 };
 
 export type AppNavSection = {
@@ -70,6 +71,7 @@ export const appNavigation: AppNavSection[] = [
         href: routes.app.conversations,
         icon: MessagesSquare,
         description: "Email, chat and SMS threads with customers, unified.",
+        badge: 4,
       },
     ],
   },

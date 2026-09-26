@@ -3,11 +3,18 @@ import { Outlet, useLocation } from "react-router";
 import { routes } from "@/lib/routes";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { Drawer, PageLoader } from "@/components/ui";
+import { Drawer, PageLoader, PageTransition } from "@/components/ui";
 import { CommandMenu } from "./command-menu";
 import { Logo } from "./logo";
 import { Sidebar, SidebarNav } from "./sidebar";
 import { Topbar } from "./topbar";
+
+function isTypingTarget(target: EventTarget | null) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+  );
+}
 
 export function AppLayout() {
   const [collapsed, setCollapsed] = useLocalStorage("nexora:sidebar-collapsed", false);
@@ -26,11 +33,19 @@ export function AppLayout() {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         toggleCommand();
+      } else if (
+        event.key === "[" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !isTypingTarget(event.target)
+      ) {
+        setCollapsed((v) => !v);
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [toggleCommand]);
+  }, [toggleCommand, setCollapsed]);
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -49,9 +64,11 @@ export function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onOpenMobileNav={mobileNav.open} onOpenCommand={command.open} />
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[1400px]">
+          <div className="mx-auto w-full max-w-content">
             <Suspense fallback={<PageLoader />}>
-              <Outlet />
+              <PageTransition key={pathname}>
+                <Outlet />
+              </PageTransition>
             </Suspense>
           </div>
         </main>
