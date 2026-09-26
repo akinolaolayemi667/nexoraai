@@ -77,9 +77,11 @@ export function UsageCard({ onNavigate }: { onNavigate?: () => void }) {
 export function Sidebar({
   collapsed,
   onToggle,
+  expandLabel = "Expand sidebar",
 }: {
   collapsed: boolean;
   onToggle: () => void;
+  expandLabel?: string;
 }) {
   const toggle = (
     <button
@@ -89,7 +91,7 @@ export function Sidebar({
         "flex h-8 items-center gap-2.5 rounded-md text-sm text-muted outline-none transition-colors duration-150 hover:bg-white/70 hover:text-ink active:bg-white focus-visible:shadow-focus",
         collapsed ? "w-8 justify-center" : "w-full px-2.5",
       )}
-      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      aria-label={collapsed ? expandLabel : "Collapse sidebar"}
     >
       {collapsed ? <ChevronsRight className="size-4" /> : <ChevronsLeft className="size-4" />}
       {!collapsed && (
@@ -104,7 +106,7 @@ export function Sidebar({
   return (
     <SidebarPanel
       collapsed={collapsed}
-      className={cn("sticky top-0 hidden h-dvh lg:flex", collapsed ? "items-center px-2" : "px-3")}
+      className={cn("sticky top-0 z-20 hidden h-dvh md:flex", collapsed ? "items-center px-2" : "px-3")}
     >
       <div className={cn("flex h-topbar shrink-0 items-center", collapsed ? "justify-center" : "px-1.5")}>
         <Logo to={routes.app.root} collapsed={collapsed} />
@@ -115,7 +117,7 @@ export function Sidebar({
       <div className={cn("flex flex-col gap-3 border-t border-border py-3", collapsed && "items-center")}>
         {!collapsed && <UsageCard />}
         {collapsed ? (
-          <Tooltip content="Expand sidebar" shortcut="[" side="right">
+          <Tooltip content={expandLabel} shortcut={expandLabel === "Expand sidebar" ? "[" : undefined} side="right">
             {toggle}
           </Tooltip>
         ) : (

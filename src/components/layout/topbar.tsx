@@ -70,7 +70,7 @@ export function Topbar({
       <Button
         variant="ghost"
         size="icon-sm"
-        className="-ml-1 lg:hidden"
+        className="-ml-1 md:hidden"
         onClick={onOpenMobileNav}
         aria-label="Open navigation"
       >
@@ -78,7 +78,7 @@ export function Topbar({
       </Button>
 
       <div className="flex min-w-0 items-center gap-2.5 lg:hidden">
-        <Link to={routes.app.root} className="shrink-0 rounded-md outline-none focus-visible:shadow-focus" aria-label="NEXORA AI overview">
+        <Link to={routes.app.root} className="shrink-0 rounded-md outline-none focus-visible:shadow-focus md:hidden" aria-label="NEXORA AI overview">
           <LogoMark className="size-6" />
         </Link>
         <span className="truncate font-display text-md font-semibold text-ink">{title}</span>
@@ -93,7 +93,7 @@ export function Topbar({
           className="hidden h-8 w-52 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-sm text-subtle outline-none transition-[border-color,box-shadow,color] duration-150 hover:border-border-strong hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex xl:w-72"
         >
           <Search className="size-3.5" aria-hidden />
-          <span className="flex-1 text-left">Search or jump to…</span>
+          <span className="flex-1 truncate text-left">Search or jump to…</span>
           <kbd className="rounded-xs border border-border bg-white px-1.5 font-mono text-2xs text-muted">
             {isMac ? "⌘K" : "Ctrl K"}
           </kbd>

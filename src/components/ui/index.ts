@@ -19,6 +19,7 @@ export * from "./navigation";
 export * from "./progress";
 export * from "./select";
 export * from "./sidebar";
+export * from "./switch";
 export * from "./table";
 export * from "./tabs";
 export * from "./textarea";

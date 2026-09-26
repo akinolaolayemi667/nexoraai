@@ -45,7 +45,7 @@ export function Modal({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <motion.div
             className="absolute inset-0 bg-overlay"
             variants={fadeIn}
@@ -63,11 +63,12 @@ export function Modal({
             variants={scaleIn}
             {...motionStates}
             className={cn(
-              "relative flex max-h-[calc(100vh-2rem)] w-full flex-col rounded-xl border border-border bg-white shadow-xl outline-none",
+              "relative flex max-h-[calc(100dvh-2.5rem)] w-full flex-col rounded-t-2xl border-t border-border bg-white shadow-xl outline-none sm:max-h-[calc(100dvh-2rem)] sm:rounded-xl sm:border",
               sizes[size],
             )}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
+            <span className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border-strong sm:hidden" aria-hidden />
+            <div className="flex items-start justify-between gap-4 border-b border-border px-6 pb-4 pt-2 sm:pt-4">
               <div className="min-w-0">
                 <h2 id={titleId} className="type-h3">
                   {title}
@@ -86,7 +87,7 @@ export function Modal({
             </div>
             {children && <div className="scrollbar-thin overflow-y-auto px-6 py-5">{children}</div>}
             {footer && (
-              <div className="flex items-center justify-end gap-2 rounded-b-xl border-t border-border bg-canvas px-6 py-3">
+              <div className="flex flex-col-reverse gap-2 border-t border-border bg-canvas px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-end sm:rounded-b-xl sm:pb-3">
                 {footer}
               </div>
             )}
@@ -165,7 +166,7 @@ export function ConfirmDialog({
                 )}
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-2">
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <Button
                 variant="secondary"
                 onClick={onClose}

@@ -67,7 +67,7 @@ export function Tabs({
         className={cn(
           "flex items-center",
           segmented
-            ? "inline-flex gap-0.5 rounded-md border border-border bg-sunken p-0.5"
+            ? "scrollbar-none inline-flex max-w-full gap-0.5 overflow-x-auto rounded-md border border-border bg-sunken p-0.5"
             : "gap-5 border-b border-border",
         )}
       >
@@ -91,7 +91,7 @@ export function Tabs({
                 "relative inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium outline-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4",
                 segmented
                   ? cn(
-                      "h-7 rounded-sm px-3 focus-visible:shadow-focus",
+                      "h-7 shrink-0 rounded-sm px-3 focus-visible:shadow-focus",
                       selected
                         ? "bg-white text-ink shadow-xs ring-1 ring-border"
                         : "text-muted hover:text-ink active:bg-white/60",

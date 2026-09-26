@@ -248,7 +248,8 @@ export default function LeadsPage() {
           <Avatar name={l.name} size="md" />
           <div className="min-w-0">
             <p className="truncate font-medium text-ink">{l.name}</p>
-            <p className="truncate text-xs text-muted">{l.email}</p>
+            <p className="truncate text-xs text-muted @2xl:hidden">{l.company}</p>
+            <p className="hidden truncate text-xs text-muted @2xl:block">{l.email}</p>
           </div>
         </div>
       ),
@@ -257,7 +258,7 @@ export default function LeadsPage() {
       key: "company",
       header: "Company",
       sortValue: (l) => l.company,
-      className: "whitespace-nowrap",
+      className: "hidden whitespace-nowrap @2xl:table-cell",
       cell: (l) => (
         <div className="min-w-0 max-w-44">
           <p className="truncate text-ink">{l.company}</p>
@@ -265,15 +266,15 @@ export default function LeadsPage() {
         </div>
       ),
     },
-    { key: "source", header: "Source", sortValue: (l) => l.source, className: "whitespace-nowrap text-muted", cell: (l) => sourceLabel[l.source] },
+    { key: "source", header: "Source", sortValue: (l) => l.source, className: "hidden whitespace-nowrap text-muted @5xl:table-cell", cell: (l) => sourceLabel[l.source] },
     { key: "status", header: "Status", sortValue: (l) => l.status, cell: (l) => <StatusBadge status={l.status} /> },
     { key: "score", header: "Score", sortValue: (l) => l.score, cell: (l) => <ScorePill score={l.score} /> },
-    { key: "owner", header: "Owner", sortValue: (l) => l.ownerId, className: "whitespace-nowrap", cell: (l) => <OwnerChip ownerId={l.ownerId} /> },
+    { key: "owner", header: "Owner", sortValue: (l) => l.ownerId, className: "hidden whitespace-nowrap @4xl:table-cell", cell: (l) => <OwnerChip ownerId={l.ownerId} /> },
     {
       key: "lastActivity",
       header: "Last activity",
       sortValue: (l) => l.lastActivityAt,
-      className: "whitespace-nowrap",
+      className: "hidden whitespace-nowrap @min-[66rem]:table-cell",
       cell: (l) => (
         <div className="min-w-0 max-w-36">
           <p className="font-mono text-xs tabular-nums text-ink" title={new Date(l.lastActivityAt).toLocaleString()}>

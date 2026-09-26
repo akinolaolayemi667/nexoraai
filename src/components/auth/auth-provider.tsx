@@ -41,6 +41,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async requestPasswordReset(email) {
         await auth.requestPasswordReset(email);
       },
+      updateProfile(patch) {
+        const next = auth.updateSessionUser(patch);
+        if (next) setSession(next);
+      },
       signOut() {
         auth.clearSession();
         setSession(null);

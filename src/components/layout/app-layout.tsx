@@ -4,6 +4,7 @@ import { routes } from "@/lib/routes";
 import { useUser } from "@/lib/auth/auth-context";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Drawer, PageLoader, PageTransition } from "@/components/ui";
 import { BottomNav } from "./bottom-nav";
 import { CommandMenu } from "./command-menu";
@@ -36,6 +37,7 @@ function useWorkspaces() {
 
 export function AppLayout() {
   const [collapsed, setCollapsed] = useLocalStorage("nexora:sidebar-collapsed", false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const mobileNav = useDisclosure();
   const command = useDisclosure();
   const shortcuts = useDisclosure();
@@ -74,7 +76,11 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-dvh bg-white">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+      <Sidebar
+        collapsed={isDesktop ? collapsed : true}
+        onToggle={() => (isDesktop ? setCollapsed((v) => !v) : mobileNav.open())}
+        expandLabel={isDesktop ? "Expand sidebar" : "Open menu"}
+      />
 
       <Drawer
         open={mobileNav.isOpen}
@@ -117,7 +123,7 @@ export function AppLayout() {
           </main>
         ) : (
           <main className="flex-1 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
-            <div className="mx-auto w-full max-w-content">
+            <div className="mx-auto w-full max-w-content min-[1800px]:max-w-[100rem]">
               <Suspense fallback={<PageLoader />}>
                 <PageTransition key={pathname}>
                   <Outlet />

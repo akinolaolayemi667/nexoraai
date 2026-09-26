@@ -33,7 +33,7 @@ function SummaryCard({
   tone: "primary" | "accent" | "success";
 }) {
   return (
-    <Card padding="md" className="flex items-start gap-4">
+    <Card padding="md" className="flex w-[72%] max-w-64 shrink-0 snap-start items-start gap-4 sm:w-auto sm:max-w-none">
       <span
         className={cn(
           "hidden size-10 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset sm:flex [&_svg]:size-5",
@@ -66,6 +66,39 @@ export default function PipelinePage() {
   const [addStage, setAddStage] = useState<DealStage | null>(null);
   const [highlight, setHighlight] = useState<string | null>(() => params.get("deal") ?? params.get("stage"));
   const boardRef = useRef<HTMLDivElement>(null);
+  const [activeStage, setActiveStage] = useState<DealStage>(dealStages[0].id);
+  const stageNavRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const nav = stageNavRef.current;
+    const chip = nav?.querySelector<HTMLElement>(`[data-chip="${activeStage}"]`);
+    if (!nav || !chip) return;
+    nav.scrollTo({ left: chip.offsetLeft - (nav.clientWidth - chip.offsetWidth) / 2, behavior: "smooth" });
+  }, [activeStage]);
+
+  function onBoardScroll() {
+    const board = boardRef.current;
+    if (!board) return;
+    const left = board.getBoundingClientRect().left;
+    let best: DealStage = dealStages[0].id;
+    let bestDistance = Infinity;
+    for (const el of board.querySelectorAll<HTMLElement>("[data-stage]")) {
+      const distance = Math.abs(el.getBoundingClientRect().left - left);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = el.dataset.stage as DealStage;
+      }
+    }
+    setActiveStage(best);
+  }
+
+  function jumpToStage(stage: DealStage) {
+    const board = boardRef.current;
+    const column = board?.querySelector<HTMLElement>(`[data-stage="${stage}"]`);
+    if (!board || !column) return;
+    const padding = parseFloat(getComputedStyle(board).paddingLeft) || 0;
+    board.scrollTo({ left: column.offsetLeft - padding, behavior: "smooth" });
+  }
   const dragRef = useRef<string | null>(null);
 
   const openDealId = params.get("deal");
@@ -225,7 +258,7 @@ export default function PipelinePage() {
         </Button>
       </header>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="scrollbar-none -mx-4 mt-5 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 sm:mx-0 sm:mt-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0">
         <SummaryCard
           icon={<CircleDollarSign />}
           label="Total Pipeline"
@@ -304,11 +337,41 @@ export default function PipelinePage() {
         </p>
       </div>
 
+      <nav
+        ref={stageNavRef}
+        aria-label="Jump to stage"
+        className="scrollbar-none relative -mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:hidden"
+      >
+        {dealStages.map((stage) => {
+          const active = activeStage === stage.id;
+          return (
+            <button
+              key={stage.id}
+              type="button"
+              data-chip={stage.id}
+              onClick={() => jumpToStage(stage.id)}
+              aria-current={active ? "true" : undefined}
+              className={cn(
+                "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors focus-visible:shadow-focus focus-visible:outline-none",
+                active ? "border-ink bg-ink text-white" : "border-border bg-canvas text-muted hover:text-ink",
+              )}
+            >
+              <span className="size-1.5 rounded-full" style={{ backgroundColor: stage.color }} aria-hidden />
+              {stage.label}
+              <span className={cn("font-mono tabular-nums", active ? "text-white/70" : "text-subtle")}>
+                {byStage[stage.id].length}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+
       <LayoutGroup>
         <motion.div
           ref={boardRef}
           layoutScroll
-          className="scrollbar-thin -mx-4 mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-6 sm:-mx-6 sm:px-6 lg:-mx-8 lg:snap-none lg:px-8"
+          onScroll={onBoardScroll}
+          className="scrollbar-thin relative -mx-4 mt-3 flex scroll-px-4 snap-x snap-mandatory sm:scroll-px-6 lg:mt-4 gap-3 overflow-x-auto px-4 pb-6 sm:-mx-6 sm:px-6 lg:-mx-8 lg:snap-none lg:px-8"
         >
           {dealStages.map((stage) => {
             const deals = byStage[stage.id];

@@ -72,31 +72,32 @@ export default function ContactsPage() {
           <Avatar name={l.name} size="md" />
           <div className="min-w-0">
             <p className="truncate font-medium text-ink">{l.name}</p>
-            <p className="truncate text-xs text-muted">{l.title || "—"}</p>
+            <p className="truncate text-xs text-muted @5xl:hidden">{l.email}</p>
+            <p className="hidden truncate text-xs text-muted @5xl:block">{l.title || "—"}</p>
           </div>
         </div>
       ),
     },
-    { key: "company", header: "Company", sortValue: (l) => l.company, className: "whitespace-nowrap", cell: (l) => l.company },
+    { key: "company", header: "Company", sortValue: (l) => l.company, className: "hidden whitespace-nowrap @2xl:table-cell", cell: (l) => l.company },
     {
       key: "email",
       header: "Email",
-      className: "whitespace-nowrap",
+      className: "hidden whitespace-nowrap @5xl:table-cell",
       cell: (l) => <span className="block max-w-56 truncate text-muted">{l.email}</span>,
     },
     {
       key: "phone",
       header: "Phone",
-      className: "whitespace-nowrap",
+      className: "hidden whitespace-nowrap @min-[76rem]:table-cell",
       cell: (l) => <span className="font-mono text-xs tabular-nums text-muted">{l.phone || "—"}</span>,
     },
-    { key: "owner", header: "Owner", sortValue: (l) => l.ownerId, className: "whitespace-nowrap", cell: (l) => <OwnerChip ownerId={l.ownerId} /> },
+    { key: "owner", header: "Owner", sortValue: (l) => l.ownerId, className: "hidden whitespace-nowrap @3xl:table-cell", cell: (l) => <OwnerChip ownerId={l.ownerId} /> },
     { key: "status", header: "Status", sortValue: (l) => l.status, cell: (l) => <StatusBadge status={l.status} /> },
     {
       key: "lastActivity",
       header: "Last activity",
       sortValue: (l) => l.lastActivityAt,
-      className: "whitespace-nowrap",
+      className: "hidden whitespace-nowrap @4xl:table-cell",
       cell: (l) => <span className="font-mono text-xs tabular-nums text-muted">{formatRelative(l.lastActivityAt, now)}</span>,
     },
   ];

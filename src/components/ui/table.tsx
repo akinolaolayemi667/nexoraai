@@ -122,7 +122,7 @@ export function Table<T>({
   const showBody = !loading && !error;
 
   return (
-    <div className={cn("scrollbar-thin relative overflow-auto", className)}>
+    <div className={cn("@container scrollbar-thin relative overflow-auto", className)}>
       <table className="w-full border-collapse text-sm">
         <thead className={cn(stickyHeader && "sticky top-0 z-10")}>
           <tr className="border-b border-border bg-canvas">
@@ -151,6 +151,7 @@ export function Table<T>({
                     "type-overline whitespace-nowrap py-2.5 text-muted",
                     density === "compact" ? "px-3" : "px-4",
                     alignClass[column.align ?? "left"],
+                    column.className,
                   )}
                 >
                   {sortable ? (

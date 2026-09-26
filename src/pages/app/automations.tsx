@@ -212,18 +212,25 @@ export default function AutomationsPage() {
     {
       key: "name",
       header: "Workflow",
+      className: "max-w-0 sm:max-w-none",
       sortValue: (r) => r.displayName,
       cell: (r) => (
         <div className="min-w-0">
           <p className="truncate font-medium text-ink">{r.displayName}</p>
-          <p className="truncate text-xs text-muted">{r.trigger}</p>
+          <p className="truncate text-xs text-muted">
+            {r.trigger}
+            <span className="sm:hidden">
+              {" · "}
+              <span className="font-mono tabular-nums">{formatNumber(r.runsToday)}</span> runs
+            </span>
+          </p>
         </div>
       ),
     },
     {
       key: "status",
       header: "Status",
-      width: "w-28",
+      width: "7rem",
       cell: (r) => (
         <Badge variant={statusBadge[r.effectiveStatus].variant} dot>
           {statusBadge[r.effectiveStatus].label}
@@ -234,14 +241,15 @@ export default function AutomationsPage() {
       key: "runs",
       header: "Runs",
       align: "right",
-      width: "w-24",
+      width: "6rem",
+      className: "hidden sm:table-cell",
       sortValue: (r) => r.runsToday,
       cell: (r) => <span className="font-mono tabular-nums text-ink">{formatNumber(r.runsToday)}</span>,
     },
     {
       key: "success",
       header: "Success rate",
-      width: "w-44",
+      width: "11rem",
       className: "hidden md:table-cell",
       sortValue: (r) => r.successRate ?? -1,
       cell: (r) =>
@@ -262,7 +270,7 @@ export default function AutomationsPage() {
     {
       key: "last",
       header: "Last run",
-      width: "w-28",
+      width: "7rem",
       className: "hidden sm:table-cell",
       sortValue: (r) => r.lastRunAt ?? 0,
       cell: (r) => <span className="text-sm text-muted">{r.lastRunAt ? formatRelative(r.lastRunAt, now) : "Never"}</span>,
@@ -270,7 +278,7 @@ export default function AutomationsPage() {
     {
       key: "actions",
       header: <span className="sr-only">Actions</span>,
-      width: "w-12",
+      width: "3rem",
       align: "right",
       cell: (r) => (
         <div onClick={(e) => e.stopPropagation()}>

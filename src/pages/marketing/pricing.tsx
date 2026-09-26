@@ -11,7 +11,7 @@ export default function PricingPage() {
     <>
       <title>Pricing · NEXORA AI</title>
       <section className="border-b border-border bg-canvas">
-        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
           <FadeIn className="mx-auto max-w-2xl text-center">
             <p className="type-overline text-primary">Pricing</p>
             <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">

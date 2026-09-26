@@ -78,6 +78,20 @@ function startSession(user: AuthUser, remember: boolean): Session {
   return session;
 }
 
+export function updateSessionUser(patch: Partial<Pick<AuthUser, "name" | "company">>): Session | null {
+  const current = readSession();
+  if (!current) return null;
+  const next: Session = { ...current, user: { ...current.user, ...patch } };
+  (localStorage.getItem(SESSION_KEY) ? localStorage : sessionStorage).setItem(SESSION_KEY, JSON.stringify(next));
+  const accounts = readAccounts();
+  const index = accounts.findIndex((a) => a.user.id === next.user.id);
+  if (index >= 0) {
+    accounts[index] = { ...accounts[index], user: next.user };
+    writeAccounts(accounts);
+  }
+  return next;
+}
+
 export function clearSession() {
   localStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(SESSION_KEY);

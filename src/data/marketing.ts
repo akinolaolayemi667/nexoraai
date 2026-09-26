@@ -214,18 +214,20 @@ export const plans: Plan[] = [
   {
     id: "scale",
     name: "Scale",
+    description: "For multi-team revenue orgs.",
+    monthly: 149,
+    annual: 124,
+    cta: "Start free",
+    features: ["Up to 100 users", "Everything in Growth", "Advanced permissions & audit log", "Sandbox workspaces", "Priority support"],
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
     description: "For organisations with advanced needs.",
     monthly: null,
     annual: null,
     cta: "Talk to sales",
-    features: [
-      "Unlimited users",
-      "Everything in Growth",
-      "SSO & SCIM",
-      "Advanced permissions & audit log",
-      "Dedicated success manager",
-      "99.9% uptime SLA",
-    ],
+    features: ["Unlimited users", "Everything in Scale", "SSO & SCIM", "Dedicated success manager", "99.9% uptime SLA", "Custom contracts & invoicing"],
   },
 ];
 

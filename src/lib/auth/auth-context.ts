@@ -8,6 +8,7 @@ export type AuthContextValue = {
   signUp: (input: SignUpInput) => Promise<AuthUser>;
   signInWithGoogle: (remember?: boolean) => Promise<AuthUser>;
   requestPasswordReset: (email: string) => Promise<void>;
+  updateProfile: (patch: Partial<Pick<AuthUser, "name" | "company">>) => void;
   signOut: () => void;
 };
 
