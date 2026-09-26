@@ -1,63 +1,94 @@
-# NexoraAI
+# NEXORA AI
 
-The AI tools marketplace and dashboard. Users discover AI tools, add them to a
-personal workspace, and run them from one dashboard. Creators publish tools and
-earn recurring revenue.
+The AI-powered business operating system: CRM, leads, pipeline, conversations,
+workflow automation, analytics, integrations, team management and billing in one
+workspace.
 
-Built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4.
+## Stack
 
-## Features
-
-- **Landing page** with featured tools, categories, creator pitch and FAQ
-- **Marketplace** with search, category filters, free-only toggle and sorting
-- **Tool detail pages** with features, sample prompts, reviews and pricing
-- **Auth** (sign up / log in / log out) with signed, HTTP-only session cookies
-- **Dashboard** with usage chart, credit balance, workspace and activity feed
-- **AI Playground** that streams responses from OpenAI, or a demo reply when no key is set
-- **Creator Studio** with revenue chart, listings and a publish-tool form
-- **Billing** with plan switching, usage meter and invoices
-- **Settings** with profile editing and creator mode toggle
+- React 19 + TypeScript
+- Vite
+- Tailwind CSS v4 (design tokens in `src/styles/globals.css`)
+- React Router
+- Framer Motion
+- Lucide React
+- Inter, Plus Jakarta Sans and IBM Plex Mono (self-hosted via Fontsource)
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local   # optional
-npm run dev
+npm run dev        # http://localhost:5190
+npm run build      # type-check + production build
+npm run preview    # serve the production build
 ```
 
-Open http://localhost:3000.
-
-## Environment variables
-
-| Variable         | Required | Description                                             |
-| ---------------- | -------- | ------------------------------------------------------- |
-| `SESSION_SECRET` | In prod  | Secret used to sign session cookies                     |
-| `OPENAI_API_KEY` | No       | Enables real AI responses in the playground             |
-| `OPENAI_MODEL`   | No       | Model to use (default `gpt-4o-mini`)                    |
+In development, the component library can be previewed at `/ui`.
 
 ## Project structure
 
 ```
 src/
-  app/
-    (marketing)/     Landing, marketplace, tool pages, pricing
-    (auth)/          Login and signup
-    dashboard/       Overview, tools, playground, creator, billing, settings
-    api/chat/        Streaming chat endpoint
-    actions.ts       Server actions (auth, workspace, plans, profile)
-  components/        Shared UI and dashboard components
-  lib/
-    data.ts          Tool catalog, plans and demo analytics
-    session.ts       Signed cookie sessions
-  proxy.ts           Redirects signed-out users away from /dashboard
+├── assets/
+├── components/
+│   ├── ui/            Design-system primitives (Button, Input, Modal, Table, …)
+│   ├── layout/        App shell, marketing and auth layouts, sidebar, topbar
+│   ├── dashboard/
+│   ├── crm/
+│   ├── automation/
+│   ├── analytics/
+│   └── integrations/
+├── data/              Navigation config and static data
+├── hooks/             Shared hooks (disclosure, overlays, local storage)
+├── lib/               Utilities (cn, formatting, route constants)
+├── pages/             One file per route, lazy-loaded
+├── styles/            Global styles and theme tokens
+├── App.tsx            Router
+└── main.tsx           Entry point
 ```
 
-## Roadmap
+## Design tokens
 
-The app currently runs on demo data so it deploys with zero setup. Next steps:
+| Token            | Value     | Usage                        |
+| ---------------- | --------- | ---------------------------- |
+| `white`          | `#FFFFFF` | Surfaces                     |
+| `canvas`         | `#F8FAFC` | App background, sidebar      |
+| `ink`            | `#111827` | Primary text                 |
+| `muted`          | `#475569` | Secondary text               |
+| `primary`        | `#2563EB` | Actions, focus, active state |
+| `accent`         | `#4F46E5` | AI and highlight accents     |
+| `primary-soft`   | `#DBEAFE` | Selected / info backgrounds  |
+| `accent-soft`    | `#EEF2FF` | AI backgrounds               |
+| `border`         | `#E2E8F0` | Dividers and outlines        |
+| `success`        | `#16A34A` | Positive states              |
+| `warning`        | `#F59E0B` | Caution states               |
+| `danger`         | `#DC2626` | Errors, destructive actions  |
 
-- Replace demo auth and cookie storage with a database (e.g. Supabase or Postgres + Prisma)
-- Stripe Checkout and webhooks for plans and tool subscriptions
-- Persist creator submissions and an admin review queue
-- Real per-user usage metering
+Fonts: `font-sans` (Inter), `font-display` (Plus Jakarta Sans, used for headings),
+`font-mono` / `.text-metric` (IBM Plex Mono, used for numbers and metrics).
+
+## Routes
+
+| Path                 | Screen        |
+| -------------------- | ------------- |
+| `/`                  | Home          |
+| `/features`          | Features      |
+| `/pricing`           | Pricing       |
+| `/login`, `/signup`  | Auth          |
+| `/app`               | Dashboard     |
+| `/app/leads`         | Leads         |
+| `/app/contacts`      | Contacts      |
+| `/app/pipeline`      | Pipeline      |
+| `/app/conversations` | Conversations |
+| `/app/automations`   | Automations   |
+| `/app/ai`            | AI Assistant  |
+| `/app/analytics`     | Analytics     |
+| `/app/integrations`  | Integrations  |
+| `/app/team`          | Team          |
+| `/app/settings`      | Settings      |
+| `/app/billing`       | Billing       |
+
+## Deployment
+
+`vercel.json` rewrites all paths to `index.html` so client-side routes work on
+refresh. Import the repository in Vercel; it detects Vite automatically.

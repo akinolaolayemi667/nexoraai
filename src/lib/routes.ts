@@ -1,0 +1,21 @@
+export const routes = {
+  home: "/",
+  features: "/features",
+  pricing: "/pricing",
+  login: "/login",
+  signup: "/signup",
+  app: {
+    root: "/app",
+    leads: "/app/leads",
+    contacts: "/app/contacts",
+    pipeline: "/app/pipeline",
+    conversations: "/app/conversations",
+    automations: "/app/automations",
+    ai: "/app/ai",
+    analytics: "/app/analytics",
+    integrations: "/app/integrations",
+    team: "/app/team",
+    settings: "/app/settings",
+    billing: "/app/billing",
+  },
+} as const;
