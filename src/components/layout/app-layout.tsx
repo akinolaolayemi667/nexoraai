@@ -41,6 +41,7 @@ export function AppLayout() {
   const shortcuts = useDisclosure();
   const { workspaces, workspace, setWorkspaceId } = useWorkspaces();
   const { pathname } = useLocation();
+  const workspaceMode = [routes.app.ai, routes.app.automations].some((href) => pathname.startsWith(href));
   const { close: closeMobileNav } = mobileNav;
   const { toggle: toggleCommand } = command;
   const { open: openShortcuts } = shortcuts;
@@ -106,15 +107,25 @@ export function AppLayout() {
           workspace={workspace}
           onSwitchWorkspace={setWorkspaceId}
         />
-        <main className="flex-1 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
-          <div className="mx-auto w-full max-w-content">
+        {workspaceMode ? (
+          <main className="flex h-[calc(100dvh-var(--spacing-topbar)-3.5rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden md:h-[calc(100dvh-var(--spacing-topbar))]">
             <Suspense fallback={<PageLoader />}>
-              <PageTransition key={pathname}>
+              <PageTransition key={pathname} className="flex min-h-0 flex-1 flex-col">
                 <Outlet />
               </PageTransition>
             </Suspense>
-          </div>
-        </main>
+          </main>
+        ) : (
+          <main className="flex-1 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
+            <div className="mx-auto w-full max-w-content">
+              <Suspense fallback={<PageLoader />}>
+                <PageTransition key={pathname}>
+                  <Outlet />
+                </PageTransition>
+              </Suspense>
+            </div>
+          </main>
+        )}
       </div>
 
       <BottomNav />

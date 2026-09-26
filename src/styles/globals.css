@@ -192,6 +192,12 @@
   }
 }
 
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
