@@ -5,8 +5,17 @@ import { cn } from "@/lib/cn";
 import { formatCompact, formatCurrency, formatNumber } from "@/lib/format";
 import { chartColor } from "@/lib/tokens";
 import { currentUser } from "@/data/navigation";
-import { AreaChart, Button, Card, ChartLegend, Progress, Sparkline, Tabs, useToast } from "@/components/ui";
-import { AnimatedNumber } from "../animated-number";
+import {
+  AnimatedNumber,
+  AreaChart,
+  Button,
+  Card,
+  ChartLegend,
+  Progress,
+  Sparkline,
+  Tabs,
+  useToast,
+} from "@/components/ui";
 import { AiInsights } from "./ai-insights";
 import { PipelineActivity } from "./pipeline-activity";
 import { PreviewShell } from "./preview-shell";

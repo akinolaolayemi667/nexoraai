@@ -49,6 +49,7 @@ export type DropdownProps = {
   width?: string;
   header?: ReactNode;
   selectable?: boolean;
+  className?: string;
 };
 
 function isAction(item: DropdownItem): item is DropdownActionItem {
@@ -63,6 +64,7 @@ export function Dropdown({
   width = "w-56",
   header,
   selectable = false,
+  className,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -126,7 +128,7 @@ export function Dropdown({
   }
 
   return (
-    <div ref={rootRef} className="relative inline-flex">
+    <div ref={rootRef} className={cn("relative inline-flex", className)}>
       {trigger({
         ref: triggerRef,
         open,

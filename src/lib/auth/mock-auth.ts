@@ -32,7 +32,7 @@ export const DEMO_CREDENTIALS = { email: "demo@nexora.ai", password: "Nexora2026
 
 const demoUser: AuthUser = {
   id: "usr_demo",
-  name: "Olayemi Akinola",
+  name: "James Carter",
   email: DEMO_CREDENTIALS.email,
   company: "Nexora HQ",
   role: "Owner",

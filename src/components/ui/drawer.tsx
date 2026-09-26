@@ -8,6 +8,7 @@ import { useOverlay } from "@/hooks/use-overlay";
 import { Button } from "./button";
 
 const widths = {
+  xs: "max-w-72",
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-xl",

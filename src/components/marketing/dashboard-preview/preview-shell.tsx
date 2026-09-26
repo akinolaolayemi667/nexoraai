@@ -14,12 +14,12 @@ function PreviewSidebar() {
           NEXORA<span className="ml-1 font-semibold text-primary">AI</span>
         </span>
       </div>
-      <div className="flex flex-col gap-4 py-3">
+      <div className="flex flex-col gap-2.5 py-3">
         {appNavigation.map((section, index) => (
-          <div key={section.label ?? index} className="flex flex-col gap-0.5">
-            {section.label && <p className="type-overline mb-1 px-2.5">{section.label}</p>}
+          <div key={section.id} className="flex flex-col gap-0.5">
+            {index > 0 && <div className="mx-2.5 mb-2 h-px bg-border" />}
             {section.items.map((item) => {
-              const active = item.label === "Dashboard";
+              const active = item.href === appNavigation[0].items[0].href;
               return (
                 <div
                   key={item.href}
@@ -49,7 +49,7 @@ function PreviewTopbar() {
       <div className="flex min-w-0 items-center gap-1 text-xs">
         <span className="text-muted">{currentUser.workspace}</span>
         <ChevronRight className="size-3 text-subtle" />
-        <span className="font-medium text-ink">Dashboard</span>
+        <span className="font-medium text-ink">Overview</span>
       </div>
       <div className="ml-auto flex items-center gap-2">
         <div className="hidden h-7 w-52 items-center gap-2 rounded-md border border-border bg-canvas px-2 text-xs text-subtle md:flex">

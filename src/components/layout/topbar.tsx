@@ -1,9 +1,13 @@
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
-  Bell,
+  BookOpen,
   ChevronDown,
   CreditCard,
+  Gift,
+  Globe,
   HelpCircle,
+  Keyboard,
+  LifeBuoy,
   LogOut,
   Menu,
   Search,
@@ -13,85 +17,143 @@ import {
 import { cn } from "@/lib/cn";
 import { routes } from "@/lib/routes";
 import { useAuth, useUser } from "@/lib/auth/auth-context";
-import { findNavItem } from "@/data/navigation";
-import { Avatar, Breadcrumbs, Button, Dropdown, Tooltip } from "@/components/ui";
+import { findNavLocation } from "@/data/navigation";
+import { Avatar, Breadcrumbs, Button, Dropdown, useToast, type BreadcrumbItem } from "@/components/ui";
+import { LogoMark } from "./logo";
+import { NotificationsMenu } from "./notifications-menu";
+import { WorkspaceSwitcher, type Workspace } from "./workspace-switcher";
+
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+
+function useBreadcrumbs(): { title: string; crumbs: BreadcrumbItem[] } {
+  const { pathname } = useLocation();
+  const location = findNavLocation(pathname);
+  const title = location?.item.label ?? "Page";
+  if (!location || location.item.href === routes.app.root) return { title, crumbs: [{ label: title }] };
+  return {
+    title,
+    crumbs: [
+      { label: "Overview", to: routes.app.root },
+      ...(location.section.label ? [{ label: location.section.label }] : []),
+      { label: title },
+    ],
+  };
+}
 
 export function Topbar({
   onOpenMobileNav,
   onOpenCommand,
+  onOpenShortcuts,
+  workspaces,
+  workspace,
+  onSwitchWorkspace,
 }: {
   onOpenMobileNav: () => void;
   onOpenCommand: () => void;
+  onOpenShortcuts: () => void;
+  workspaces: Workspace[];
+  workspace: Workspace;
+  onSwitchWorkspace: (id: string) => void;
 }) {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { toast } = useToast();
   const user = useUser();
-  const current = findNavItem(pathname);
-  const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+  const { title, crumbs } = useBreadcrumbs();
 
   return (
-    <header className="sticky top-0 z-30 flex h-topbar items-center gap-3 border-b border-border bg-white/95 px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-topbar shrink-0 items-center gap-2 border-b border-border bg-white/90 px-3 backdrop-blur-md sm:px-6">
       <Button
         variant="ghost"
         size="icon-sm"
-        className="lg:hidden"
+        className="-ml-1 lg:hidden"
         onClick={onOpenMobileNav}
         aria-label="Open navigation"
       >
         <Menu />
       </Button>
 
-      <Breadcrumbs
-        className="hidden sm:block"
-        items={[
-          { label: user.company, to: routes.app.root },
-          { label: current?.label ?? "Page" },
-        ]}
-      />
+      <div className="flex min-w-0 items-center gap-2.5 lg:hidden">
+        <Link to={routes.app.root} className="shrink-0 rounded-md outline-none focus-visible:shadow-focus" aria-label="NEXORA AI overview">
+          <LogoMark className="size-6" />
+        </Link>
+        <span className="truncate font-display text-md font-semibold text-ink">{title}</span>
+      </div>
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <Breadcrumbs className="hidden lg:block" items={crumbs} />
+
+      <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
         <button
           type="button"
           onClick={onOpenCommand}
-          className="hidden h-8 w-64 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-sm text-subtle outline-none transition-[border-color,box-shadow,color] duration-150 hover:border-border-strong hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex"
+          className="hidden h-8 w-52 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-sm text-subtle outline-none transition-[border-color,box-shadow,color] duration-150 hover:border-border-strong hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex xl:w-72"
         >
-          <Search className="size-3.5" />
+          <Search className="size-3.5" aria-hidden />
           <span className="flex-1 text-left">Search or jump to…</span>
           <kbd className="rounded-xs border border-border bg-white px-1.5 font-mono text-2xs text-muted">
             {isMac ? "⌘K" : "Ctrl K"}
           </kbd>
         </button>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="md:hidden"
-          onClick={onOpenCommand}
-          aria-label="Search"
-        >
+        <Button variant="ghost" size="icon-sm" className="md:hidden" onClick={onOpenCommand} aria-label="Search">
           <Search />
         </Button>
 
-        <Tooltip content="Help & docs" side="bottom">
-          <Button variant="ghost" size="icon-sm" aria-label="Help">
-            <HelpCircle />
-          </Button>
-        </Tooltip>
-        <Tooltip content="Notifications" side="bottom">
-          <Button variant="ghost" size="icon-sm" aria-label="Notifications" className="relative">
-            <Bell />
-            <span className="absolute right-2 top-2 size-1.5 rounded-full bg-primary ring-2 ring-white" />
-          </Button>
-        </Tooltip>
+        <NotificationsMenu />
 
-        <div className="mx-1.5 h-5 w-px bg-border" />
+        <Dropdown
+          align="end"
+          width="w-60"
+          className="hidden sm:inline-flex"
+          items={[
+            {
+              label: "Documentation",
+              description: "Guides and API reference",
+              icon: <BookOpen />,
+              onSelect: () => toast({ title: "Docs open in a new tab once the help center launches." }),
+            },
+            {
+              label: "Keyboard shortcuts",
+              icon: <Keyboard />,
+              shortcut: "?",
+              onSelect: onOpenShortcuts,
+            },
+            {
+              label: "Contact support",
+              description: "Median reply under 2 hours",
+              icon: <LifeBuoy />,
+              onSelect: () =>
+                toast({ variant: "success", title: "Support request started", description: "We'll reply to your email shortly." }),
+            },
+            { label: "What's new", icon: <Gift />, onSelect: () => toast({ title: "You're on the latest release." }) },
+          ]}
+          trigger={({ open, ...props }) => (
+            <Button
+              {...props}
+              variant="ghost"
+              size="icon-sm"
+              className={cn(open && "bg-sunken/70 text-ink")}
+              aria-label="Help"
+            >
+              <HelpCircle />
+            </Button>
+          )}
+        />
+
+        <div className="mx-1.5 hidden h-5 w-px bg-border lg:block" aria-hidden />
+
+        <div className="hidden lg:flex">
+          <WorkspaceSwitcher workspaces={workspaces} current={workspace} onSwitch={onSwitchWorkspace} />
+        </div>
 
         <Dropdown
           align="end"
           header={
-            <div>
-              <p className="text-sm font-medium text-ink">{user.name}</p>
-              <p className="text-xs text-muted">{user.email}</p>
+            <div className="flex items-center gap-2.5">
+              <Avatar name={user.name} size="md" />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-ink">{user.name}</p>
+                <p className="truncate text-xs text-muted">{user.email}</p>
+              </div>
             </div>
           }
           items={[
@@ -99,6 +161,7 @@ export function Topbar({
             { label: "Settings", icon: <Settings />, onSelect: () => navigate(routes.app.settings) },
             { label: "Billing", icon: <CreditCard />, onSelect: () => navigate(routes.app.billing) },
             { type: "separator" },
+            { label: "Back to website", icon: <Globe />, onSelect: () => navigate(routes.home) },
             { label: "Log out", icon: <LogOut />, danger: true, onSelect: signOut },
           ]}
           trigger={({ open, ...props }) => (
@@ -106,14 +169,18 @@ export function Topbar({
               type="button"
               {...props}
               className={cn(
-                "flex items-center gap-2 rounded-md py-1 pl-1 pr-1.5 outline-none transition-colors duration-150 hover:bg-canvas active:bg-sunken focus-visible:shadow-focus",
+                "ml-0.5 flex items-center gap-1.5 rounded-full p-0.5 outline-none transition-colors duration-150 hover:bg-canvas focus-visible:shadow-focus sm:rounded-md sm:py-1 sm:pl-1 sm:pr-1.5",
                 open && "bg-canvas",
               )}
-              aria-label="Account menu"
+              aria-label={`Account menu for ${user.name}`}
             >
               <Avatar name={user.name} size="sm" status="online" />
               <ChevronDown
-                className={cn("hidden size-3.5 text-subtle transition-transform duration-150 sm:block", open && "rotate-180")}
+                className={cn(
+                  "hidden size-3.5 text-subtle transition-transform duration-150 sm:block",
+                  open && "rotate-180",
+                )}
+                aria-hidden
               />
             </button>
           )}

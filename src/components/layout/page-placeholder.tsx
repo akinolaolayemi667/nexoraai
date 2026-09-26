@@ -23,7 +23,7 @@ export function AppPagePlaceholder() {
           action={
             pathname !== routes.app.root && (
               <Link to={routes.app.root} className={buttonVariants({ variant: "secondary", size: "sm" })}>
-                Back to dashboard
+                Back to overview
               </Link>
             )
           }
