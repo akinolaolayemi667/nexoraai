@@ -186,7 +186,7 @@ function automations(state: CrmState, now: number): AiReply {
         ],
       },
     ],
-    actions: [{ id: aid(), kind: "navigate", label: "Open Automation Builder", href: routes.app.automations, primary: true }],
+    actions: [{ id: aid(), kind: "navigate", label: "Open Automation Builder", href: routes.app.automation("lead-qualification"), primary: true }],
   };
 }
 

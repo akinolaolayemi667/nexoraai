@@ -1,361 +1,540 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pencil, Play, Plus, Save, Settings2, Trash2 } from "lucide-react";
-import { cn } from "@/lib/cn";
-import { formatRelative } from "@/lib/format";
-import { useCrm } from "@/lib/crm/crm-context";
-import { NODE_H, NODE_W, nodeMeta, nodeOrder } from "@/lib/automation/nodes";
-import type { FlowEdge, FlowNode, NodeType, Port, Selection } from "@/lib/automation/types";
-import { useWorkflow } from "@/lib/automation/use-workflow";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Link, useNavigate } from "react-router";
 import {
-  checkConnection,
-  createNode,
-  findFreeSpot,
-  flowId,
-  freePort,
-  snap,
-  tracePath,
-  workflowIssues,
-} from "@/lib/automation/workflow";
+  Activity,
+  CheckCircle2,
+  MoreHorizontal,
+  Pause,
+  Play,
+  Search,
+  Workflow,
+  X,
+  XCircle,
+} from "lucide-react";
+import { cn } from "@/lib/cn";
+import { distribute } from "@/lib/distribute";
+import { formatDuration, formatNumber, formatRelative } from "@/lib/format";
+import { routes } from "@/lib/routes";
+import { useUser } from "@/lib/auth/auth-context";
+import { useCrm } from "@/lib/crm/crm-context";
+import { FAILED_TODAY, RUNS_TODAY, workflows, type WorkflowInfo } from "@/lib/automation/catalog";
+import { buildExecution, generateExecutions, hourlyRuns, type Execution } from "@/lib/automation/executions";
+import { defaultStored, readStored, writeStored, type StoredWorkflow } from "@/lib/automation/storage";
+import type { WorkflowStatus } from "@/lib/automation/types";
+import { mulberry32 } from "@/lib/crm/seed";
 import { useNow } from "@/hooks/use-now";
-import { useDisclosure } from "@/hooks/use-disclosure";
-import { Badge, Button, Drawer, Dropdown, Tooltip, useToast } from "@/components/ui";
-import { FlowCanvas, type FlowCanvasHandle, type RunHighlight } from "@/components/automation/flow-canvas";
-import { NodePalette } from "@/components/automation/node-palette";
-import { statusMetaFor, WorkflowSidebar, type SidebarTab } from "@/components/automation/workflow-sidebar";
+import {
+  AnimatedNumber,
+  Badge,
+  BarChart,
+  Button,
+  buttonVariants,
+  Card,
+  ChartContainer,
+  Dropdown,
+  Input,
+  Pagination,
+  Table,
+  Tabs,
+  useToast,
+  type Column,
+  type SortState,
+} from "@/components/ui";
+import { ExecutionDrawer } from "@/components/automation/execution-drawer";
 
-const STEP_MS = 550;
-const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+const PAGE_SIZE = 8;
 
-const isTyping = (target: EventTarget | null) =>
-  target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+type Row = WorkflowInfo & { effectiveStatus: WorkflowStatus; displayName: string; lastRunAt: number | null; successRate: number | null };
+
+const statusBadge: Record<WorkflowStatus, { label: string; variant: "success" | "warning" | "neutral" }> = {
+  active: { label: "Active", variant: "success" },
+  paused: { label: "Paused", variant: "warning" },
+  draft: { label: "Draft", variant: "neutral" },
+};
+
+function StatTile({
+  label,
+  value,
+  detail,
+  icon,
+  tone,
+  onClick,
+  active,
+}: {
+  label: string;
+  value: number;
+  detail: ReactNode;
+  icon: ReactNode;
+  tone: string;
+  onClick?: () => void;
+  active?: boolean;
+}) {
+  const Comp = onClick ? "button" : "div";
+  return (
+    <Comp
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      aria-pressed={onClick ? active : undefined}
+      className={cn(
+        "flex min-w-0 flex-col rounded-lg border bg-white p-4 text-left shadow-sm outline-none transition-[border-color,box-shadow] duration-150 sm:p-5",
+        active ? "border-danger-border shadow-[0_0_0_3px_var(--color-danger-soft)]" : "border-border",
+        onClick && "hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus",
+      )}
+    >
+      <span className="flex items-center justify-between gap-2">
+        <span className="truncate text-sm font-medium text-muted">{label}</span>
+        <span className={cn("hidden size-7 shrink-0 items-center justify-center rounded-md ring-1 ring-inset sm:flex [&_svg]:size-3.5", tone)}>{icon}</span>
+      </span>
+      <AnimatedNumber
+        value={value}
+        format={(v) => formatNumber(Math.round(v))}
+        className="mt-3 block font-mono text-xl font-semibold tabular-nums tracking-tight text-ink sm:text-2xl"
+      />
+      <span className="mt-1 truncate text-xs text-subtle">{detail}</span>
+    </Comp>
+  );
+}
 
 export default function AutomationsPage() {
+  const user = useUser();
   const now = useNow(30_000);
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { state } = useCrm();
-  const { doc, dispatch, dirty, save, savedAt, stats, recordRun } = useWorkflow();
-  const [selection, setSelection] = useState<Selection>(null);
-  const [tab, setTab] = useState<SidebarTab>("workflow");
-  const [run, setRun] = useState<RunHighlight | null>(null);
-  const [justSaved, setJustSaved] = useState(false);
-  const canvasRef = useRef<FlowCanvasHandle>(null);
-  const settings = useDisclosure();
-  const mounted = useRef(true);
+  const [mountedAt] = useState(() => Date.now());
+  const [stored, setStored] = useState<Record<string, StoredWorkflow | null>>(() =>
+    Object.fromEntries(workflows.map((w) => [w.id, readStored(user.id, w.id)])),
+  );
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | WorkflowStatus>("all");
+  const [sort, setSort] = useState<SortState>(null);
+  const [page, setPage] = useState(1);
+  const [workflowFilter, setWorkflowFilter] = useState<string | null>(null);
+  const [failedOnly, setFailedOnly] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(8);
+  const [retries, setRetries] = useState<Execution[]>([]);
+  const [openExecution, setOpenExecution] = useState<Execution | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const executionsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  const issues = useMemo(() => workflowIssues(doc), [doc]);
-  const selectedNode = selection?.kind === "node" ? (doc.nodes.find((n) => n.id === selection.id) ?? null) : null;
-  const running = run !== null;
-
-  const select = useCallback((next: Selection) => {
-    setSelection(next);
-    if (next?.kind === "node") setTab("step");
-    else if (next === null) setTab((t) => (t === "step" ? "workflow" : t));
-  }, []);
-
-  const selectNode = useCallback((id: string) => select({ kind: "node", id }), [select]);
-
-  /* Editing ---------------------------------------------------------------- */
-
-  const guardTrigger = (type: NodeType) => {
-    const existing = doc.nodes.find((n) => n.type === "trigger");
-    if (type === "trigger" && existing) {
-      toast({ title: "This workflow already has a trigger", description: "Edit the existing trigger instead.", variant: "warning" });
-      selectNode(existing.id);
-      return false;
-    }
-    return true;
-  };
-
-  const addNode = (type: NodeType) => {
-    if (!guardTrigger(type)) return;
-    let node: FlowNode;
-    let edge: FlowEdge | undefined;
-    if (selectedNode) {
-      const port = type === "trigger" ? null : freePort(doc, selectedNode);
-      const offset = port === "yes" ? -170 : port === "no" ? 170 : 0;
-      const spot = findFreeSpot(doc, selectedNode.x + offset, selectedNode.y + 150);
-      node = createNode(type, spot.x, spot.y);
-      if (port) edge = { id: flowId("ed"), from: selectedNode.id, port, to: node.id };
-    } else {
-      const center = canvasRef.current?.viewportCenter() ?? { x: 0, y: 0 };
-      const spot = findFreeSpot(doc, center.x - NODE_W / 2, center.y - NODE_H / 2);
-      node = createNode(type, spot.x, spot.y);
-    }
-    dispatch({ type: "node/add", node, edge });
-    selectNode(node.id);
-    canvasRef.current?.reveal(node);
-  };
-
-  const dropNode = (type: NodeType, x: number, y: number) => {
-    if (!guardTrigger(type)) return;
-    const node = createNode(type, x, y);
-    dispatch({ type: "node/add", node });
-    selectNode(node.id);
-  };
-
-  const connect = (from: string, port: Port, to: string) => {
-    const result = checkConnection(doc, from, port, to);
-    if (!result.ok) {
-      toast({ title: "Can't connect those steps", description: result.reason, variant: "warning" });
-      return;
-    }
-    dispatch({ type: "edge/add", edge: { id: flowId("ed"), from, port, to } });
-    if (result.replaced) toast({ title: "Connection replaced", description: "Each output connects to one next step." });
-  };
-
-  const deleteNode = useCallback(
-    (id: string) => {
-      const node = doc.nodes.find((n) => n.id === id);
-      if (!node || running) return;
-      const edges = doc.edges.filter((e) => e.from === id || e.to === id);
-      dispatch({ type: "node/delete", id });
-      select(null);
-      settings.close();
-      toast({
-        title: `Deleted “${node.title}”`,
-        description: edges.length ? `${edges.length} ${edges.length === 1 ? "connection" : "connections"} removed.` : undefined,
-        action: { label: "Undo", onClick: () => dispatch({ type: "restore", nodes: [node], edges }) },
-      });
-    },
-    [doc, running, dispatch, select, settings, toast],
+  const rows = useMemo<Row[]>(
+    () =>
+      workflows.map((w) => {
+        const s = stored[w.id];
+        const baseLast = w.lastRunMinutes >= 0 ? mountedAt - w.lastRunMinutes * 60_000 : null;
+        const lastRunAt = Math.max(baseLast ?? 0, s?.stats.lastRunAt ?? 0) || null;
+        return {
+          ...w,
+          effectiveStatus: s?.saved.status ?? w.status,
+          displayName: s?.saved.name || w.name,
+          lastRunAt,
+          successRate: w.runsToday ? ((w.runsToday - w.failedToday) / w.runsToday) * 100 : null,
+        };
+      }),
+    [stored, mountedAt],
   );
 
-  const deleteEdge = useCallback(
-    (id: string) => {
-      const edge = doc.edges.find((e) => e.id === id);
-      if (!edge || running) return;
-      dispatch({ type: "edge/delete", id });
-      select(null);
-      toast({
-        title: "Connection removed",
-        action: { label: "Undo", onClick: () => dispatch({ type: "restore", nodes: [], edges: [edge] }) },
-      });
-    },
-    [doc.edges, running, dispatch, select, toast],
+  const counts = useMemo(
+    () => ({
+      all: rows.length,
+      active: rows.filter((r) => r.effectiveStatus === "active").length,
+      paused: rows.filter((r) => r.effectiveStatus === "paused").length,
+      draft: rows.filter((r) => r.effectiveStatus === "draft").length,
+    }),
+    [rows],
   );
 
-  const duplicateNode = (id: string) => {
-    const source = doc.nodes.find((n) => n.id === id);
-    if (!source || !guardTrigger(source.type)) return;
-    const spot = findFreeSpot(doc, source.x + 40, source.y + 40);
-    const node = { ...source, id: flowId("nd"), title: `${source.title} copy`.slice(0, 40), x: snap(spot.x), y: snap(spot.y), config: { ...source.config } };
-    dispatch({ type: "node/add", node });
-    selectNode(node.id);
-    canvasRef.current?.reveal(node);
-  };
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = rows.filter(
+      (r) =>
+        (statusFilter === "all" || r.effectiveStatus === statusFilter) &&
+        (!q || r.displayName.toLowerCase().includes(q) || r.trigger.toLowerCase().includes(q)),
+    );
+    if (!sort) return list;
+    const value = (r: Row): string | number =>
+      sort.key === "name" ? r.displayName.toLowerCase() : sort.key === "runs" ? r.runsToday : sort.key === "success" ? (r.successRate ?? -1) : (r.lastRunAt ?? 0);
+    return [...list].sort((a, b) => {
+      const av = value(a);
+      const bv = value(b);
+      const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+      return sort.direction === "asc" ? cmp : -cmp;
+    });
+  }, [rows, query, statusFilter, sort]);
 
-  const addTrigger = () => {
-    const first = [...doc.nodes].sort((a, b) => a.y - b.y)[0];
-    const spot = findFreeSpot(doc, first ? first.x : -NODE_W / 2, first ? first.y - 150 : 0);
-    const node = createNode("trigger", spot.x, spot.y);
-    const edge = first ? { id: flowId("ed"), from: node.id, port: "out" as const, to: first.id } : undefined;
-    dispatch({ type: "node/add", node, edge });
-    selectNode(node.id);
-    canvasRef.current?.reveal(node);
-  };
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const saveWorkflow = useCallback(() => {
-    save();
-    setJustSaved(true);
-    window.setTimeout(() => mounted.current && setJustSaved(false), 1600);
-    const blocking = issues.length;
+  const [feedLeads] = useState(() => state.leads);
+  const generated = useMemo(() => generateExecutions(workflows, feedLeads, mountedAt), [feedLeads, mountedAt]);
+  const executions = useMemo(() => [...retries, ...generated], [retries, generated]);
+  const shownExecutions = executions.filter(
+    (e) => (!workflowFilter || e.workflowId === workflowFilter) && (!failedOnly || e.status === "failed"),
+  );
+  const hourly = useMemo(() => hourlyRuns(RUNS_TODAY, FAILED_TODAY, mountedAt, distribute), [mountedAt]);
+
+  const setStatus = (row: Row, status: WorkflowStatus) => {
+    const current = stored[row.id] ?? defaultStored(row, state.leads);
+    const next = { ...current, saved: { ...current.saved, status } };
+    writeStored(user.id, row.id, next);
+    setStored((s) => ({ ...s, [row.id]: next }));
     toast({
-      title: "Workflow saved",
-      description: blocking ? `Saved with ${blocking} ${blocking === 1 ? "check" : "checks"} to review before it runs reliably.` : "Stored in this browser for your account.",
-      variant: blocking ? "warning" : "success",
+      title: status === "paused" ? `Paused “${row.displayName}”` : `Resumed “${row.displayName}”`,
+      description: status === "paused" ? "New events won't start runs until you resume it." : "New events will start runs again.",
+      variant: status === "paused" ? "warning" : "success",
+      action: { label: "Undo", onClick: () => setStatus({ ...row, effectiveStatus: status }, row.effectiveStatus) },
     });
-  }, [save, issues.length, toast]);
-
-  /* Test run --------------------------------------------------------------- */
-
-  const testRun = async () => {
-    if (running) return;
-    if (!doc.nodes.some((n) => n.type === "trigger")) {
-      toast({ title: "Add a trigger first", description: "Test runs start from the trigger step.", variant: "warning" });
-      return;
-    }
-    const pool = state.leads.filter((l) => l.status === "new" || l.status === "contacted");
-    const lead = (pool.length ? pool : state.leads)[Math.floor(Math.random() * Math.max(1, pool.length || state.leads.length))];
-    const score = lead?.score ?? 72;
-    const path = tracePath(doc, score);
-    select(null);
-    const started = Date.now();
-    const done = new Set<string>();
-    const traversed = new Set<string>();
-    for (let i = 0; i < path.nodes.length; i++) {
-      if (i > 0) traversed.add(path.edges[i - 1]);
-      setRun({ active: path.nodes[i], nodes: new Set(done), edges: new Set(traversed) });
-      await sleep(STEP_MS);
-      if (!mounted.current) return;
-      done.add(path.nodes[i]);
-    }
-    setRun({ active: null, nodes: new Set(done), edges: new Set(traversed) });
-    const failedAt = path.nodes
-      .map((id) => doc.nodes.find((n) => n.id === id))
-      .find((n) => n?.type === "webhook" && !/^https?:\/\/\S+\.\S+/.test(n.config.url ?? ""));
-    const ok = !failedAt;
-    recordRun({
-      id: flowId("run"),
-      at: Date.now(),
-      ok,
-      durationMs: Date.now() - started,
-      lead: lead?.name ?? "Sample lead",
-      branch: path.branch,
-      steps: path.nodes.length,
-      test: true,
-    });
-    toast({
-      title: ok ? "Test run completed" : `Test run failed at “${failedAt!.title}”`,
-      description: ok
-        ? `${lead?.name ?? "A sample lead"} (score ${score})${path.branch ? ` took the ${path.branch === "yes" ? "Yes" : "No"} path` : ""} through ${path.nodes.length} steps. Simulated only; nothing was sent.`
-        : "Add a valid URL to the webhook step and try again.",
-      variant: ok ? "success" : "error",
-    });
-    await sleep(1400);
-    if (mounted.current) setRun(null);
   };
 
-  /* Keyboard ---------------------------------------------------------------- */
+  const focusWorkflow = (id: string | null) => {
+    setWorkflowFilter(id);
+    setVisibleCount(8);
+    if (id) window.setTimeout(() => executionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  };
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        saveWorkflow();
-        return;
-      }
-      if (isTyping(event.target) || document.querySelector("[role=dialog]")) return;
-      if (event.key === "Escape") select(null);
-      if ((event.key === "Delete" || event.key === "Backspace") && selection) {
-        event.preventDefault();
-        if (selection.kind === "node") deleteNode(selection.id);
-        else deleteEdge(selection.id);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [saveWorkflow, select, selection, deleteNode, deleteEdge]);
+  const openDrawer = (execution: Execution) => {
+    setOpenExecution(execution);
+    setDrawerOpen(true);
+  };
 
-  const status = statusMetaFor(doc.status);
-  const saveLabel = dirty ? "Unsaved changes" : savedAt ? `Saved ${formatRelative(savedAt, now).toLowerCase()}` : "All changes saved";
+  const retry = (execution: Execution) => {
+    const workflow = workflows.find((w) => w.id === execution.workflowId);
+    const lead = state.leads.find((l) => l.id === execution.leadId);
+    if (!workflow || !lead) return;
+    const run = { ...buildExecution(workflow, lead, Date.now(), null, mulberry32(Date.now() % 100000), `ex_retry_${Date.now().toString(36)}`), retryOf: execution.id };
+    setRetries((list) => [run, ...list]);
+    setOpenExecution(run);
+    toast({ title: "Retry succeeded", description: `${workflow.name} completed for ${lead.name}. Simulated in demo mode.`, variant: "success" });
+  };
 
-  const sidebar = (
-    <WorkflowSidebar
-      tab={tab}
-      onTabChange={setTab}
-      doc={doc}
-      dispatch={dispatch}
-      stats={stats}
-      issues={issues}
-      now={now}
-      selectedNode={selectedNode}
-      onSelectNode={selectNode}
-      onDeleteNode={deleteNode}
-      onDuplicateNode={duplicateNode}
-      onAddTrigger={addTrigger}
-    />
-  );
+  const columns: Column<Row>[] = [
+    {
+      key: "name",
+      header: "Workflow",
+      sortValue: (r) => r.displayName,
+      cell: (r) => (
+        <div className="min-w-0">
+          <p className="truncate font-medium text-ink">{r.displayName}</p>
+          <p className="truncate text-xs text-muted">{r.trigger}</p>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      width: "w-28",
+      cell: (r) => (
+        <Badge variant={statusBadge[r.effectiveStatus].variant} dot>
+          {statusBadge[r.effectiveStatus].label}
+        </Badge>
+      ),
+    },
+    {
+      key: "runs",
+      header: "Runs",
+      align: "right",
+      width: "w-24",
+      sortValue: (r) => r.runsToday,
+      cell: (r) => <span className="font-mono tabular-nums text-ink">{formatNumber(r.runsToday)}</span>,
+    },
+    {
+      key: "success",
+      header: "Success rate",
+      width: "w-44",
+      className: "hidden md:table-cell",
+      sortValue: (r) => r.successRate ?? -1,
+      cell: (r) =>
+        r.successRate === null ? (
+          <span className="text-subtle">—</span>
+        ) : (
+          <span className="flex items-center gap-2.5">
+            <span className="h-1.5 w-16 overflow-hidden rounded-full bg-sunken" aria-hidden>
+              <span
+                className={cn("block h-full rounded-full", r.successRate >= 97 ? "bg-success" : r.successRate >= 90 ? "bg-warning" : "bg-danger")}
+                style={{ width: `${r.successRate}%` }}
+              />
+            </span>
+            <span className="font-mono text-sm tabular-nums text-ink">{r.successRate.toFixed(1)}%</span>
+          </span>
+        ),
+    },
+    {
+      key: "last",
+      header: "Last run",
+      width: "w-28",
+      className: "hidden sm:table-cell",
+      sortValue: (r) => r.lastRunAt ?? 0,
+      cell: (r) => <span className="text-sm text-muted">{r.lastRunAt ? formatRelative(r.lastRunAt, now) : "Never"}</span>,
+    },
+    {
+      key: "actions",
+      header: <span className="sr-only">Actions</span>,
+      width: "w-12",
+      align: "right",
+      cell: (r) => (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dropdown
+            align="end"
+            width="w-48"
+            trigger={({ open, ...props }) => (
+              <Button {...props} variant="ghost" size="icon-sm" aria-label={`Actions for ${r.displayName}`} className={cn(open && "bg-sunken")}>
+                <MoreHorizontal />
+              </Button>
+            )}
+            items={[
+              { label: "Open in builder", icon: <Workflow />, onSelect: () => navigate(routes.app.automation(r.id)) },
+              { label: "View executions", icon: <Activity />, onSelect: () => focusWorkflow(r.id), disabled: r.runsToday === 0 },
+              ...(r.effectiveStatus === "draft"
+                ? []
+                : [
+                    { type: "separator" as const },
+                    r.effectiveStatus === "active"
+                      ? { label: "Pause workflow", icon: <Pause />, onSelect: () => setStatus(r, "paused") }
+                      : { label: "Resume workflow", icon: <Play />, onSelect: () => setStatus(r, "active") },
+                  ]),
+            ]}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  const filterName = workflowFilter ? rows.find((r) => r.id === workflowFilter)?.displayName : null;
+  const successRate = ((RUNS_TODAY - FAILED_TODAY) / RUNS_TODAY) * 100;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-white px-3 sm:gap-3 sm:px-5">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="truncate text-sm font-semibold text-ink">Automation Builder</h1>
-            <Badge variant={doc.status === "active" ? "success" : doc.status === "paused" ? "warning" : "neutral"} dot className="hidden sm:inline-flex">
-              {status.label}
-            </Badge>
-          </div>
-          <p className="flex min-w-0 items-center gap-1.5 text-xs text-muted">
-            <span className="truncate">{doc.name}</span>
-            <span aria-hidden className="hidden sm:inline">
-              ·
-            </span>
-            <span className={cn("flex shrink-0 items-center gap-1", dirty && "text-warning-text")} title={saveLabel}>
-              {dirty && <span className="size-1.5 rounded-full bg-warning" aria-hidden />}
-              <span className="hidden sm:inline">{saveLabel}</span>
-              {dirty && <span className="sr-only sm:hidden">{saveLabel}</span>}
-            </span>
-          </p>
-        </div>
+    <>
+      <title>Automations · NEXORA AI</title>
 
-        <Dropdown
-          align="end"
-          width="w-60"
-          className="lg:hidden"
-          trigger={({ open, ...props }) => (
-            <Button {...props} variant="secondary" size="sm" leftIcon={<Plus />} className={cn(open && "bg-sunken")} aria-label="Add step">
-              <span className="hidden sm:inline">Add step</span>
-            </Button>
-          )}
-          items={nodeOrder.map((type) => {
-            const meta = nodeMeta[type];
-            const Icon = meta.icon;
-            return { label: meta.label, description: meta.description, icon: <Icon />, onSelect: () => addNode(type) };
-          })}
-        />
-        <Tooltip content="Workflow settings">
-          <Button variant="secondary" size="icon-sm" className="xl:hidden" onClick={() => { setTab(selectedNode ? "step" : "workflow"); settings.open(); }} aria-label="Workflow settings">
-            <Settings2 />
-          </Button>
-        </Tooltip>
-        <Button variant="secondary" size="sm" leftIcon={<Play />} loading={running} onClick={testRun} aria-label="Test run">
-          <span className="hidden sm:inline">{running ? "Running…" : "Test run"}</span>
-        </Button>
-        <Tooltip content="Save workflow" shortcut="Ctrl S">
-          <Button size="sm" leftIcon={<Save />} success={justSaved} onClick={saveWorkflow} aria-label="Save workflow">
-            <span className="hidden sm:inline">Save workflow</span>
-            <span className="sm:hidden">Save</span>
-          </Button>
-        </Tooltip>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Automation monitoring</h1>
+          <p className="mt-1 text-base text-muted">Health and activity for every workflow in your workspace.</p>
+        </div>
+        <Link to={routes.app.automation("lead-qualification")} className={buttonVariants({ size: "sm", className: "self-start sm:self-auto" })}>
+          <Workflow />
+          Open builder
+        </Link>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-canvas lg:flex">
-          <NodePalette onAdd={addNode} targetLabel={selectedNode?.title ?? null} />
-        </aside>
+      <section aria-label="Automation metrics" className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatTile
+          label="Active Workflows"
+          value={counts.active}
+          detail={`of ${counts.all} workflows`}
+          icon={<Workflow />}
+          tone="bg-primary-soft/60 text-primary ring-primary-border"
+        />
+        <StatTile
+          label="Runs Today"
+          value={RUNS_TODAY}
+          detail="Last 24 hours"
+          icon={<Activity />}
+          tone="bg-accent-soft text-accent ring-accent-border"
+        />
+        <StatTile
+          label="Successful"
+          value={RUNS_TODAY - FAILED_TODAY}
+          detail={`${successRate.toFixed(1)}% success rate`}
+          icon={<CheckCircle2 />}
+          tone="bg-success-soft text-success-text ring-success-border"
+        />
+        <StatTile
+          label="Failed"
+          value={FAILED_TODAY}
+          detail={failedOnly ? "Showing failed runs below" : "Click to review failed runs"}
+          icon={<XCircle />}
+          tone="bg-danger-soft text-danger-text ring-danger-border"
+          active={failedOnly}
+          onClick={() => {
+            setFailedOnly((v) => !v);
+            setVisibleCount(8);
+            window.setTimeout(() => executionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+          }}
+        />
+      </section>
 
-        <div className="relative flex min-w-0 flex-1 flex-col">
-          <FlowCanvas
-            ref={canvasRef}
-            doc={doc}
-            selection={selection}
-            run={run}
-            onSelect={select}
-            onMoveNode={(id, x, y) => dispatch({ type: "node/move", id, x, y })}
-            onConnect={connect}
-            onDeleteEdge={deleteEdge}
-            onDropNode={dropNode}
+      <Card className="mt-4">
+        <div className="flex flex-col gap-3 px-5 pt-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="type-h3">Workflows</h2>
+            <p className="mt-0.5 text-sm text-muted">Runs and success rate over the last 24 hours. Select a row to see its executions.</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Tabs
+              variant="segmented"
+              value={statusFilter}
+              onValueChange={(v) => {
+                setStatusFilter(v as typeof statusFilter);
+                setPage(1);
+              }}
+              items={[
+                { value: "all", label: "All", count: counts.all },
+                { value: "active", label: "Active", count: counts.active },
+                { value: "paused", label: "Paused", count: counts.paused },
+                { value: "draft", label: "Draft", count: counts.draft },
+              ]}
+            />
+            <Input
+              size="sm"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search workflows"
+              leftIcon={<Search />}
+              aria-label="Search workflows"
+              containerClassName="sm:w-56"
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <Table<Row>
+            columns={columns}
+            rows={pageRows}
+            getRowId={(r) => r.id}
+            onRowClick={(r) => (r.runsToday > 0 ? focusWorkflow(r.id) : navigate(routes.app.automation(r.id)))}
+            activeRowId={workflowFilter ?? undefined}
+            sort={sort}
+            onSortChange={(next) => {
+              setSort(next);
+              setPage(1);
+            }}
+            density="compact"
+            empty={<p className="py-10 text-center text-sm text-muted">No workflows match your filters.</p>}
           />
-          {selectedNode && (
-            <div data-canvas-ui className="absolute inset-x-3 bottom-14 flex items-center gap-2 rounded-xl border border-border bg-white p-2 pl-3 shadow-lg xl:hidden">
-              <span className="min-w-0 flex-1">
-                <span className="block text-2xs font-medium uppercase tracking-wider text-subtle">{nodeMeta[selectedNode.type].label}</span>
-                <span className="block truncate text-sm font-semibold text-ink">{selectedNode.title}</span>
-              </span>
-              <Button size="sm" variant="secondary" leftIcon={<Pencil />} onClick={() => { setTab("step"); settings.open(); }}>
-                Edit
-              </Button>
-              <Button size="icon-sm" variant="ghost" onClick={() => deleteNode(selectedNode.id)} aria-label={`Delete ${selectedNode.title}`}>
-                <Trash2 />
+        </div>
+        {pageCount > 1 && (
+          <div className="border-t border-border px-5 py-3">
+            <Pagination page={currentPage} pageCount={pageCount} onPageChange={setPage} pageSize={PAGE_SIZE} total={filtered.length} />
+          </div>
+        )}
+      </Card>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-12">
+        <ChartContainer
+          className="xl:col-span-7"
+          title="Runs by hour"
+          metric={formatNumber(RUNS_TODAY)}
+          description="Last 24 hours, successful and failed"
+          legend={[
+            { label: "Successful", color: "var(--color-chart-1)" },
+            { label: "Failed", color: "var(--color-danger)" },
+          ]}
+          height={300}
+        >
+          <BarChart
+            data={hourly}
+            index="label"
+            layout="stacked"
+            series={[
+              { key: "successful", label: "Successful", color: "var(--color-chart-1)" },
+              { key: "failed", label: "Failed", color: "var(--color-danger)" },
+            ]}
+            valueFormatter={formatNumber}
+            yAxisWidth={36}
+            maxBarWidth={18}
+            aria-label="Automation runs per hour over the last 24 hours"
+          />
+        </ChartContainer>
+
+        <div ref={executionsRef} className="flex scroll-mt-20 flex-col xl:col-span-5">
+        <Card className="flex flex-1 flex-col">
+          <div className="flex flex-wrap items-start justify-between gap-3 px-5 pt-5">
+            <div>
+              <h2 className="type-h3">Recent executions</h2>
+              <p className="mt-0.5 text-sm text-muted">Select a run to see each step.</p>
+            </div>
+            <Tabs
+              variant="segmented"
+              value={failedOnly ? "failed" : "all"}
+              onValueChange={(v) => {
+                setFailedOnly(v === "failed");
+                setVisibleCount(8);
+              }}
+              items={[
+                { value: "all", label: "All" },
+                { value: "failed", label: "Failed" },
+              ]}
+            />
+          </div>
+          {filterName && (
+            <div className="px-5 pt-3">
+              <Badge variant="primary" size="md" onRemove={() => focusWorkflow(null)}>
+                {filterName}
+              </Badge>
+            </div>
+          )}
+          <ul className="mt-3 flex-1 divide-y divide-border border-t border-border">
+            {shownExecutions.slice(0, visibleCount).map((e) => (
+              <li key={e.id}>
+                <button
+                  type="button"
+                  onClick={() => openDrawer(e)}
+                  className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-canvas focus-visible:bg-canvas focus-visible:outline-none"
+                >
+                  {e.status === "success" ? (
+                    <CheckCircle2 className="size-4 shrink-0 text-success" aria-label="Succeeded" />
+                  ) : (
+                    <XCircle className="size-4 shrink-0 text-danger" aria-label="Failed" />
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-ink">{e.workflowName}</span>
+                    <span className="block truncate text-xs text-muted">
+                      {e.leadName} ·{" "}
+                      {e.status === "failed"
+                        ? `failed at ${e.steps.find((s) => s.status === "failed")?.label.toLowerCase()}`
+                        : `${e.steps.length} steps`}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <span className="block text-xs text-muted">{formatRelative(e.finishedAt, now)}</span>
+                    <span className="block font-mono text-2xs tabular-nums text-subtle">{formatDuration(e.finishedAt - e.startedAt)}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+            {shownExecutions.length === 0 && (
+              <li className="px-5 py-10 text-center text-sm text-muted">
+                No {failedOnly ? "failed " : ""}executions{filterName ? ` for ${filterName}` : ""} today.
+              </li>
+            )}
+          </ul>
+          {shownExecutions.length > visibleCount && (
+            <div className="border-t border-border px-5 py-2.5">
+              <Button variant="ghost" size="sm" className="w-full" onClick={() => setVisibleCount((n) => n + 8)}>
+                Show more ({shownExecutions.length - visibleCount} remaining)
               </Button>
             </div>
           )}
+          {(workflowFilter || failedOnly) && shownExecutions.length > 0 && (
+            <p className="flex items-center justify-between border-t border-border px-5 py-2.5 text-xs text-muted">
+              Showing {Math.min(visibleCount, shownExecutions.length)} of {shownExecutions.length} recent runs
+              <button
+                type="button"
+                onClick={() => {
+                  focusWorkflow(null);
+                  setFailedOnly(false);
+                }}
+                className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+              >
+                <X className="size-3" /> Clear filters
+              </button>
+            </p>
+          )}
+        </Card>
         </div>
-
-        <aside className="hidden w-80 shrink-0 flex-col border-l border-border bg-white xl:flex">{sidebar}</aside>
       </div>
 
-      <Drawer open={settings.isOpen} onClose={settings.close} title="Workflow settings" size="sm">
-        <div className="-mx-6 -my-5 flex h-[calc(100%+2.5rem)] flex-col">{sidebar}</div>
-      </Drawer>
-    </div>
+      <ExecutionDrawer
+        open={drawerOpen}
+        execution={openExecution}
+        onClose={() => setDrawerOpen(false)}
+        onRetry={retry}
+        retried={openExecution !== null && retries.some((r) => r.retryOf === openExecution.id)}
+      />
+    </>
   );
 }

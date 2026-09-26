@@ -41,7 +41,7 @@ export function AppLayout() {
   const shortcuts = useDisclosure();
   const { workspaces, workspace, setWorkspaceId } = useWorkspaces();
   const { pathname } = useLocation();
-  const workspaceMode = [routes.app.ai, routes.app.automations].some((href) => pathname.startsWith(href));
+  const workspaceMode = [routes.app.ai, `${routes.app.automations}/`].some((href) => pathname.startsWith(href));
   const { close: closeMobileNav } = mobileNav;
   const { toggle: toggleCommand } = command;
   const { open: openShortcuts } = shortcuts;

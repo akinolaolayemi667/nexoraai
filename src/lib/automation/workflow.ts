@@ -1,5 +1,5 @@
 import { NODE_H, NODE_W, nodeMeta, portsFor } from "./nodes";
-import type { FlowEdge, FlowNode, NodeType, Port, RunRecord, WorkflowDoc, WorkflowStats } from "./types";
+import type { FlowEdge, FlowNode, NodeType, Port, WorkflowDoc } from "./types";
 
 let counter = 0;
 export const flowId = (prefix: string) => `${prefix}_${Date.now().toString(36)}${(counter++).toString(36)}`;
@@ -42,23 +42,6 @@ export function templateDoc(): WorkflowDoc {
       { id: "e_6", from: "n_email", port: "out", to: "n_task" },
     ],
   };
-}
-
-export function seedStats(leadNames: string[], now = Date.now()): WorkflowStats {
-  const minutes = [14, 52, 97, 180, 260, 410];
-  const history: RunRecord[] = minutes.map((m, i) => {
-    const branch = i % 3 === 1 ? "no" : "yes";
-    return {
-      id: flowId("run"),
-      at: now - m * 60_000,
-      ok: i !== 4,
-      durationMs: 1800 + ((i * 733) % 2400),
-      lead: leadNames[i % Math.max(1, leadNames.length)] ?? "New lead",
-      branch,
-      steps: branch === "yes" ? 6 : 4,
-    };
-  });
-  return { runs: 1284, successes: 1251, lastRunAt: history[0].at, history };
 }
 
 /* Reducer ------------------------------------------------------------------ */

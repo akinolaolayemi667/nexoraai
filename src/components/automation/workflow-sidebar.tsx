@@ -1,7 +1,7 @@
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, CheckCircle2, Copy, MousePointerClick, Trash2, XCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { formatNumber, formatRelative } from "@/lib/format";
-import { nodeMeta, triggerEvents, type NodeField } from "@/lib/automation/nodes";
+import { formatDuration, formatNumber, formatRelative } from "@/lib/format";
+import { nodeMeta, triggerEvents, withCurrent, type NodeField } from "@/lib/automation/nodes";
 import type { FlowNode, WorkflowDoc, WorkflowStats, WorkflowStatus } from "@/lib/automation/types";
 import type { DocAction, Issue } from "@/lib/automation/workflow";
 import { Button, EmptyState, Input, Progress, Select, Tabs, Textarea } from "@/components/ui";
@@ -84,7 +84,7 @@ function SettingsPanel({
           <div>
             <Select
               label="Trigger"
-              options={triggerEvents}
+              options={withCurrent(triggerEvents, trigger.config.event)}
               value={trigger.config.event}
               onChange={(e) => dispatch({ type: "node/update", id: trigger.id, config: { event: e.target.value } })}
             />
@@ -159,7 +159,7 @@ function SettingsPanel({
                 </span>
                 <span className="block text-2xs text-muted">
                   {r.ok ? `${r.steps} steps` : "Failed at webhook"}
-                  {r.branch && ` · ${r.branch === "yes" ? "Yes" : "No"} path`} · {(r.durationMs / 1000).toFixed(1)}s
+                  {r.branch && ` · ${r.branch === "yes" ? "Yes" : "No"} path`} · {formatDuration(r.durationMs)}
                 </span>
               </span>
               <span className="shrink-0 text-2xs text-subtle">{formatRelative(r.at, now)}</span>
@@ -173,7 +173,7 @@ function SettingsPanel({
 
 function FieldInput({ field, value, onChange }: { field: NodeField; value: string; onChange: (value: string) => void }) {
   if (field.kind === "select") {
-    return <Select label={field.label} options={field.options} value={value} onChange={(e) => onChange(e.target.value)} />;
+    return <Select label={field.label} options={withCurrent(field.options, value)} value={value} onChange={(e) => onChange(e.target.value)} />;
   }
   if (field.kind === "textarea") {
     return <Textarea label={field.label} value={value} placeholder={field.placeholder} rows={3} onChange={(e) => onChange(e.target.value)} />;

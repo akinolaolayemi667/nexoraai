@@ -10,6 +10,7 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
+import { distribute, noise } from "@/lib/distribute";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { routes } from "@/lib/routes";
 import type { Deal, DealStage } from "@/lib/crm/types";
@@ -115,26 +116,6 @@ export const periods: Record<Period, PeriodConfig> = {
     conversionChange: 3.4,
   },
 };
-
-const noise = (i: number, seed: number) => {
-  const x = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453;
-  return x - Math.floor(x);
-};
-
-/** Splits `total` across `weights` so the integer parts always add back up to `total`. */
-function distribute(total: number, weights: number[]) {
-  const sum = weights.reduce((a, b) => a + b, 0);
-  const raw = weights.map((w) => (w / sum) * total);
-  const result = raw.map(Math.floor);
-  let remainder = total - result.reduce((a, b) => a + b, 0);
-  const order = raw.map((value, i) => ({ fraction: value - result[i], i })).sort((a, b) => b.fraction - a.fraction);
-  for (const { i } of order) {
-    if (remainder <= 0) break;
-    result[i] += 1;
-    remainder -= 1;
-  }
-  return result;
-}
 
 const dayLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
 
@@ -291,7 +272,7 @@ export const insights: Insight[] = [
     detail:
       "Leads contacted within an hour convert 2.4× more often. Average response time is up 40 minutes from last month.",
     impact: "2.4× conversion lift",
-    action: { type: "navigate", label: "Set up auto-reply", href: routes.app.automations },
+    action: { type: "navigate", label: "Set up auto-reply", href: routes.app.automation("demo-request-reply") },
   },
   {
     id: "close-this-week",

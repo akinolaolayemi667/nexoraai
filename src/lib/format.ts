@@ -27,6 +27,15 @@ export function formatPercent(value: number, digits = 1) {
   return `${value > 0 ? "+" : ""}${value.toFixed(digits)}%`;
 }
 
+/** "840 ms", "4.21 s", "3m 12s", "20h 5m". */
+export function formatDuration(ms: number) {
+  if (ms < 1000) return `${Math.max(1, Math.round(ms))} ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(ms < 10_000 ? 2 : 1)} s`;
+  const minutes = Math.floor(ms / 60_000);
+  if (minutes < 60) return `${minutes}m ${Math.round((ms % 60_000) / 1000)}s`;
+  return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+}
+
 const shortDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
 const longDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
 const timeOfDay = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });

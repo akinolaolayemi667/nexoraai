@@ -68,8 +68,8 @@ const initialNotifications: Notification[] = [
   {
     id: "n5",
     kind: "automation",
-    title: "Inbound lead routing ran 46 times",
-    body: "All runs completed without errors today.",
+    title: "Lead Qualification ran 412 times today",
+    body: "6 runs failed. Open monitoring to review them.",
     time: "5h",
     href: routes.app.automations,
     read: true,

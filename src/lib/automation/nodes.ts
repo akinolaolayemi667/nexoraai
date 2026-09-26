@@ -24,6 +24,10 @@ type NodeMeta = {
 
 const pick = (options: Option[], value: string | undefined) => options.find((o) => o.value === value)?.label ?? value ?? "";
 
+/** Keeps a custom saved value selectable alongside the preset options. */
+export const withCurrent = (options: Option[], value: string | undefined) =>
+  value && !options.some((o) => o.value === value) ? [{ value, label: value }, ...options] : options;
+
 export const triggerEvents: Option[] = [
   { value: "lead.created", label: "New lead created" },
   { value: "form.submitted", label: "Form submitted" },

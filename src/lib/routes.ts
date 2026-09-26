@@ -13,6 +13,7 @@ export const routes = {
     pipeline: "/app/pipeline",
     conversations: "/app/conversations",
     automations: "/app/automations",
+    automation: (id: string) => `/app/automations/${id}`,
     ai: "/app/ai",
     analytics: "/app/analytics",
     integrations: "/app/integrations",
