@@ -120,6 +120,7 @@ export default function ContactProfilePage() {
           <EmptyState
             icon={<UserX />}
             title="Contact not found"
+            titleAs="h1"
             description="This contact may have been deleted, or the link is out of date."
             action={
               <Link to={backHref} className={buttonVariants({ variant: "secondary", size: "sm" })}>

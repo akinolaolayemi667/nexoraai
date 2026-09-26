@@ -40,6 +40,10 @@ export type TableProps<T> = {
   density?: "compact" | "comfortable";
   stickyHeader?: boolean;
   className?: string;
+  /** Accessible name for the table. */
+  label?: string;
+  /** Names a row for its selection checkbox, e.g. "Select Sarah Kim". */
+  rowLabel?: (row: T) => string;
 };
 
 const alignClass = { left: "text-left", right: "text-right", center: "text-center" };
@@ -65,6 +69,8 @@ export function Table<T>({
   density = "comfortable",
   stickyHeader = false,
   className,
+  label,
+  rowLabel,
 }: TableProps<T>) {
   const [internalSort, setInternalSort] = useState<SortState>(defaultSort);
   const controlled = onSortChange !== undefined;
@@ -123,7 +129,7 @@ export function Table<T>({
 
   return (
     <div className={cn("@container scrollbar-thin relative overflow-auto", className)}>
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full border-collapse text-sm" aria-label={label} aria-busy={loading || undefined}>
         <thead className={cn(stickyHeader && "sticky top-0 z-10")}>
           <tr className="border-b border-border bg-canvas">
             {selectable && (
@@ -224,7 +230,6 @@ export function Table<T>({
                 <tr
                   key={id}
                   tabIndex={clickable ? 0 : undefined}
-                  aria-selected={selectable ? isSelected : undefined}
                   aria-disabled={disabled || undefined}
                   data-active={isActive || undefined}
                   onClick={clickable ? () => onRowClick?.(row) : undefined}
@@ -250,7 +255,7 @@ export function Table<T>({
                         checked={isSelected}
                         disabled={disabled}
                         onChange={() => toggleRow(id)}
-                        aria-label="Select row"
+                        aria-label={rowLabel ? `Select ${rowLabel(row)}` : "Select row"}
                       />
                     </td>
                   )}

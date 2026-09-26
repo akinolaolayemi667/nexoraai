@@ -8,6 +8,7 @@ import { fadeUp, motionStates } from "@/lib/motion";
 import { routes } from "@/lib/routes";
 import { isEmail } from "@/lib/validation";
 import { useForm } from "@/hooks/use-form";
+import { Seo } from "@/components/seo";
 import { AuthDivider, AuthHeader, GoogleButton, PasswordInput } from "@/components/auth/auth-ui";
 import { Alert, Button, Checkbox, Input } from "@/components/ui";
 
@@ -271,7 +272,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <title>{view.name === "reset" ? "Reset password · NEXORA AI" : "Log in · NEXORA AI"}</title>
+      <Seo page="login" title={view.name === "reset" ? "Reset password · NEXORA AI" : undefined} />
       <AnimatePresence mode="wait" initial={false}>
         {view.name === "signin" ? (
           <SignInView key="signin" initialEmail={view.email} onForgot={(email) => setView({ name: "reset", email })} />

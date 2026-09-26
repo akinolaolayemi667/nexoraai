@@ -400,6 +400,7 @@ export default function AutomationsPage() {
         </div>
         <div className="mt-4">
           <Table<Row>
+            label="Workflows"
             columns={columns}
             rows={pageRows}
             getRowId={(r) => r.id}

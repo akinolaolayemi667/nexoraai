@@ -460,6 +460,8 @@ export default function LeadsPage() {
 
         <div className="hidden md:block">
           <Table
+            label="Leads"
+            rowLabel={(l) => l.name}
             columns={columns}
             rows={pageRows}
             getRowId={(l) => l.id}

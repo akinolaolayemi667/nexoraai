@@ -1,17 +1,18 @@
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { routes } from "@/lib/routes";
+import { Seo } from "@/components/seo";
 import { PricingCta, ProductCapabilities, Solutions } from "@/components/marketing";
 import { FadeIn, buttonVariants } from "@/components/ui";
 
 export default function FeaturesPage() {
   return (
     <>
-      <title>Features · NEXORA AI</title>
-      <section className="bg-white">
+      <Seo page="features" />
+      <section aria-labelledby="features-heading" className="bg-white">
         <FadeIn className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
           <p className="type-overline text-primary">Features</p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+          <h1 id="features-heading" className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             Everything your team needs, in one workspace.
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted">

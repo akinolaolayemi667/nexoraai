@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo";
 import {
   Hero,
   PricingCta,
@@ -10,11 +11,7 @@ import {
 export default function HomePage() {
   return (
     <>
-      <title>NEXORA AI — AI-Powered Operations. One Intelligent Workspace.</title>
-      <meta
-        name="description"
-        content="Manage leads, automate workflows, understand your customers and move your business forward from one intelligent platform."
-      />
+      <Seo page="home" />
       <Hero />
       <ProductOverview />
       <ProductCapabilities />

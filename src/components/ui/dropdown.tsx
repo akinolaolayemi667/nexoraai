@@ -38,7 +38,7 @@ type TriggerProps = {
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
   "aria-haspopup": "menu";
   "aria-expanded": boolean;
-  "aria-controls": string;
+  "aria-controls"?: string;
 };
 
 export type DropdownProps = {
@@ -134,14 +134,17 @@ export function Dropdown({
         open,
         onClick: () => (open ? close() : openMenu(false)),
         onKeyDown: (event) => {
-          if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+          if (event.key === "Escape" && open) {
+            event.preventDefault();
+            close();
+          } else if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             openMenu(true);
           }
         },
         "aria-haspopup": "menu",
         "aria-expanded": open,
-        "aria-controls": menuId,
+        "aria-controls": open ? menuId : undefined,
       })}
       <AnimatePresence>
         {open && (

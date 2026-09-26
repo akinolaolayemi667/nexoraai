@@ -9,6 +9,7 @@ export type EmptyStateProps = {
   tone?: "default" | "error";
   bordered?: boolean;
   size?: "sm" | "md";
+  titleAs?: "h1" | "h2" | "h3";
   className?: string;
 };
 
@@ -20,6 +21,7 @@ export function EmptyState({
   tone = "default",
   bordered = false,
   size = "md",
+  titleAs: Title = "h3",
   className,
 }: EmptyStateProps) {
   return (
@@ -42,7 +44,7 @@ export function EmptyState({
           {icon}
         </div>
       )}
-      <h3 className="type-h4">{title}</h3>
+      <Title className="type-h4">{title}</Title>
       {description && <p className="mt-1.5 max-w-sm text-sm text-muted">{description}</p>}
       {action && <div className="mt-5 flex items-center gap-2">{action}</div>}
     </div>

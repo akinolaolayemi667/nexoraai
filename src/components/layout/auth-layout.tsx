@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { routes } from "@/lib/routes";
 import { Avatar, FadeIn, PageLoader, Sparkline } from "@/components/ui";
 import { Logo } from "./logo";
+import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
 
 const activity = [
   { icon: Target, text: "12 new leads scored overnight", tone: "bg-primary-soft text-primary-active" },
@@ -101,6 +102,7 @@ export function AuthLayout() {
 
   return (
     <div className="grid min-h-screen grid-cols-1 bg-white lg:grid-cols-[1fr_1.05fr]">
+      <SkipLink />
       <div className="flex min-w-0 flex-col px-6 py-5 sm:px-10">
         <header className="flex h-10 items-center justify-between">
           <Logo />
@@ -112,7 +114,7 @@ export function AuthLayout() {
             Back to site
           </Link>
         </header>
-        <main className="flex flex-1 items-center justify-center py-12">
+        <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex flex-1 items-center justify-center py-12 outline-none">
           <div className="w-full max-w-sm">
             <Suspense fallback={<PageLoader />}>
               <Outlet />

@@ -6,10 +6,12 @@ import { useDisclosure } from "@/hooks/use-disclosure";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Drawer, PageLoader, PageTransition } from "@/components/ui";
+import { useNoIndex } from "@/components/seo";
 import { BottomNav } from "./bottom-nav";
 import { CommandMenu } from "./command-menu";
 import { Logo } from "./logo";
 import { ShortcutsDialog } from "./shortcuts-dialog";
+import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
 import { Sidebar, SidebarNav, UsageCard } from "./sidebar";
 import { Topbar } from "./topbar";
 import { WorkspaceSwitcher, type Workspace } from "./workspace-switcher";
@@ -47,6 +49,7 @@ export function AppLayout() {
   const { close: closeMobileNav } = mobileNav;
   const { toggle: toggleCommand } = command;
   const { open: openShortcuts } = shortcuts;
+  useNoIndex();
 
   useEffect(() => {
     closeMobileNav();
@@ -76,6 +79,7 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-dvh bg-white">
+      <SkipLink />
       <Sidebar
         collapsed={isDesktop ? collapsed : true}
         onToggle={() => (isDesktop ? setCollapsed((v) => !v) : mobileNav.open())}
@@ -114,7 +118,7 @@ export function AppLayout() {
           onSwitchWorkspace={setWorkspaceId}
         />
         {workspaceMode ? (
-          <main className="flex h-[calc(100dvh-var(--spacing-topbar)-3.5rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden md:h-[calc(100dvh-var(--spacing-topbar))]">
+          <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex h-[calc(100dvh-var(--spacing-topbar)-3.5rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden outline-none md:h-[calc(100dvh-var(--spacing-topbar))]">
             <Suspense fallback={<PageLoader />}>
               <PageTransition key={pathname} className="flex min-h-0 flex-1 flex-col">
                 <Outlet />
@@ -122,7 +126,7 @@ export function AppLayout() {
             </Suspense>
           </main>
         ) : (
-          <main className="flex-1 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
+          <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 px-4 outline-none pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
             <div className="mx-auto w-full max-w-content min-[1800px]:max-w-[100rem]">
               <Suspense fallback={<PageLoader />}>
                 <PageTransition key={pathname}>

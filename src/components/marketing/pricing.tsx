@@ -108,12 +108,17 @@ export function PlanCards({ billing }: { billing: Billing }) {
               {price !== null && billing === "annual" ? `Billed annually · $${price * 12} per user / year` : ""}
             </p>
             {plan.monthly === null ? (
-              <a href="mailto:sales@nexora.ai" className={buttonVariants({ variant: "secondary", className: "mt-6 w-full" })}>
+              <a
+                href="mailto:sales@nexora.ai"
+                aria-label={`${plan.cta} about ${plan.name}`}
+                className={buttonVariants({ variant: "secondary", className: "mt-6 w-full" })}
+              >
                 {plan.cta}
               </a>
             ) : (
               <Link
                 to={routes.signup}
+                aria-label={`${plan.cta} with ${plan.name}`}
                 className={buttonVariants({ variant: plan.popular ? "primary" : "secondary", className: "mt-6 w-full" })}
               >
                 {plan.cta}

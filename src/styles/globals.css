@@ -47,7 +47,7 @@
   --color-sunken: #f1f5f9;
   --color-ink: #111827;
   --color-muted: #475569;
-  --color-subtle: #94a3b8;
+  --color-subtle: #64748b;
   --color-overlay: rgb(17 24 39 / 0.4);
 
   --color-primary: #2563eb;
@@ -93,7 +93,7 @@
   --color-chart-5: #f59e0b;
   --color-chart-6: #94a3b8;
   --color-chart-grid: #eef2f6;
-  --color-chart-axis: #94a3b8;
+  --color-chart-axis: #64748b;
 
   /* Radius: restrained ---------------------------------------------------- */
   --radius-xs: 0.125rem;

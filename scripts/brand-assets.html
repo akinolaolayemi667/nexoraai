@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NEXORA brand assets</title>
+    <!--
+      Source for public/og-image.png and the PNG app icons.
+      Open /scripts/brand-assets.html?asset=og (or icon, maskable, touch) on the dev server
+      and capture the viewport at the asset's exact size.
+    -->
+    <script type="module">
+      import "@fontsource-variable/inter";
+      import "@fontsource-variable/plus-jakarta-sans";
+      import "@fontsource/ibm-plex-mono/500.css";
+      const asset = new URLSearchParams(location.search).get("asset") ?? "og";
+      document.documentElement.dataset.asset = asset;
+    </script>
+    <style>
+      * { box-sizing: border-box; margin: 0; }
+      html, body { background: transparent; }
+      [data-view] { display: none; }
+      html[data-asset="og"] [data-view="og"],
+      html[data-asset="icon"] [data-view="icon"],
+      html[data-asset="maskable"] [data-view="maskable"],
+      html[data-asset="touch"] [data-view="touch"] { display: flex; }
+
+      .og {
+        width: 1200px; height: 630px; position: relative; overflow: hidden;
+        background: #fff; font-family: "Inter Variable", system-ui, sans-serif; color: #111827;
+        padding: 64px 72px; gap: 56px; align-items: center;
+      }
+      .og::before {
+        content: ""; position: absolute; inset: 0;
+        background-image: linear-gradient(to right, #eef2f6 1px, transparent 1px), linear-gradient(to bottom, #eef2f6 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 70%);
+      }
+      .og::after {
+        content: ""; position: absolute; width: 640px; height: 640px; right: -160px; top: -120px;
+        background: radial-gradient(circle, rgb(37 99 235 / 0.12), transparent 65%);
+      }
+      .copy { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+      .brand { display: flex; align-items: center; gap: 14px; font-family: "Plus Jakarta Sans Variable"; font-weight: 700; font-size: 26px; letter-spacing: -0.02em; }
+      .brand b { color: #2563eb; font-weight: 600; margin-left: 4px; }
+      .eyebrow { margin-top: 48px; font-size: 15px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #2563eb; }
+      h1 { margin-top: 16px; font-family: "Plus Jakarta Sans Variable"; font-weight: 700; font-size: 50px; line-height: 1.08; letter-spacing: -0.035em; }
+      .sub { margin-top: 22px; font-size: 21px; line-height: 1.5; color: #475569; max-width: 520px; }
+      .chips { margin-top: 32px; display: flex; gap: 10px; flex-wrap: wrap; }
+      .chip { font-size: 15px; font-weight: 500; color: #111827; background: #fff; border: 1px solid #e2e8f0; border-radius: 999px; padding: 7px 14px; }
+
+      .mock { position: relative; z-index: 1; width: 440px; display: flex; flex-direction: column; gap: 14px; }
+      .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 24px 48px -20px rgb(17 24 39 / 0.25), 0 2px 6px -2px rgb(17 24 39 / 0.06); padding: 20px 22px; }
+      .row { display: flex; align-items: center; justify-content: space-between; }
+      .label { font-size: 14px; color: #475569; font-weight: 500; }
+      .metric { font-family: "IBM Plex Mono"; font-weight: 500; font-size: 34px; letter-spacing: -0.03em; margin-top: 6px; }
+      .delta { font-family: "IBM Plex Mono"; font-size: 13px; color: #15803d; background: #f0fdf4; border-radius: 4px; padding: 2px 6px; }
+      .bars { display: flex; gap: 6px; margin-top: 14px; height: 10px; }
+      .bars span { border-radius: 3px; }
+      .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; font-size: 12px; color: #475569; }
+      .stages b { display: block; font-family: "IBM Plex Mono"; font-weight: 500; font-size: 15px; color: #111827; margin-top: 2px; }
+      .ai { display: flex; gap: 14px; align-items: flex-start; }
+      .ai-icon { flex: none; width: 36px; height: 36px; border-radius: 9px; background: #4f46e5; display: grid; place-items: center; }
+      .ai p { font-size: 15px; line-height: 1.45; color: #111827; }
+      .ai small { display: block; margin-top: 6px; font-size: 13px; color: #2563eb; font-weight: 600; }
+
+      .icon { width: 512px; height: 512px; }
+      .maskable { width: 512px; height: 512px; background: #111827; align-items: center; justify-content: center; }
+      .touch { width: 180px; height: 180px; background: #111827; align-items: center; justify-content: center; }
+    </style>
+  </head>
+  <body>
+    <div data-view="og" class="og">
+      <div class="copy">
+        <div class="brand">
+          <svg width="44" height="44" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#111827"/><path d="M8.5 19.5V8.5L19.5 19.5V8.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19.5" cy="8.5" r="2.2" fill="#2563EB"/></svg>
+          <span>NEXORA<b>AI</b></span>
+        </div>
+        <p class="eyebrow">AI business operating system</p>
+        <h1>AI-powered operations. One intelligent workspace.</h1>
+        <p class="sub">Leads, pipeline, automation, conversations and analytics, with AI that tells you what to do next.</p>
+        <div class="chips"><span class="chip">CRM</span><span class="chip">Pipeline</span><span class="chip">Automation</span><span class="chip">AI assistant</span><span class="chip">Analytics</span></div>
+      </div>
+      <div class="mock">
+        <div class="card">
+          <div class="row"><span class="label">Revenue this month</span><span class="delta">+12.8%</span></div>
+          <div class="row">
+            <span class="metric">$84,250</span>
+            <svg width="130" height="40" viewBox="0 0 130 40" aria-hidden="true"><path d="M2 34 L20 28 L36 30 L52 20 L70 23 L88 13 L106 15 L128 4" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="label">Open pipeline</span><span class="label" style="font-family: 'IBM Plex Mono'; color: #111827">$248,500</span></div>
+          <div class="bars">
+            <span style="flex: 1.2; background: #94a3b8"></span><span style="flex: 3; background: #0ea5e9"></span><span style="flex: 2.6; background: #2563eb"></span><span style="flex: 3.6; background: #4f46e5"></span><span style="flex: 2.4; background: #16a34a"></span>
+          </div>
+          <div class="stages"><span>Qualified<b>5</b></span><span>Proposal<b>4</b></span><span>Negotiation<b>2</b></span><span>Won<b>3</b></span></div>
+        </div>
+        <div class="card ai">
+          <span class="ai-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg></span>
+          <p>12 high-intent leads need follow-up today. Drafts are ready.<small>Review leads →</small></p>
+        </div>
+      </div>
+    </div>
+
+    <div data-view="icon" class="icon">
+      <svg width="512" height="512" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#111827"/><path d="M8.5 19.5V8.5L19.5 19.5V8.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19.5" cy="8.5" r="2.2" fill="#2563EB"/></svg>
+    </div>
+
+    <div data-view="maskable" class="maskable">
+      <svg width="300" height="300" viewBox="6 6 16 16" aria-hidden="true"><path d="M8.5 19.5V8.5L19.5 19.5V8.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19.5" cy="8.5" r="2.2" fill="#2563EB"/></svg>
+    </div>
+
+    <div data-view="touch" class="touch">
+      <svg width="112" height="112" viewBox="6 6 16 16" aria-hidden="true"><path d="M8.5 19.5V8.5L19.5 19.5V8.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19.5" cy="8.5" r="2.2" fill="#2563EB"/></svg>
+    </div>
+  </body>
+</html>

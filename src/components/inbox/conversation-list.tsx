@@ -55,7 +55,7 @@ export function ConversationList({ conversations, counts, filter, onFilter, quer
               >
                 {f === "ai" && <Sparkles className="size-3 shrink-0 text-accent" aria-hidden />}
                 <span className="truncate">{filterLabels[f]}</span>
-                <span className={cn("font-mono text-[0.625rem] tabular-nums", selected ? "text-primary" : "text-subtle")}>{counts[f]}</span>
+                <span className={cn("font-mono text-[0.625rem] tabular-nums", selected ? "text-primary" : "text-muted")}>{counts[f]}</span>
               </button>
             );
           })}

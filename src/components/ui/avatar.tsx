@@ -61,6 +61,8 @@ export function Avatar({ name, src, size = "md", status, className }: AvatarProp
           <img
             src={src}
             alt={name}
+            loading="lazy"
+            decoding="async"
             className="size-full object-cover"
             onError={() => setFailed(true)}
           />

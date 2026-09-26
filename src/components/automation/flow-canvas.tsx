@@ -332,7 +332,13 @@ export const FlowCanvas = forwardRef<FlowCanvasHandle, FlowCanvasProps>(function
         className="absolute left-0 top-0 origin-top-left"
         style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})` }}
       >
-        <svg className="pointer-events-none absolute left-0 top-0 overflow-visible" width={1} height={1} aria-hidden>
+        <svg
+          className="pointer-events-none absolute left-0 top-0 overflow-visible"
+          width={1}
+          height={1}
+          role="group"
+          aria-label="Connections"
+        >
           <defs>
             {Object.entries(edgeColors).map(([key, color]) => (
               <marker
@@ -363,11 +369,18 @@ export const FlowCanvas = forwardRef<FlowCanvasHandle, FlowCanvasProps>(function
                   fill="none"
                   stroke="transparent"
                   strokeWidth={16}
-                  className="pointer-events-auto cursor-pointer"
+                  className="pointer-events-auto cursor-pointer outline-none focus-visible:stroke-primary/20"
+                  tabIndex={0}
+                  role="button"
+                  aria-pressed={selected}
+                  aria-label={`Connection from ${nodeById.get(edge.from)?.title ?? "step"}${
+                    edge.port === "yes" ? " (yes)" : edge.port === "no" ? " (no)" : ""
+                  } to ${nodeById.get(edge.to)?.title ?? "step"}. Press Delete to remove.`}
                   onPointerDown={(e) => {
                     e.stopPropagation();
                     onSelect({ kind: "edge", id: edge.id });
                   }}
+                  onFocus={() => onSelect({ kind: "edge", id: edge.id })}
                 />
                 <path
                   d={g.d}

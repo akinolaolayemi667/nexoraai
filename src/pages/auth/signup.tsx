@@ -9,6 +9,7 @@ import { fadeUp, motionStates } from "@/lib/motion";
 import { routes } from "@/lib/routes";
 import { isEmail, passwordStrength } from "@/lib/validation";
 import { useForm } from "@/hooks/use-form";
+import { Seo } from "@/components/seo";
 import { AuthDivider, AuthHeader, GoogleButton, PasswordInput, PasswordStrength } from "@/components/auth/auth-ui";
 import { Alert, Button, Input } from "@/components/ui";
 
@@ -136,7 +137,7 @@ export default function SignupPage() {
 
   return (
     <>
-      <title>Create your workspace · NEXORA AI</title>
+      <Seo page="signup" />
       <AnimatePresence mode="wait" initial={false}>
         {status === "success" ? (
           <SetupProgress key="success" name={form.values.name} company={form.values.company} redirect={redirect} />

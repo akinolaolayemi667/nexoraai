@@ -20,6 +20,7 @@ export type TabsProps = {
   variant?: "underline" | "segmented";
   className?: string;
   panelClassName?: string;
+  "aria-label"?: string;
 };
 
 export function Tabs({
@@ -30,6 +31,7 @@ export function Tabs({
   variant = "underline",
   className,
   panelClassName,
+  "aria-label": ariaLabel,
 }: TabsProps) {
   const [internal, setInternal] = useState(defaultValue ?? items[0]?.value);
   const active = value ?? internal;
@@ -63,6 +65,7 @@ export function Tabs({
     <div className={className}>
       <div
         role="tablist"
+        aria-label={ariaLabel}
         onKeyDown={onKeyDown}
         className={cn(
           "flex items-center",
@@ -83,7 +86,7 @@ export function Tabs({
               type="button"
               role="tab"
               aria-selected={selected}
-              aria-controls={`${baseId}-panel-${item.value}`}
+              aria-controls={selected && item.content !== undefined ? `${baseId}-panel-${item.value}` : undefined}
               tabIndex={selected ? 0 : -1}
               disabled={item.disabled}
               onClick={() => select(item.value)}

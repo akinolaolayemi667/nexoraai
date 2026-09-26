@@ -1,11 +1,14 @@
 import { Link } from "react-router";
 import { routes } from "@/lib/routes";
+import { useNoIndex } from "@/components/seo";
 import { buttonVariants } from "@/components/ui";
 import { Logo } from "@/components/layout/logo";
 
 export default function NotFoundPage() {
+  useNoIndex();
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 text-center">
       <title>Page not found · NEXORA AI</title>
       <Logo />
       <p className="text-metric mt-10 text-sm font-medium text-primary">404</p>
@@ -21,6 +24,6 @@ export default function NotFoundPage() {
           Open dashboard
         </Link>
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,28 +1,64 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { routes } from "@/lib/routes";
+import { absoluteUrl, breadcrumbSchema, graph, organizationSchema, pages, softwareSchema } from "@/lib/seo";
+import { plans, pricingFaqs } from "@/data/marketing";
+import { Seo } from "@/components/seo";
 import { PlanCards, PricingFaq, Section, SectionHeading, type Billing } from "@/components/marketing";
 import { FadeIn, Tabs, buttonVariants } from "@/components/ui";
+
+const structuredData = graph(
+  organizationSchema,
+  {
+    ...softwareSchema,
+    offers: plans
+      .filter((plan) => plan.monthly !== null)
+      .map((plan) => ({
+        "@type": "Offer",
+        name: plan.name,
+        description: plan.description,
+        price: plan.monthly,
+        priceCurrency: "USD",
+        url: absoluteUrl(pages.pricing.path),
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: plan.monthly,
+          priceCurrency: "USD",
+          unitText: "user per month",
+        },
+      })),
+  },
+  {
+    "@type": "FAQPage",
+    mainEntity: pricingFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+  breadcrumbSchema(pages.pricing, "Pricing"),
+);
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>("annual");
 
   return (
     <>
-      <title>Pricing · NEXORA AI</title>
-      <section className="border-b border-border bg-canvas">
+      <Seo page="pricing" structuredData={structuredData} />
+      <section aria-labelledby="pricing-heading" className="border-b border-border bg-canvas">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
           <FadeIn className="mx-auto max-w-2xl text-center">
             <p className="type-overline text-primary">Pricing</p>
-            <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+            <h1 id="pricing-heading" className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
               Simple pricing that scales with you.
             </h1>
             <p className="mt-5 text-lg text-muted">
               Start with a 14-day free trial of Growth. No credit card required.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Tabs
                 variant="segmented"
+                aria-label="Billing period"
                 value={billing}
                 onValueChange={(value) => setBilling(value as Billing)}
                 items={[

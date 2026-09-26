@@ -190,7 +190,7 @@ export function FoundationsSection() {
             </div>
           ))}
         </Specimen>
-        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
+        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
           <Specimen label="Size scale">
             <div className="flex flex-col gap-3">
               {typeScale.map(([name, size, lineHeight]) => (
@@ -223,7 +223,7 @@ export function FoundationsSection() {
       </DocBlock>
 
       <DocBlock id="spacing" title="Spacing" description="A 4px base grid. Layout dimensions are named tokens so shells stay consistent.">
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
           <Specimen>
             <div className="flex flex-col gap-2.5">
               {spacing.map(([name, px]) => (

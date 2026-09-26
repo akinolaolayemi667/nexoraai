@@ -8,6 +8,7 @@ import { routes } from "@/lib/routes";
 import { footerColumns, marketingNavigation, type MarketingMenuItem } from "@/data/marketing";
 import { Avatar, Badge, Button, Dropdown, PageLoader, TopNavLink, buttonVariants } from "@/components/ui";
 import { Logo } from "./logo";
+import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
 
 const navLinkClass =
   "rounded-sm text-sm font-medium text-muted outline-none transition-colors duration-150 hover:text-ink active:text-ink focus-visible:shadow-focus";
@@ -207,7 +208,7 @@ function MarketingHeader() {
 
 function MarketingFooter() {
   return (
-    <footer className="border-t border-border bg-canvas">
+    <footer className="border-t border-border bg-canvas" aria-label="Site footer">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 py-14 md:grid-cols-6">
         <div className="col-span-2">
           <Logo />
@@ -217,8 +218,13 @@ function MarketingFooter() {
           </p>
         </div>
         {footerColumns.map((column) => (
-          <div key={column.title}>
-            <h4 className="type-overline text-ink">{column.title}</h4>
+          <nav key={column.title} aria-labelledby={`footer-${column.title.toLowerCase().replace(/\s+/g, "-")}`}>
+            <h2
+              id={`footer-${column.title.toLowerCase().replace(/\s+/g, "-")}`}
+              className="type-overline font-sans text-ink"
+            >
+              {column.title}
+            </h2>
             <ul className="mt-3 space-y-2">
               {column.links.map((link) => (
                 <li key={link.label}>
@@ -231,7 +237,7 @@ function MarketingFooter() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
         ))}
       </div>
       <div className="border-t border-border">
@@ -252,8 +258,9 @@ export function MarketingLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SkipLink />
       <MarketingHeader />
-      <main className="flex-1">
+      <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 outline-none">
         <Suspense fallback={<PageLoader />}>
           <Outlet />
         </Suspense>

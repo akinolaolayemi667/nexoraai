@@ -180,6 +180,8 @@ export default function ContactsPage() {
 
         <div className="hidden md:block">
           <Table
+            label="Contacts"
+            rowLabel={(l) => l.name}
             columns={columns}
             rows={pageRows}
             getRowId={(l) => l.id}
