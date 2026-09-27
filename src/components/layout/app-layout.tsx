@@ -78,7 +78,8 @@ export function AppLayout() {
   }, [toggleCommand, openShortcuts, setCollapsed]);
 
   return (
-    <div className="bg-ambient flex min-h-dvh">
+    <div className="bg-ambient relative flex min-h-dvh">
+      <div className="bg-grid mask-radial pointer-events-none fixed inset-0 -z-10 opacity-70" aria-hidden />
       <SkipLink />
       <Sidebar
         collapsed={isDesktop ? collapsed : true}

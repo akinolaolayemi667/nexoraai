@@ -37,6 +37,7 @@ export type SidebarItemProps = {
   collapsed?: boolean;
   end?: boolean;
   disabled?: boolean;
+  tone?: "light" | "dark";
   onNavigate?: () => void;
 };
 
@@ -48,8 +49,10 @@ export function SidebarItem({
   collapsed = false,
   end,
   disabled = false,
+  tone = "light",
   onNavigate,
 }: SidebarItemProps) {
+  const dark = tone === "dark";
   const link = (
     <NavLink
       to={to}
@@ -65,7 +68,13 @@ export function SidebarItem({
         cn(
           "group relative flex h-8 items-center gap-2.5 rounded-lg text-sm font-medium outline-none transition-[background-color,color,box-shadow] duration-150 focus-visible:shadow-focus",
           collapsed ? "w-8 justify-center" : "w-full px-2.5",
-          isActive ? "font-semibold text-ink" : "text-muted hover:bg-white/60 hover:text-ink active:bg-white/80",
+          dark
+            ? isActive
+              ? "font-semibold text-white"
+              : "text-slate-300 hover:bg-white/10 hover:text-white active:bg-white/15"
+            : isActive
+              ? "font-semibold text-ink"
+              : "text-muted hover:bg-white/60 hover:text-ink active:bg-white/80",
           disabled && "pointer-events-none opacity-40",
         )
       }
@@ -76,7 +85,12 @@ export function SidebarItem({
             <motion.span
               layoutId="sidebar-active-item"
               transition={{ type: "spring", stiffness: 520, damping: 42 }}
-              className="absolute inset-0 rounded-lg bg-linear-to-r from-primary/12 via-primary/6 to-accent/5 shadow-[0_6px_16px_-8px_rgb(37_99_235/0.45)] ring-1 ring-primary/15"
+              className={cn(
+                "absolute inset-0 rounded-lg ring-1",
+                dark
+                  ? "bg-linear-to-r from-primary/35 via-primary/15 to-transparent shadow-[0_8px_20px_-10px_rgb(37_99_235/0.8)] ring-white/15"
+                  : "bg-linear-to-r from-primary/12 via-primary/6 to-accent/5 shadow-[0_6px_16px_-8px_rgb(37_99_235/0.45)] ring-primary/15",
+              )}
               aria-hidden
             >
               <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-primary" />
@@ -85,7 +99,7 @@ export function SidebarItem({
           <Icon
             className={cn(
               "relative size-4 shrink-0 transition-colors duration-150",
-              isActive ? "text-primary" : "text-subtle group-hover:text-muted",
+              isActive ? (dark ? "text-blue-200" : "text-primary") : dark ? "text-slate-400 group-hover:text-slate-200" : "text-subtle group-hover:text-muted",
             )}
             aria-hidden
           />
@@ -97,7 +111,13 @@ export function SidebarItem({
               <span
                 className={cn(
                   "relative rounded-sm px-1.5 font-mono text-2xs font-medium tabular-nums",
-                  isActive ? "bg-primary-soft text-primary-active" : "bg-sunken text-muted",
+                  isActive
+                    ? dark
+                      ? "bg-white/15 text-white"
+                      : "bg-primary-soft text-primary-active"
+                    : dark
+                      ? "bg-white/10 text-slate-300"
+                      : "bg-sunken text-muted",
                 )}
               >
                 {badge}

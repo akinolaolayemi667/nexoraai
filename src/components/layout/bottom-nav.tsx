@@ -14,7 +14,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="glass-strong fixed inset-x-0 bottom-0 z-30 rounded-t-2xl border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(15_23_42/0.12)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 rounded-t-2xl border border-x-0 border-b-0 border-white/10 bg-[#0b1020]/88 pb-[env(safe-area-inset-bottom)] text-slate-300 shadow-[0_-12px_40px_-16px_rgb(2_6_23/0.45)] backdrop-blur-xl md:hidden"
     >
       <ul className="grid h-14 grid-cols-5">
         {mobileNavigation.map((item) => {
@@ -27,7 +27,7 @@ export function BottomNav() {
               className={({ isActive }) =>
                 cn(
                   "relative flex flex-1 flex-col items-center justify-center gap-1 text-2xs font-medium outline-none transition-colors duration-150 focus-visible:bg-canvas",
-                  isActive ? "text-primary" : "text-muted active:text-ink",
+                  isActive ? "text-blue-200" : "text-slate-400 active:text-white",
                 )
               }
             >

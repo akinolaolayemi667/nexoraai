@@ -21,10 +21,12 @@ export function LogoMark({ className }: { className?: string }) {
 export function Logo({
   to = "/",
   collapsed = false,
+  inverted = false,
   className,
 }: {
   to?: string;
   collapsed?: boolean;
+  inverted?: boolean;
   className?: string;
 }) {
   return (
@@ -35,8 +37,8 @@ export function Logo({
     >
       <LogoMark />
       {!collapsed && (
-        <span className="font-display text-md font-bold tracking-tight text-ink">
-          NEXORA<span className="ml-1 font-semibold text-primary">AI</span>
+        <span className={cn("font-display text-md font-bold tracking-tight", inverted ? "text-white" : "text-ink")}>
+          NEXORA<span className={cn("ml-1 font-semibold", inverted ? "text-blue-300" : "text-primary")}>AI</span>
         </span>
       )}
     </Link>

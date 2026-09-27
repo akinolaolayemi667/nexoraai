@@ -15,9 +15,11 @@ const aiCredits = { used: 1240, limit: 2000 };
 
 export function SidebarNav({
   collapsed = false,
+  tone = "light",
   onNavigate,
 }: {
   collapsed?: boolean;
+  tone?: "light" | "dark";
   onNavigate?: () => void;
 }) {
   const unread = useInboxUnread(useUser().id);
@@ -31,7 +33,8 @@ export function SidebarNav({
               <div
                 role="separator"
                 className={cn(
-                  "h-px shrink-0 bg-linear-to-r from-transparent via-slate-300/70 to-transparent",
+                  "h-px shrink-0 bg-linear-to-r from-transparent to-transparent",
+                  tone === "dark" ? "via-white/20" : "via-slate-300/70",
                   collapsed ? "mx-auto w-6" : "mx-2.5",
                 )}
               />
@@ -46,6 +49,7 @@ export function SidebarNav({
                   badge={item.href === routes.app.conversations ? unread || undefined : item.badge}
                   end={item.href === routes.app.root}
                   collapsed={collapsed}
+                  tone={tone}
                   onNavigate={onNavigate}
                 />
               ))}
@@ -98,7 +102,7 @@ export function Sidebar({
       type="button"
       onClick={onToggle}
       className={cn(
-        "flex h-8 items-center gap-2.5 rounded-md text-sm text-muted outline-none transition-colors duration-150 hover:bg-white/70 hover:text-ink active:bg-white focus-visible:shadow-focus",
+        "flex h-8 items-center gap-2.5 rounded-md text-sm text-slate-300 outline-none transition-colors duration-150 hover:bg-white/10 hover:text-white active:bg-white/15 focus-visible:shadow-focus",
         collapsed ? "w-8 justify-center" : "w-full px-2.5",
       )}
       aria-label={collapsed ? expandLabel : "Collapse sidebar"}
@@ -107,7 +111,7 @@ export function Sidebar({
       {!collapsed && (
         <>
           <span className="flex-1 text-left">Collapse</span>
-          <kbd className="rounded-xs border border-border bg-white px-1.5 font-mono text-2xs text-subtle">[</kbd>
+          <kbd className="rounded-xs border border-white/15 bg-white/10 px-1.5 font-mono text-2xs text-slate-300">[</kbd>
         </>
       )}
     </button>
@@ -118,17 +122,17 @@ export function Sidebar({
       <SidebarPanel
         collapsed={collapsed}
         className={cn(
-          "rounded-2xl border border-glass-border bg-glass-strong! shadow-glass-float",
+          "rounded-2xl border border-white/10 bg-[#0b1020]/80! text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_24px_60px_-24px_rgb(2_6_23/0.7)] backdrop-blur-2xl",
           collapsed ? "items-center px-2" : "px-3",
         )}
       >
         <div className={cn("flex h-12 shrink-0 items-center", collapsed ? "justify-center" : "px-1.5")}>
-          <Logo to={routes.app.root} collapsed={collapsed} />
+          <Logo to={routes.app.root} collapsed={collapsed} inverted />
         </div>
         <div className="scrollbar-thin flex flex-1 flex-col overflow-y-auto py-3">
-          <SidebarNav collapsed={collapsed} />
+          <SidebarNav collapsed={collapsed} tone="dark" />
         </div>
-        <div className={cn("flex flex-col gap-3 border-t border-hairline py-3", collapsed && "items-center")}>
+        <div className={cn("flex flex-col gap-3 border-t border-white/10 py-3", collapsed && "items-center")}>
           {!collapsed && <UsageCard />}
           {collapsed ? (
             <Tooltip content={expandLabel} shortcut={expandLabel === "Expand sidebar" ? "[" : undefined} side="right">

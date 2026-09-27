@@ -7,11 +7,11 @@ import { LogoMark } from "@/components/layout/logo";
 
 function PreviewSidebar() {
   return (
-    <div className="hidden w-52 shrink-0 flex-col border-r border-hairline bg-white/45 px-3 lg:flex" aria-hidden>
+    <div className="hidden w-52 shrink-0 flex-col border-r border-white/10 bg-[#0b1020]/90 px-3 text-white lg:flex" aria-hidden>
       <div className="flex h-12 items-center gap-2 px-1.5">
         <LogoMark className="size-6" />
-        <span className="font-display text-sm font-bold tracking-tight text-ink">
-          NEXORA<span className="ml-1 font-semibold text-primary">AI</span>
+        <span className="font-display text-sm font-bold tracking-tight text-white">
+          NEXORA<span className="ml-1 font-semibold text-blue-300">AI</span>
         </span>
       </div>
       <div className="flex flex-col gap-2.5 py-3">
@@ -26,15 +26,15 @@ function PreviewSidebar() {
                   className={cn(
                     "relative flex h-7 items-center gap-2.5 rounded-lg px-2.5 text-xs font-medium",
                     active
-                      ? "bg-linear-to-r from-primary/12 via-primary/6 to-accent/5 font-semibold text-ink ring-1 ring-primary/15"
-                      : "text-muted",
+                      ? "bg-linear-to-r from-primary/40 via-primary/15 to-transparent font-semibold text-white ring-1 ring-white/15"
+                      : "text-slate-300",
                   )}
                 >
                   {active && <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-primary" />}
-                  <item.icon className={cn("size-3.5", active ? "text-primary" : "text-subtle")} />
+                  <item.icon className={cn("size-3.5", active ? "text-blue-200" : "text-slate-400")} />
                   <span className="flex-1 truncate">{item.label}</span>
                   {item.badge !== undefined && (
-                    <span className="rounded-sm bg-sunken px-1 font-mono text-[0.625rem] text-muted">{item.badge}</span>
+                    <span className="rounded-sm bg-white/10 px-1 font-mono text-[0.625rem] text-slate-200">{item.badge}</span>
                   )}
                 </div>
               );

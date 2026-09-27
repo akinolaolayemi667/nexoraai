@@ -14,9 +14,9 @@ const revenueTrend = [52, 55, 54, 60, 58, 64, 69, 67, 74, 78, 76, 84];
 function HeroBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      <div className="absolute left-1/2 top-[-14rem] h-[44rem] w-[80rem] -translate-x-1/2 bg-[radial-gradient(closest-side,rgb(59_130_246/0.16),transparent)]" />
-      <div className="absolute right-[-16rem] top-[30rem] h-[36rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(79_70_229/0.13),transparent)]" />
-      <div className="absolute left-[-18rem] top-[40rem] h-[32rem] w-[44rem] bg-[radial-gradient(closest-side,rgb(124_58_237/0.08),transparent)]" />
+      <div className="absolute left-1/2 top-[-14rem] h-[44rem] w-[80rem] -translate-x-1/2 bg-[radial-gradient(closest-side,rgb(37_99_235/0.32),transparent)]" />
+      <div className="absolute right-[-16rem] top-[30rem] h-[36rem] w-[48rem] bg-[radial-gradient(closest-side,rgb(79_70_229/0.26),transparent)]" />
+      <div className="absolute left-[-18rem] top-[40rem] h-[32rem] w-[44rem] bg-[radial-gradient(closest-side,rgb(124_58_237/0.18),transparent)]" />
       <div className="absolute inset-x-0 top-0 h-[44rem] bg-grid opacity-70 [mask-image:radial-gradient(ellipse_60%_65%_at_50%_0%,black,transparent)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white to-transparent" />
     </div>

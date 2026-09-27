@@ -67,7 +67,7 @@ export function Topbar({
 
   return (
     <header className="sticky top-0 z-30 h-topbar shrink-0 bg-linear-to-b from-canvas via-canvas/70 to-transparent px-2 py-2 sm:px-3 lg:pr-4">
-      <div className="glass-strong flex h-12 items-center gap-2 rounded-2xl px-2.5 sm:px-4">
+      <div className="flex h-12 items-center gap-2 rounded-2xl border border-white/80 bg-white/50 px-2.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_12px_40px_-18px_rgb(30_64_175/0.35)] backdrop-blur-2xl sm:px-4">
         <Button
           variant="ghost"
           size="icon-sm"
