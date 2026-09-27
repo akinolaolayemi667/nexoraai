@@ -87,14 +87,14 @@ export function AiInsightsCard({
   }, [refreshing]);
 
   return (
-    <Card className={cn("relative flex flex-col overflow-hidden", className)}>
+    <Card variant="ai" className={cn("relative flex flex-col overflow-hidden", className)}>
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-accent-soft/80 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-accent/8 to-transparent"
         aria-hidden
       />
       <div className="relative flex items-start justify-between gap-3 px-5 pt-5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-accent text-white shadow-xs">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-accent bg-gradient-ai text-white shadow-xs">
             <Sparkles className="size-4" aria-hidden />
           </span>
           <div className="min-w-0">
@@ -156,7 +156,7 @@ export function AiInsightsCard({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0, transition: transitions.emphasized }}
                   exit={{ opacity: 0, x: 16, transition: transitions.exit }}
-                  className="group/insight relative flex gap-3 rounded-md px-3 py-3 transition-colors duration-100 hover:bg-canvas"
+                  className="group/insight relative flex gap-3 rounded-lg px-3 py-3 transition-colors duration-150 hover:bg-white/70"
                 >
                   <InsightIcon insight={insight} />
                   <div className="min-w-0 flex-1 pr-5">
@@ -180,7 +180,7 @@ export function AiInsightsCard({
         )}
       </div>
 
-      <div className="relative border-t border-border p-3">
+      <div className="relative border-t border-accent/10 p-3">
         <Button variant="secondary" size="sm" className="w-full" rightIcon={<ArrowRight />} onClick={onViewAll}>
           View insights
         </Button>
@@ -218,7 +218,7 @@ export function InsightsDrawer({
       size="lg"
       title={
         <span className="flex items-center gap-2">
-          <span className="flex size-6 items-center justify-center rounded-md bg-accent text-white">
+          <span className="flex size-6 items-center justify-center rounded-md bg-accent bg-gradient-ai text-white">
             <Sparkles className="size-3.5" aria-hidden />
           </span>
           AI insights
@@ -268,7 +268,7 @@ export function InsightsDrawer({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0, transition: transitions.emphasized }}
                 exit={{ opacity: 0, scale: 0.98, transition: transitions.exit }}
-                className="rounded-lg border border-border bg-white p-4 shadow-xs"
+                className="glass-card rounded-xl p-4"
               >
                 <div className="flex items-start gap-3">
                   <InsightIcon insight={insight} />

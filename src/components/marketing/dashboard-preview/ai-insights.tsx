@@ -35,14 +35,14 @@ export function AiInsights({ live }: { live: boolean }) {
 
   return (
     <div
-      className="flex h-full flex-col rounded-lg border border-accent-border bg-accent-soft/60 p-4"
+      className="glass-ai flex h-full flex-col rounded-xl p-4 shadow-none!"
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
       <div className="flex items-center gap-2">
-        <span className="flex size-6 items-center justify-center rounded-md bg-accent text-white">
+        <span className="flex size-6 items-center justify-center rounded-md bg-accent bg-gradient-ai text-white">
           <Sparkles className="size-3.5" aria-hidden />
         </span>
         <p className="whitespace-nowrap text-sm font-semibold text-ink">AI insights</p>

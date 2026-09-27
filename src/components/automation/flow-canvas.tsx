@@ -65,7 +65,7 @@ function curve(s: Point, t: Point) {
   return { d: `M ${s.x} ${s.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${t.x} ${t.y}`, mid };
 }
 
-const edgeColors = { idle: "#cbd5e1", selected: "#2563eb", run: "#16a34a", link: "#2563eb" };
+const edgeColors = { idle: "#a5b4fc", selected: "#4f46e5", run: "#16a34a", link: "#2563eb" };
 
 export const FlowCanvas = forwardRef<FlowCanvasHandle, FlowCanvasProps>(function FlowCanvas(
   { doc, selection, run, onSelect, onMoveNode, onConnect, onDeleteEdge, onDropNode },
@@ -319,7 +319,7 @@ export const FlowCanvas = forwardRef<FlowCanvasHandle, FlowCanvasProps>(function
       onDrop={onDrop}
       aria-label="Workflow canvas"
       className={cn(
-        "relative min-h-0 flex-1 touch-none overflow-hidden bg-canvas outline-none",
+        "relative min-h-0 flex-1 touch-none overflow-hidden bg-canvas bg-grid outline-none",
         panning ? "cursor-grabbing" : link ? "cursor-crosshair" : "cursor-grab",
       )}
       style={{
@@ -460,7 +460,7 @@ export const FlowCanvas = forwardRef<FlowCanvasHandle, FlowCanvasProps>(function
 
       <div
         data-canvas-ui
-        className="absolute bottom-3 left-3 flex items-center gap-0.5 rounded-lg border border-border bg-white p-0.5 shadow-sm"
+        className="glass-strong absolute bottom-3 left-3 flex items-center gap-0.5 rounded-xl p-0.5"
       >
         <Tooltip content="Zoom out">
           <Button variant="ghost" size="icon-xs" onClick={() => zoomBy(1 / 1.2)} disabled={view.zoom <= MIN_ZOOM + 0.001} aria-label="Zoom out">

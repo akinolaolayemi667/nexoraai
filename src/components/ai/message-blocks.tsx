@@ -10,7 +10,7 @@ import type { AiBlock } from "@/lib/ai/types";
 import { Avatar, Button } from "@/components/ui";
 import { ScorePill, StageBadge, StatusBadge } from "@/components/crm/crm-ui";
 
-const shell = "overflow-hidden rounded-lg border border-border bg-white";
+const shell = "glass-card overflow-hidden rounded-xl";
 
 function LeadsBlock({ leadIds, now }: { leadIds: string[]; now: number }) {
   const { state } = useCrm();

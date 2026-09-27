@@ -47,7 +47,7 @@ export function Modal({
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <motion.div
-            className="absolute inset-0 bg-overlay"
+            className="absolute inset-0 bg-overlay backdrop-blur-[2px]"
             variants={fadeIn}
             {...motionStates}
             onClick={closeOnBackdrop ? onClose : undefined}
@@ -63,12 +63,12 @@ export function Modal({
             variants={scaleIn}
             {...motionStates}
             className={cn(
-              "relative flex max-h-[calc(100dvh-2.5rem)] w-full flex-col rounded-t-2xl border-t border-border bg-white shadow-xl outline-none sm:max-h-[calc(100dvh-2rem)] sm:rounded-xl sm:border",
+              "glass-overlay relative flex max-h-[calc(100dvh-2.5rem)] w-full flex-col rounded-t-3xl border-b-0 outline-none sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl sm:border-b",
               sizes[size],
             )}
           >
             <span className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border-strong sm:hidden" aria-hidden />
-            <div className="flex items-start justify-between gap-4 border-b border-border px-6 pb-4 pt-2 sm:pt-4">
+            <div className="flex items-start justify-between gap-4 border-b border-hairline px-6 pb-4 pt-2 sm:pt-5">
               <div className="min-w-0">
                 <h2 id={titleId} className="type-h3">
                   {title}
@@ -87,7 +87,7 @@ export function Modal({
             </div>
             {children && <div className="scrollbar-thin overflow-y-auto px-6 py-5">{children}</div>}
             {footer && (
-              <div className="flex flex-col-reverse gap-2 border-t border-border bg-canvas px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-end sm:rounded-b-xl sm:pb-3">
+              <div className="flex flex-col-reverse gap-2 border-t border-hairline bg-white/50 px-6 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-end sm:rounded-b-2xl sm:pb-3">
                 {footer}
               </div>
             )}
@@ -132,7 +132,7 @@ export function ConfirmDialog({
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            className="absolute inset-0 bg-overlay"
+            className="absolute inset-0 bg-overlay backdrop-blur-[2px]"
             variants={fadeIn}
             {...motionStates}
             onClick={loading ? undefined : onClose}
@@ -147,7 +147,7 @@ export function ConfirmDialog({
             tabIndex={-1}
             variants={scaleIn}
             {...motionStates}
-            className="relative w-full max-w-md rounded-xl border border-border bg-white p-6 shadow-xl outline-none"
+            className="glass-overlay relative w-full max-w-md rounded-2xl p-6 outline-none"
           >
             <div className="flex gap-4">
               {tone === "danger" && (

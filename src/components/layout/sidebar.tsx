@@ -1,5 +1,6 @@
-import { Fragment } from "react";
+import { Fragment, useId } from "react";
 import { Link } from "react-router";
+import { LayoutGroup } from "framer-motion";
 import { ChevronsLeft, ChevronsRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
@@ -20,38 +21,47 @@ export function SidebarNav({
   onNavigate?: () => void;
 }) {
   const unread = useInboxUnread(useUser().id);
+  const groupId = useId();
   return (
-    <nav className="flex flex-col gap-3" aria-label="Main">
-      {appNavigation.map((section, index) => (
-        <Fragment key={section.id}>
-          {index > 0 && (
-            <div role="separator" className={cn("h-px shrink-0 bg-border", collapsed ? "mx-auto w-6" : "mx-2.5")} />
-          )}
-          <SidebarSection collapsed={collapsed}>
-            {section.items.map((item) => (
-              <SidebarItem
-                key={item.href}
-                to={item.href}
-                label={item.label}
-                icon={item.icon}
-                badge={item.href === routes.app.conversations ? unread || undefined : item.badge}
-                end={item.href === routes.app.root}
-                collapsed={collapsed}
-                onNavigate={onNavigate}
+    <LayoutGroup id={groupId}>
+      <nav className="flex flex-col gap-3" aria-label="Main">
+        {appNavigation.map((section, index) => (
+          <Fragment key={section.id}>
+            {index > 0 && (
+              <div
+                role="separator"
+                className={cn(
+                  "h-px shrink-0 bg-linear-to-r from-transparent via-slate-300/70 to-transparent",
+                  collapsed ? "mx-auto w-6" : "mx-2.5",
+                )}
               />
-            ))}
-          </SidebarSection>
-        </Fragment>
-      ))}
-    </nav>
+            )}
+            <SidebarSection collapsed={collapsed}>
+              {section.items.map((item) => (
+                <SidebarItem
+                  key={item.href}
+                  to={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  badge={item.href === routes.app.conversations ? unread || undefined : item.badge}
+                  end={item.href === routes.app.root}
+                  collapsed={collapsed}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </SidebarSection>
+          </Fragment>
+        ))}
+      </nav>
+    </LayoutGroup>
   );
 }
 
 export function UsageCard({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="rounded-lg border border-border bg-white p-3 shadow-xs">
+    <div className="glass-ai rounded-xl p-3 shadow-none!">
       <div className="flex items-center gap-2">
-        <span className="flex size-5 items-center justify-center rounded-sm bg-accent-soft text-accent">
+        <span className="flex size-5 items-center justify-center rounded-md bg-gradient-ai text-white">
           <Sparkles className="size-3" aria-hidden />
         </span>
         <p className="text-xs font-semibold text-ink">AI credits</p>
@@ -104,26 +114,31 @@ export function Sidebar({
   );
 
   return (
-    <SidebarPanel
-      collapsed={collapsed}
-      className={cn("sticky top-0 z-20 hidden h-dvh md:flex", collapsed ? "items-center px-2" : "px-3")}
-    >
-      <div className={cn("flex h-topbar shrink-0 items-center", collapsed ? "justify-center" : "px-1.5")}>
-        <Logo to={routes.app.root} collapsed={collapsed} />
-      </div>
-      <div className="scrollbar-thin flex flex-1 flex-col overflow-y-auto py-3">
-        <SidebarNav collapsed={collapsed} />
-      </div>
-      <div className={cn("flex flex-col gap-3 border-t border-border py-3", collapsed && "items-center")}>
-        {!collapsed && <UsageCard />}
-        {collapsed ? (
-          <Tooltip content={expandLabel} shortcut={expandLabel === "Expand sidebar" ? "[" : undefined} side="right">
-            {toggle}
-          </Tooltip>
-        ) : (
-          toggle
+    <div className="sticky top-0 z-20 hidden h-dvh shrink-0 py-2 pl-2 md:flex">
+      <SidebarPanel
+        collapsed={collapsed}
+        className={cn(
+          "rounded-2xl border border-glass-border bg-glass-strong! shadow-glass-float",
+          collapsed ? "items-center px-2" : "px-3",
         )}
-      </div>
-    </SidebarPanel>
+      >
+        <div className={cn("flex h-12 shrink-0 items-center", collapsed ? "justify-center" : "px-1.5")}>
+          <Logo to={routes.app.root} collapsed={collapsed} />
+        </div>
+        <div className="scrollbar-thin flex flex-1 flex-col overflow-y-auto py-3">
+          <SidebarNav collapsed={collapsed} />
+        </div>
+        <div className={cn("flex flex-col gap-3 border-t border-hairline py-3", collapsed && "items-center")}>
+          {!collapsed && <UsageCard />}
+          {collapsed ? (
+            <Tooltip content={expandLabel} shortcut={expandLabel === "Expand sidebar" ? "[" : undefined} side="right">
+              {toggle}
+            </Tooltip>
+          ) : (
+            toggle
+          )}
+        </div>
+      </SidebarPanel>
+    </div>
   );
 }

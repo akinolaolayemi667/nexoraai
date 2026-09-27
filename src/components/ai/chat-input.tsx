@@ -79,8 +79,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     <div>
       <div
         className={cn(
-          "rounded-xl border border-border bg-white shadow-sm transition-[border-color,box-shadow] duration-150",
-          "focus-within:border-primary focus-within:shadow-focus",
+          "glass-ai rounded-2xl transition-[box-shadow] duration-200",
+          "focus-within:shadow-glow-ai",
         )}
       >
         <AnimatePresence initial={false}>

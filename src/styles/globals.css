@@ -43,14 +43,17 @@
 
   /* Color: brand & neutrals ---------------------------------------------- */
   --color-white: #ffffff;
-  --color-canvas: #f8fafc;
-  --color-sunken: #f1f5f9;
-  --color-ink: #111827;
+  --color-canvas: #f4f7fb;
+  --color-sunken: #eef2f7;
+  --color-deep: #0b1020;
+  --color-surface-dark: #111827;
+  --color-ink: #0f172a;
   --color-muted: #475569;
   --color-subtle: #64748b;
-  --color-overlay: rgb(17 24 39 / 0.4);
+  --color-overlay: rgb(15 23 42 / 0.35);
 
   --color-primary: #2563eb;
+  --color-primary-bright: #3b82f6;
   --color-primary-hover: #1d4ed8;
   --color-primary-active: #1e40af;
   --color-primary-soft: #dbeafe;
@@ -60,6 +63,18 @@
   --color-accent-hover: #4338ca;
   --color-accent-soft: #eef2ff;
   --color-accent-border: #c7d2fe;
+
+  --color-violet: #7c3aed;
+  --color-violet-soft: #f5f3ff;
+  --color-violet-border: #ddd6fe;
+
+  /* Glass ------------------------------------------------------------------ */
+  --color-glass: rgb(255 255 255 / 0.6);
+  --color-glass-strong: rgb(255 255 255 / 0.78);
+  --color-glass-soft: rgb(255 255 255 / 0.42);
+  --color-glass-dark: rgb(15 23 42 / 0.6);
+  --color-glass-border: rgb(255 255 255 / 0.7);
+  --color-hairline: rgb(148 163 184 / 0.2);
 
   /* Color: status --------------------------------------------------------- */
   --color-success: #16a34a;
@@ -88,27 +103,33 @@
   /* Color: data visualisation -------------------------------------------- */
   --color-chart-1: #2563eb;
   --color-chart-2: #4f46e5;
-  --color-chart-3: #0ea5e9;
-  --color-chart-4: #14b8a6;
-  --color-chart-5: #f59e0b;
+  --color-chart-3: #7c3aed;
+  --color-chart-4: #60a5fa;
+  --color-chart-5: #a78bfa;
   --color-chart-6: #94a3b8;
-  --color-chart-grid: #eef2f6;
+  --color-chart-grid: #e8edf4;
   --color-chart-axis: #64748b;
 
   /* Radius: restrained ---------------------------------------------------- */
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.625rem;
-  --radius-2xl: 0.75rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
 
   /* Elevation ------------------------------------------------------------- */
-  --shadow-xs: 0 1px 2px 0 rgb(17 24 39 / 0.05);
-  --shadow-sm: 0 1px 2px 0 rgb(17 24 39 / 0.04), 0 1px 3px 0 rgb(17 24 39 / 0.04);
-  --shadow-md: 0 4px 12px -2px rgb(17 24 39 / 0.08), 0 2px 4px -2px rgb(17 24 39 / 0.04);
-  --shadow-lg: 0 12px 32px -12px rgb(17 24 39 / 0.2), 0 2px 6px -2px rgb(17 24 39 / 0.08);
-  --shadow-xl: 0 24px 64px -16px rgb(17 24 39 / 0.3), 0 4px 12px -4px rgb(17 24 39 / 0.08);
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+  --shadow-lg: 0 12px 32px -12px rgb(15 23 42 / 0.2), 0 2px 6px -2px rgb(15 23 42 / 0.08);
+  --shadow-xl: 0 24px 64px -16px rgb(15 23 42 / 0.3), 0 4px 12px -4px rgb(15 23 42 / 0.08);
+  --shadow-glass: 0 0 0 1px rgb(148 163 184 / 0.16), 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.1);
+  --shadow-glass-hover: 0 0 0 1px rgb(148 163 184 / 0.22), 0 2px 4px rgb(15 23 42 / 0.04), 0 16px 36px -14px rgb(15 23 42 / 0.16);
+  --shadow-glass-float: 0 0 0 1px rgb(148 163 184 / 0.18), 0 20px 50px rgb(15 23 42 / 0.08), 0 2px 8px rgb(15 23 42 / 0.04);
+  --shadow-glow: 0 8px 28px -10px rgb(37 99 235 / 0.45);
+  --shadow-glow-ai: 0 10px 32px -12px rgb(79 70 229 / 0.35);
   --shadow-focus: 0 0 0 3px rgb(37 99 235 / 0.18);
   --shadow-focus-danger: 0 0 0 3px rgb(220 38 38 / 0.15);
   --shadow-focus-success: 0 0 0 3px rgb(22 163 74 / 0.15);
@@ -116,7 +137,7 @@
   /* Layout ---------------------------------------------------------------- */
   --spacing-sidebar: 15rem;
   --spacing-sidebar-collapsed: 3.75rem;
-  --spacing-topbar: 3.5rem;
+  --spacing-topbar: 4rem;
   --container-content: 87.5rem;
 
   /* Motion ---------------------------------------------------------------- */
@@ -192,6 +213,134 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Glass hierarchy
+ *   L1 canvas        solid background (body)
+ *   L2 glass-soft    secondary surfaces — no blur
+ *   L3 glass-card    content cards — translucent, no blur (cards are numerous)
+ *      glass         blurred surface for sticky/overlapping panels
+ *   L4 glass-strong  floating chrome: nav, top bar, menus, modals
+ *   L5 glass-ai      AI & premium surfaces — indigo tint + gradient border
+ * Only L4 and `glass`/`glass-panel` use backdrop-filter, keeping the number of
+ * blurred layers on screen small.
+ * ------------------------------------------------------------------------- */
+@utility glass-soft {
+  background-color: var(--color-glass-soft);
+  border: 1px solid rgb(255 255 255 / 0.6);
+  box-shadow: 0 0 0 1px rgb(148 163 184 / 0.12);
+}
+@utility glass-card {
+  background-color: rgb(255 255 255 / 0.74);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-glass);
+}
+@utility glass {
+  background-color: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+@utility glass-panel {
+  background-color: var(--color-glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+@utility glass-strong {
+  background-color: var(--color-glass-strong);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-glass-float);
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(170%);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(170%);
+}
+@utility glass-overlay {
+  background-color: rgb(255 255 255 / 0.82);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: 0 0 0 1px rgb(148 163 184 / 0.18), var(--shadow-xl);
+  -webkit-backdrop-filter: blur(var(--glass-blur-overlay)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur-overlay)) saturate(180%);
+}
+@utility glass-dark {
+  color: var(--color-white);
+  background-color: var(--color-glass-dark);
+  border: 1px solid var(--color-hairline);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 20px 50px rgb(2 6 23 / 0.35);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+@utility glass-ai {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(135deg, rgb(238 242 255 / 0.92), rgb(255 255 255 / 0.82) 48%, rgb(245 243 255 / 0.9)) padding-box,
+    linear-gradient(135deg, rgb(79 70 229 / 0.42), rgb(124 58 237 / 0.2) 50%, rgb(37 99 235 / 0.36)) border-box;
+  box-shadow: var(--shadow-glow-ai);
+}
+@utility glass-hover {
+  transition-property: background-color, border-color, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-standard);
+  &:hover {
+    background-color: rgb(255 255 255 / 0.86);
+    border-color: rgb(255 255 255 / 0.95);
+    box-shadow: var(--shadow-glass-hover);
+    transform: translateY(-1px);
+  }
+}
+
+/* Gradients ---------------------------------------------------------------- */
+@utility bg-gradient-primary {
+  background-image: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+@utility bg-gradient-ai {
+  background-image: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+@utility bg-gradient-soft {
+  background-image: linear-gradient(135deg, #dbeafe, #eef2ff);
+}
+@utility text-gradient-ai {
+  background-image: linear-gradient(100deg, #2563eb, #4f46e5 45%, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ambient environment: static radial light, never animated. */
+@utility bg-ambient {
+  background-color: var(--color-canvas);
+  background-image:
+    radial-gradient(60rem 36rem at 8% -8%, rgb(59 130 246 / 0.09), transparent 60%),
+    radial-gradient(50rem 32rem at 100% 0%, rgb(79 70 229 / 0.07), transparent 62%),
+    radial-gradient(56rem 36rem at 60% 110%, rgb(124 58 237 / 0.05), transparent 60%);
+  background-attachment: fixed;
+}
+@utility bg-ambient-deep {
+  background-color: var(--color-deep);
+  background-image:
+    radial-gradient(48rem 28rem at 15% 0%, rgb(37 99 235 / 0.28), transparent 60%),
+    radial-gradient(40rem 26rem at 90% 20%, rgb(79 70 229 / 0.24), transparent 62%),
+    radial-gradient(40rem 24rem at 50% 110%, rgb(124 58 237 / 0.16), transparent 60%);
+}
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.14) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+@utility bg-grid-dark {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+@utility mask-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+@utility mask-radial {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 72%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 72%);
+}
+
 @keyframes flow-dash {
   to {
     stroke-dashoffset: -12;
@@ -199,13 +348,27 @@
 }
 
 @layer base {
+  :root {
+    --glass-blur: 20px;
+    --glass-blur-strong: 24px;
+    --glass-blur-overlay: 30px;
+  }
+
+  @media (max-width: 767px) {
+    :root {
+      --glass-blur: 12px;
+      --glass-blur-strong: 14px;
+      --glass-blur-overlay: 16px;
+    }
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-white font-sans text-base text-ink antialiased;
+    @apply bg-canvas font-sans text-base text-ink antialiased;
     font-feature-settings: "cv11", "ss01";
   }
 
@@ -225,7 +388,43 @@
   }
 }
 
+/* Without backdrop blur, or when the user asks for less transparency, glass
+ * surfaces become near-opaque so text contrast never depends on what's behind. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-panel,
+  .glass-strong,
+  .glass-overlay {
+    background-color: rgb(255 255 255 / 0.96);
+  }
+  .glass-dark {
+    background-color: rgb(15 23 42 / 0.94);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-panel,
+  .glass-strong,
+  .glass-overlay,
+  .glass-card,
+  .glass-soft {
+    background-color: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-dark {
+    background-color: var(--color-surface-dark);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .glass-hover:hover {
+    transform: none;
+  }
+
   *,
   ::before,
   ::after {

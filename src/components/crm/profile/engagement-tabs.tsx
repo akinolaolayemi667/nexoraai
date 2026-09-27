@@ -144,7 +144,7 @@ export function NotesTab({ lead, notes, now }: { lead: Lead; notes: Note[]; now:
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                className="group overflow-hidden rounded-lg border border-border bg-white p-4"
+                className="glass-card group overflow-hidden rounded-xl p-4"
               >
                 <div className="flex items-center gap-2.5">
                   <Avatar name={note.author} size="sm" />

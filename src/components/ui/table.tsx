@@ -129,9 +129,9 @@ export function Table<T>({
 
   return (
     <div className={cn("@container scrollbar-thin relative overflow-auto", className)}>
-      <table className="w-full border-collapse text-sm" aria-label={label} aria-busy={loading || undefined}>
+      <table className="w-full border-collapse bg-white/70 text-sm" aria-label={label} aria-busy={loading || undefined}>
         <thead className={cn(stickyHeader && "sticky top-0 z-10")}>
-          <tr className="border-b border-border bg-canvas">
+          <tr className="border-b border-border/80 bg-slate-50/95">
             {selectable && (
               <th scope="col" className="w-10 px-4 py-2.5">
                 <Checkbox
@@ -242,10 +242,10 @@ export function Table<T>({
                   }
                   className={cn(
                     "border-b border-border-subtle outline-none transition-colors duration-100 last:border-0",
-                    clickable && "cursor-pointer focus-visible:bg-primary-soft/30 focus-visible:shadow-[inset_2px_0_0_var(--color-primary)]",
-                    isActive && "bg-primary-soft/40 shadow-[inset_2px_0_0_var(--color-primary)]",
-                    !isActive && isSelected && "bg-primary-soft/25",
-                    !isActive && !isSelected && !disabled && "hover:bg-canvas active:bg-sunken/60",
+                    clickable && "cursor-pointer focus-visible:bg-primary/6 focus-visible:shadow-[inset_2px_0_0_var(--color-primary)]",
+                    isActive && "bg-primary/8 shadow-[inset_2px_0_0_var(--color-primary)]",
+                    !isActive && isSelected && "bg-primary/6",
+                    !isActive && !isSelected && !disabled && "hover:bg-primary/4 active:bg-primary/6",
                     disabled && "opacity-50",
                   )}
                 >

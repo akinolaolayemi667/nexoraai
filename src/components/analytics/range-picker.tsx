@@ -93,7 +93,7 @@ export function RangePicker({ value, from, to, onChange }: RangePickerProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: duration.fast, ease: ease.standard }}
-            className="absolute right-0 top-full z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-border bg-white p-4 shadow-lg"
+            className="absolute right-0 top-full z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] glass-strong rounded-xl p-4"
             onKeyDown={(e) => {
               if (e.key === "Escape") setOpen(false);
               if (e.key === "Enter") apply();

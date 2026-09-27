@@ -17,7 +17,7 @@ const signupPerks = ["14-day free trial of Growth", "No credit card required", "
 
 function AuthShowcase({ signup }: { signup: boolean }) {
   return (
-    <aside className="relative hidden overflow-hidden border-l border-border bg-canvas lg:flex">
+    <aside className="relative hidden overflow-hidden border-l border-hairline bg-white/30 lg:flex">
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,var(--color-border-subtle)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border-subtle)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
         aria-hidden
@@ -28,7 +28,7 @@ function AuthShowcase({ signup }: { signup: boolean }) {
           {signup ? "Your intelligent business system starts here." : "Pick up right where your team left off."}
         </h2>
 
-        <div className="mt-8 overflow-hidden rounded-lg border border-border bg-white shadow-lg" aria-hidden>
+        <div className="glass-strong mt-8 overflow-hidden rounded-2xl" aria-hidden>
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
             <p className="text-xs font-semibold text-ink">Today in Nexora HQ</p>
             <span className="flex items-center gap-1.5 text-2xs text-success-text">
@@ -101,7 +101,7 @@ export function AuthLayout() {
   if (user && arrivedSignedIn && !signedOut) return <Navigate to={routes.app.root} replace />;
 
   return (
-    <div className="grid min-h-screen grid-cols-1 bg-white lg:grid-cols-[1fr_1.05fr]">
+    <div className="bg-ambient grid min-h-screen grid-cols-1 lg:grid-cols-[1fr_1.05fr]">
       <SkipLink />
       <div className="flex min-w-0 flex-col px-6 py-5 sm:px-10">
         <header className="flex h-10 items-center justify-between">

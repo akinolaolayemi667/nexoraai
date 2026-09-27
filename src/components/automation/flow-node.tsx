@@ -48,8 +48,8 @@ export const FlowNodeView = memo(function FlowNodeView({
       onKeyDown={onKeyDown}
       style={{ left: node.x, top: node.y, width: NODE_W, height: NODE_H }}
       className={cn(
-        "group absolute cursor-grab touch-none select-none rounded-xl border bg-white outline-none transition-[box-shadow,border-color] duration-150 active:cursor-grabbing",
-        selected ? "border-primary shadow-[0_0_0_3px_rgb(37_99_235/0.18),var(--shadow-md)]" : "border-border shadow-sm hover:border-border-strong hover:shadow-md",
+        "glass-card group absolute cursor-grab touch-none select-none rounded-xl outline-none transition-[box-shadow,border-color,transform] duration-200 active:cursor-grabbing",
+        selected ? "border-primary! shadow-[0_0_0_3px_rgb(37_99_235/0.18),var(--shadow-glass-hover)]" : "hover:-translate-y-px hover:shadow-glass-hover",
         linkTarget && "border-primary shadow-[0_0_0_4px_rgb(37_99_235/0.22)]",
         run === "active" && "border-success shadow-[0_0_0_4px_rgb(22_163_74/0.22)]",
         run === "done" && !selected && "border-success-border",

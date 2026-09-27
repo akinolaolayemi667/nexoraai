@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 export function SettingsCard({ title, description, action, children, footer, className }: { title: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; footer?: ReactNode; className?: string }) {
   return (
-    <section className={cn("rounded-lg border border-border bg-white shadow-xs", className)}>
+    <section className={cn("glass-card overflow-hidden rounded-2xl", className)}>
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-ink">{title}</h3>

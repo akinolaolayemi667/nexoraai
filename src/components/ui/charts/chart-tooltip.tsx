@@ -19,7 +19,7 @@ export function ChartTooltip({
   return (
     <div
       className={cn(
-        "pointer-events-none min-w-36 rounded-md border border-border bg-white px-3 py-2 shadow-lg",
+        "pointer-events-none min-w-36 rounded-lg glass-strong px-3 py-2",
         className,
       )}
       style={style}

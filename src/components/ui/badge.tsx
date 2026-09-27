@@ -21,7 +21,7 @@ const tones: Record<Tone, { soft: string; outline: string; solid: string; dot: s
   accent: {
     soft: "bg-accent-soft text-accent ring-accent-border",
     outline: "bg-white text-accent ring-accent-border",
-    solid: "bg-accent text-white ring-accent",
+    solid: "bg-accent bg-gradient-ai text-white ring-accent",
     dot: "bg-accent",
   },
   success: {

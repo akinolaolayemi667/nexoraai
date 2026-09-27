@@ -78,7 +78,7 @@ export function AppLayout() {
   }, [toggleCommand, openShortcuts, setCollapsed]);
 
   return (
-    <div className="flex min-h-dvh bg-white">
+    <div className="bg-ambient flex min-h-dvh">
       <SkipLink />
       <Sidebar
         collapsed={isDesktop ? collapsed : true}
@@ -126,7 +126,7 @@ export function AppLayout() {
             </Suspense>
           </main>
         ) : (
-          <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 px-4 outline-none pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:px-8">
+          <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 px-4 outline-none pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pt-4 md:pb-10 lg:px-8">
             <div className="mx-auto w-full max-w-content min-[1800px]:max-w-[100rem]">
               <Suspense fallback={<PageLoader />}>
                 <PageTransition key={pathname}>

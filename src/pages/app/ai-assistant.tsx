@@ -215,7 +215,7 @@ export default function AiAssistantPage() {
 
   return (
     <div className="flex min-h-0 flex-1">
-      <aside className="hidden w-72 shrink-0 flex-col border-r border-border bg-canvas md:flex">
+      <aside className="hidden w-72 shrink-0 flex-col border-r border-hairline bg-white/40 md:flex">
         <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
           <h2 className="text-sm font-semibold text-ink">AI Conversations</h2>
           <span className="rounded-full bg-sunken px-2 py-0.5 font-mono text-2xs tabular-nums text-muted">{conversations.length}</span>
@@ -227,8 +227,8 @@ export default function AiAssistantPage() {
         <div className="-mx-6 -my-5 flex h-[calc(100%+2.5rem)] flex-col">{list}</div>
       </Drawer>
 
-      <section className="flex min-w-0 flex-1 flex-col bg-white">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-3 sm:px-5">
+      <section className="flex min-w-0 flex-1 flex-col bg-white/25">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-hairline bg-white/50 px-3 backdrop-blur-md sm:px-5">
           <Button variant="ghost" size="icon-sm" className="md:hidden" onClick={history.open} aria-label="Show conversations">
             <PanelLeft />
           </Button>
@@ -296,7 +296,7 @@ export default function AiAssistantPage() {
                       type="button"
                       disabled={busy}
                       onClick={() => send(prompt)}
-                      className="rounded-full border border-border bg-white px-3 py-1.5 text-xs text-ink transition-colors hover:border-border-strong hover:bg-canvas disabled:opacity-50"
+                      className="rounded-full border border-hairline bg-white/75 px-3 py-1.5 text-xs text-ink shadow-xs transition-colors hover:border-primary/25 hover:bg-white disabled:opacity-50"
                     >
                       {prompt}
                     </button>

@@ -25,7 +25,7 @@ type StatusFilter = "all" | MemberStatus;
 
 function Stat({ label, value, icon, children }: { label: string; value: ReactNode; icon: ReactNode; children?: ReactNode }) {
   return (
-    <div className="rounded-lg border border-border bg-white p-4 shadow-xs">
+    <div className="glass-card rounded-2xl p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-medium text-muted sm:text-sm">{label}</p>
         <span className="flex size-7 items-center justify-center rounded-md bg-sunken text-muted [&_svg]:size-3.5">{icon}</span>
@@ -245,7 +245,7 @@ export default function TeamPage() {
         </Stat>
       </section>
 
-      <section aria-labelledby="members-heading" className="mt-4 overflow-hidden rounded-lg border border-border bg-white shadow-xs">
+      <section aria-labelledby="members-heading" className="glass-card mt-4 overflow-hidden rounded-2xl">
         <h2 id="members-heading" className="sr-only">
           Team members
         </h2>
@@ -382,7 +382,7 @@ export default function TeamPage() {
           {roles.map((r) => {
             const count = members.filter((m) => m.role === r.id && m.status !== "suspended").length;
             return (
-              <div key={r.id} className="rounded-lg border border-border bg-white p-4 shadow-xs">
+              <div key={r.id} className="glass-card rounded-2xl p-4">
                 <div className="flex items-center justify-between gap-2">
                   <RoleBadge role={r.id} />
                   <span className="text-xs text-muted">
@@ -395,7 +395,7 @@ export default function TeamPage() {
           })}
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-lg border border-border bg-white shadow-xs">
+        <div className="glass-card mt-4 overflow-hidden rounded-2xl">
           <div className="scrollbar-thin overflow-x-auto">
             <table className="w-full min-w-[40rem] text-sm">
               <caption className="sr-only">Permissions by role</caption>

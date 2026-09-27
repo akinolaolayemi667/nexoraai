@@ -19,7 +19,7 @@ export function ProductOverview() {
       <Stagger inView className="relative mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
         <div className="absolute left-[16%] right-[16%] top-9 hidden h-px bg-border md:block" aria-hidden />
         {overviewSteps.map((step) => (
-          <StaggerItem key={step.step} className="relative rounded-lg border border-border bg-white p-6 shadow-sm">
+          <StaggerItem key={step.step} className="glass-card glass-hover relative rounded-2xl p-6">
             <div className="flex items-center justify-between">
               <span className="flex size-10 items-center justify-center rounded-lg border border-primary-border bg-primary-soft/60 text-primary">
                 <step.icon className="size-5" aria-hidden />
@@ -43,9 +43,9 @@ export function Solutions() {
         title="Built for every revenue team."
         description="Sales, marketing, success and operations share one source of truth, and each team gets the views it needs."
       />
-      <Stagger inView className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+      <Stagger inView className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {solutions.map((item) => (
-          <StaggerItem key={item.title} className="flex flex-col bg-white p-6">
+          <StaggerItem key={item.title} className="glass-card glass-hover flex flex-col rounded-2xl p-6">
             <item.icon className="size-5 text-primary" aria-hidden />
             <h3 className="type-h4 mt-4">{item.title}</h3>
             <p className="mt-1.5 flex-1 text-sm text-muted">{item.description}</p>

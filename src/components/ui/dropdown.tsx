@@ -156,7 +156,7 @@ export function Dropdown({
             animate={{ opacity: 1, scale: 1, y: 0, transition: { duration: duration.fast, ease: ease.emphasized } }}
             exit={{ opacity: 0, scale: 0.98, transition: { duration: duration.instant, ease: ease.exit } }}
             className={cn(
-              "absolute z-40 rounded-lg border border-border bg-white p-1 shadow-lg",
+              "glass-strong absolute z-40 rounded-xl p-1",
               side === "bottom" ? "top-full mt-1.5" : "bottom-full mb-1.5",
               align === "start" ? "left-0" : "right-0",
               side === "bottom"

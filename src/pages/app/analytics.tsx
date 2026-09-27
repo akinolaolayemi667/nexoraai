@@ -119,7 +119,7 @@ function KpiTile({ kpi }: { kpi: Kpi }) {
   const good = kpi.lowerIsBetter ? !up : up;
   const TrendIcon = up ? ArrowUpRight : ArrowDownRight;
   const className = cn(
-    "group flex h-full min-w-0 flex-col rounded-lg border border-border bg-white p-4 shadow-sm outline-none sm:p-5",
+    "glass-card glass-hover group flex h-full min-w-0 flex-col rounded-xl p-4 outline-none focus-visible:border-primary focus-visible:shadow-focus sm:p-5",
     kpi.href && "transition-[border-color,box-shadow] duration-150 hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus",
   );
   const body = (

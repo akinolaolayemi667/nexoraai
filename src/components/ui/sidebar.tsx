@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { NavLink } from "react-router";
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Tooltip } from "./tooltip";
@@ -62,32 +63,40 @@ export function SidebarItem({
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
-          "group relative flex h-8 items-center gap-2.5 rounded-md text-sm font-medium outline-none transition-[background-color,color,box-shadow] duration-150 focus-visible:shadow-focus",
+          "group relative flex h-8 items-center gap-2.5 rounded-lg text-sm font-medium outline-none transition-[background-color,color,box-shadow] duration-150 focus-visible:shadow-focus",
           collapsed ? "w-8 justify-center" : "w-full px-2.5",
-          isActive
-            ? "bg-white text-ink shadow-xs ring-1 ring-border"
-            : "text-muted hover:bg-white/70 hover:text-ink active:bg-white",
+          isActive ? "font-semibold text-ink" : "text-muted hover:bg-white/60 hover:text-ink active:bg-white/80",
           disabled && "pointer-events-none opacity-40",
         )
       }
     >
       {({ isActive }) => (
         <>
+          {isActive && (
+            <motion.span
+              layoutId="sidebar-active-item"
+              transition={{ type: "spring", stiffness: 520, damping: 42 }}
+              className="absolute inset-0 rounded-lg bg-linear-to-r from-primary/12 via-primary/6 to-accent/5 shadow-[0_6px_16px_-8px_rgb(37_99_235/0.45)] ring-1 ring-primary/15"
+              aria-hidden
+            >
+              <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-primary" />
+            </motion.span>
+          )}
           <Icon
             className={cn(
-              "size-4 shrink-0 transition-colors duration-150",
+              "relative size-4 shrink-0 transition-colors duration-150",
               isActive ? "text-primary" : "text-subtle group-hover:text-muted",
             )}
             aria-hidden
           />
-          {!collapsed && <span className="flex-1 truncate">{label}</span>}
+          {!collapsed && <span className="relative flex-1 truncate">{label}</span>}
           {badge !== undefined &&
             (collapsed ? (
               <span className="absolute right-1 top-1 size-1.5 rounded-full bg-primary ring-2 ring-canvas" />
             ) : (
               <span
                 className={cn(
-                  "rounded-sm px-1.5 font-mono text-2xs font-medium tabular-nums",
+                  "relative rounded-sm px-1.5 font-mono text-2xs font-medium tabular-nums",
                   isActive ? "bg-primary-soft text-primary-active" : "bg-sunken text-muted",
                 )}
               >
@@ -117,7 +126,7 @@ export function SidebarPanel({
     <aside
       data-collapsed={collapsed || undefined}
       className={cn(
-        "flex h-full shrink-0 flex-col border-r border-border bg-canvas transition-[width] duration-200 ease-standard",
+        "glass-panel flex h-full shrink-0 flex-col border-r border-hairline transition-[width] duration-200 ease-standard",
         collapsed ? "w-sidebar-collapsed" : "w-sidebar",
         className,
       )}

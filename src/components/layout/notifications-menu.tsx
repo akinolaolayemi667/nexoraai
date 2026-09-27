@@ -140,7 +140,7 @@ export function NotificationsMenu() {
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: duration.fast, ease: ease.emphasized } }}
             exit={{ opacity: 0, scale: 0.98, transition: { duration: duration.instant, ease: ease.exit } }}
-            className="fixed inset-x-3 top-[calc(var(--spacing-topbar)+0.5rem)] z-40 flex max-h-[min(34rem,calc(100dvh-6rem))] origin-top flex-col overflow-hidden rounded-lg border border-border bg-white shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:origin-top-right"
+            className="fixed inset-x-3 top-[calc(var(--spacing-topbar)+0.5rem)] z-40 flex max-h-[min(34rem,calc(100dvh-6rem))] origin-top flex-col overflow-hidden rounded-2xl glass-overlay sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:origin-top-right"
           >
             <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
               <div className="flex items-center gap-2">

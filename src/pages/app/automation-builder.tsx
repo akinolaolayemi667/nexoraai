@@ -278,7 +278,7 @@ function Builder({ workflow }: { workflow: WorkflowInfo }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <title>{`${doc.name || "Automation Builder"} · NEXORA AI`}</title>
-      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-white px-3 sm:gap-3 sm:px-5">
+      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-hairline bg-white/75 px-3 backdrop-blur-md sm:gap-3 sm:px-5">
         <Tooltip content="Back to automations">
           <Link
             to={routes.app.automations}
@@ -340,7 +340,7 @@ function Builder({ workflow }: { workflow: WorkflowInfo }) {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-canvas lg:flex">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-hairline bg-white/45 lg:flex">
           <NodePalette onAdd={addNode} targetLabel={selectedNode?.title ?? null} />
         </aside>
 
@@ -357,7 +357,7 @@ function Builder({ workflow }: { workflow: WorkflowInfo }) {
             onDropNode={dropNode}
           />
           {selectedNode && (
-            <div data-canvas-ui className="absolute inset-x-3 bottom-14 flex items-center gap-2 rounded-xl border border-border bg-white p-2 pl-3 shadow-lg xl:hidden">
+            <div data-canvas-ui className="absolute inset-x-3 bottom-14 flex items-center gap-2 rounded-xl glass-strong p-2 pl-3 xl:hidden">
               <span className="min-w-0 flex-1">
                 <span className="block text-2xs font-medium uppercase tracking-wider text-subtle">{nodeMeta[selectedNode.type].label}</span>
                 <span className="block truncate text-sm font-semibold text-ink">{selectedNode.title}</span>
@@ -372,7 +372,7 @@ function Builder({ workflow }: { workflow: WorkflowInfo }) {
           )}
         </div>
 
-        <aside className="hidden w-80 shrink-0 flex-col border-l border-border bg-white xl:flex">{sidebar}</aside>
+        <aside className="hidden w-80 shrink-0 flex-col border-l border-hairline bg-white/75 backdrop-blur-md xl:flex">{sidebar}</aside>
       </div>
 
       <Drawer open={settings.isOpen} onClose={settings.close} title="Workflow settings" size="sm">

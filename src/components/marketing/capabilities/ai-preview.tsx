@@ -94,7 +94,7 @@ export function AiPreview() {
       <PanelHeader
         title={
           <span className="flex items-center gap-2">
-            <span className="flex size-5 items-center justify-center rounded-sm bg-accent text-white">
+            <span className="flex size-5 items-center justify-center rounded-sm bg-accent bg-gradient-ai text-white">
               <Sparkles className="size-3" aria-hidden />
             </span>
             NEXORA Assistant

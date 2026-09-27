@@ -55,9 +55,9 @@ export const DealCard = memo(function DealCard({
           }
         }}
         className={cn(
-          "group relative cursor-grab select-none rounded-lg border bg-white p-3 shadow-xs outline-none transition-[box-shadow,border-color,opacity,transform] duration-150 active:cursor-grabbing",
-          "hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus",
-          dragging ? "scale-[0.98] border-dashed border-primary-border opacity-40 shadow-none" : "border-border",
+          "glass-card group relative cursor-grab select-none rounded-xl p-3 outline-none transition-[box-shadow,border-color,opacity,transform] duration-200 active:cursor-grabbing",
+          "hover:-translate-y-px hover:shadow-glass-hover focus-visible:border-primary focus-visible:shadow-focus",
+          dragging ? "scale-[0.98] border-dashed border-primary-border opacity-40 shadow-none" : "",
           highlighted && "border-primary shadow-focus",
           deal.stage === "lost" && "bg-canvas opacity-70 hover:opacity-100",
         )}

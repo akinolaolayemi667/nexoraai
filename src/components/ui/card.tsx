@@ -4,20 +4,31 @@ import { cn } from "@/lib/cn";
 import { formatPercent } from "@/lib/format";
 import { Skeleton } from "./loading-state";
 
+export type CardVariant = "glass" | "solid" | "soft" | "ai";
+
 export type CardProps = HTMLAttributes<HTMLDivElement> & {
   interactive?: boolean;
   selected?: boolean;
   disabled?: boolean;
   padding?: "none" | "sm" | "md" | "lg";
+  variant?: CardVariant;
 };
 
 const paddings = { none: "", sm: "p-4", md: "p-5", lg: "p-6" };
+
+const surfaces: Record<CardVariant, string> = {
+  glass: "glass-card",
+  solid: "border border-border bg-white shadow-sm",
+  soft: "glass-soft",
+  ai: "glass-ai",
+};
 
 export function Card({
   interactive = false,
   selected = false,
   disabled = false,
   padding = "none",
+  variant = "glass",
   className,
   onKeyDown,
   ...props
@@ -38,11 +49,17 @@ export function Card({
         }
       }}
       className={cn(
-        "rounded-lg border bg-white shadow-sm outline-none",
-        selected ? "border-primary shadow-focus" : "border-border",
+        "rounded-xl outline-none",
+        surfaces[variant],
+        selected && "border-primary! bg-white! shadow-focus!",
         interactive &&
           !disabled &&
-          "cursor-pointer transition-[border-color,box-shadow,background-color] duration-150 hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus active:bg-canvas",
+          cn(
+            "cursor-pointer focus-visible:border-primary focus-visible:shadow-focus active:translate-y-0",
+            variant === "ai"
+              ? "transition-shadow duration-200 hover:shadow-glow"
+              : "glass-hover",
+          ),
         disabled && "pointer-events-none opacity-60",
         paddings[padding],
         className,
@@ -82,7 +99,7 @@ export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 rounded-b-lg border-t border-border bg-canvas px-5 py-3",
+        "flex items-center justify-between gap-3 rounded-b-xl border-t border-hairline bg-white/45 px-5 py-3",
         className,
       )}
       {...props}
@@ -120,8 +137,12 @@ export function MetricCard({
   return (
     <Card padding="md" className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-muted">{label}</span>
-        {icon && <span className="text-subtle [&_svg]:size-4">{icon}</span>}
+        <span className="type-overline text-muted">{label}</span>
+        {icon && (
+          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-soft text-primary ring-1 ring-primary-border/60 [&_svg]:size-3.5">
+            {icon}
+          </span>
+        )}
       </div>
       {loading ? (
         <div className="space-y-2">

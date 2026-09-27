@@ -76,5 +76,45 @@ export const pageTransition: Variants = {
   exit: { opacity: 0, transition: { duration: duration.fast, ease: ease.exit } },
 };
 
-export const motionPresets = { fadeIn, fadeUp, scaleIn, pageTransition } as const;
+const glassEase = [0.22, 1, 0.36, 1] as const;
+
+export const glassFadeIn: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.4, ease: glassEase } },
+  exit: { opacity: 0, transition: transitions.exit },
+};
+
+export const glassSlideUp: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: glassEase } },
+  exit: { opacity: 0, y: 8, transition: transitions.exit },
+};
+
+export const glassScaleIn: Variants = {
+  hidden: { opacity: 0, scale: 0.96, y: 6 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.45, ease: glassEase } },
+  exit: { opacity: 0, scale: 0.98, transition: transitions.exit },
+};
+
+/** Soft focus-pull: content resolves from a light blur. Use sparingly on hero-level surfaces. */
+export const glassReveal: Variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: glassEase } },
+  exit: { opacity: 0, transition: transitions.exit },
+};
+
+export function staggerGlass(stagger = 0.08, delayChildren = 0.05): Variants {
+  return staggerChildren(stagger, delayChildren);
+}
+
+export const motionPresets = {
+  fadeIn,
+  fadeUp,
+  scaleIn,
+  pageTransition,
+  glassFadeIn,
+  glassSlideUp,
+  glassScaleIn,
+  glassReveal,
+} as const;
 export type MotionPreset = keyof typeof motionPresets;

@@ -12,11 +12,11 @@ function MetricTile({ metric }: { metric: Metric }) {
   return (
     <Link
       to={metric.href}
-      className="group flex min-w-0 flex-col rounded-lg border border-border bg-white p-4 shadow-sm outline-none transition-[border-color,box-shadow] duration-150 hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus sm:p-5"
+      className="glass-card glass-hover group relative flex min-w-0 flex-col overflow-hidden rounded-xl p-4 outline-none focus-visible:border-primary focus-visible:shadow-focus sm:p-5"
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="truncate text-sm font-medium text-muted">{metric.label}</span>
-        <span className="hidden size-7 shrink-0 items-center justify-center rounded-md bg-canvas text-subtle ring-1 ring-border transition-colors duration-150 group-hover:text-primary sm:flex">
+        <span className="type-overline truncate text-muted">{metric.label}</span>
+        <span className="hidden size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-soft text-primary ring-1 ring-primary-border/60 transition-shadow duration-200 group-hover:shadow-glow sm:flex">
           <metric.icon className="size-3.5" aria-hidden />
         </span>
       </div>

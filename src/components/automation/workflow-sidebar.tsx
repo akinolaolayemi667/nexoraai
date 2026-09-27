@@ -16,7 +16,7 @@ export const statusMetaFor = (status: WorkflowStatus) => statuses.find((s) => s.
 
 function Stat({ label, value, className }: { label: string; value: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-white px-3 py-2.5", className)}>
+    <div className={cn("glass-soft rounded-xl px-3 py-2.5", className)}>
       <p className="text-xs text-muted">{label}</p>
       <div className="mt-0.5 text-sm font-semibold text-ink">{value}</div>
     </div>
@@ -148,7 +148,7 @@ function SettingsPanel({
 
       <section className="space-y-2">
         <h3 className="type-overline text-subtle">Recent runs</h3>
-        <ul className="divide-y divide-border rounded-lg border border-border bg-white">
+        <ul className="glass-card divide-y divide-hairline overflow-hidden rounded-xl">
           {stats.history.map((r) => (
             <li key={r.id} className="flex items-center gap-2.5 px-3 py-2">
               {r.ok ? <CheckCircle2 className="size-4 shrink-0 text-success" /> : <XCircle className="size-4 shrink-0 text-danger" />}

@@ -89,8 +89,8 @@ export function InsightCards({ now, onAsk, disabled }: { now: number; onAsk: (pr
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...transitions.spring, delay: 0.04 * i }}
           className={cn(
-            "group flex flex-col rounded-xl border border-border bg-white p-4 text-left shadow-xs outline-none transition-[border-color,box-shadow,transform] duration-150",
-            "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-60",
+            "glass-card glass-hover group flex flex-col rounded-xl p-4 text-left outline-none",
+            "focus-visible:border-primary focus-visible:shadow-focus disabled:pointer-events-none disabled:opacity-60",
             i === 0 && "sm:col-span-2",
             i < 2 ? "lg:col-span-3" : "lg:col-span-2",
           )}

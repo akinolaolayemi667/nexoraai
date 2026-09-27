@@ -16,9 +16,9 @@ function planPrice(plan: Plan, billing: Billing) {
 
 export function PricingCta() {
   return (
-    <section className="bg-white py-24">
+    <section className="py-24">
       <div className="mx-auto max-w-6xl px-6">
-        <FadeIn inView className="grid grid-cols-1 gap-10 overflow-hidden rounded-2xl bg-ink p-8 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:p-14">
+        <FadeIn inView className="bg-ambient-deep relative grid grid-cols-1 gap-10 overflow-hidden rounded-3xl p-8 shadow-glass-float sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:p-14">
           <div className="flex flex-col justify-center">
             <p className="type-overline text-primary-border">Pricing</p>
             <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -42,8 +42,8 @@ export function PricingCta() {
               <li
                 key={plan.id}
                 className={cn(
-                  "flex items-center justify-between gap-4 rounded-lg border px-5 py-4",
-                  plan.popular ? "border-primary bg-white/[0.06]" : "border-white/10 bg-white/[0.03]",
+                  "flex items-center justify-between gap-4 rounded-xl border px-5 py-4 backdrop-blur-md",
+                  plan.popular ? "border-primary/50 bg-white/10" : "border-white/10 bg-white/5",
                 )}
               >
                 <div className="min-w-0">
@@ -85,8 +85,8 @@ export function PlanCards({ billing }: { billing: Billing }) {
           <div
             key={plan.id}
             className={cn(
-              "relative flex flex-col rounded-lg border bg-white p-6 shadow-sm",
-              plan.popular ? "border-primary shadow-focus" : "border-border",
+              "relative flex flex-col rounded-2xl p-6",
+              plan.popular ? "glass-ai shadow-glow-ai" : "glass-card",
             )}
           >
             <div className="flex items-center justify-between">
@@ -141,10 +141,10 @@ export function PlanCards({ billing }: { billing: Billing }) {
 
 export function PricingFaq() {
   return (
-    <div className="divide-y divide-border rounded-lg border border-border bg-white">
+    <div className="glass-card divide-y divide-hairline overflow-hidden rounded-2xl">
       {pricingFaqs.map((faq) => (
         <details key={faq.question} className="group">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-5 py-4 text-sm font-medium text-ink outline-none transition-colors hover:bg-canvas focus-visible:shadow-focus [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-5 py-4 text-sm font-medium text-ink outline-none transition-colors hover:bg-white/60 focus-visible:shadow-focus [&::-webkit-details-marker]:hidden">
             {faq.question}
             <ChevronDown className="size-4 shrink-0 text-subtle transition-transform duration-150 group-open:rotate-180" aria-hidden />
           </summary>

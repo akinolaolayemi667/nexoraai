@@ -9,7 +9,7 @@ export default function FeaturesPage() {
   return (
     <>
       <Seo page="features" />
-      <section aria-labelledby="features-heading" className="bg-white">
+      <section aria-labelledby="features-heading">
         <FadeIn className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
           <p className="type-overline text-primary">Features</p>
           <h1 id="features-heading" className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">

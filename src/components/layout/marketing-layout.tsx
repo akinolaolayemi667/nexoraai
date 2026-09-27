@@ -66,9 +66,20 @@ function NavMenu({ label, items }: { label: string; items: MarketingMenuItem[] }
   );
 }
 
+function useScrolled(threshold = 8) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
 function MobileMenu() {
   return (
-    <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-white px-6 pb-6 pt-2 lg:hidden">
+    <div className="max-h-[calc(100dvh-6rem)] overflow-y-auto border-t border-hairline px-4 pb-5 pt-2 sm:px-5 lg:hidden">
       <nav aria-label="Mobile" className="flex flex-col divide-y divide-border-subtle">
         {marketingNavigation.map((entry) =>
           "items" in entry ? (
@@ -97,7 +108,7 @@ function MobileMenu() {
                       ) : (
                         <Link
                           to={item.href}
-                          className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm font-medium text-ink outline-none transition-colors hover:bg-canvas active:bg-sunken focus-visible:shadow-focus"
+                          className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium text-ink outline-none transition-colors hover:bg-white/70 active:bg-white focus-visible:shadow-focus"
                         >
                           {content}
                         </Link>
@@ -111,7 +122,7 @@ function MobileMenu() {
             <Link
               key={entry.label}
               to={entry.href}
-              className="rounded-md px-2 py-3 text-sm font-medium text-ink outline-none transition-colors hover:bg-canvas active:bg-sunken focus-visible:shadow-focus"
+              className="rounded-lg px-2 py-3 text-sm font-medium text-ink outline-none transition-colors hover:bg-white/70 active:bg-white focus-visible:shadow-focus"
             >
               {entry.label}
             </Link>
@@ -157,58 +168,71 @@ function MarketingHeader() {
   const { key } = useLocation();
   const { user } = useAuth();
 
+  const scrolled = useScrolled();
+
   useEffect(() => setMenuOpen(false), [key]);
 
+  const raised = scrolled || menuOpen;
+
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-6">
-        <div className="flex items-center gap-10">
-          <Logo />
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
-            {marketingNavigation.map((entry) =>
-              "items" in entry ? (
-                <NavMenu key={`${entry.label}-${key}`} label={entry.label} items={entry.items} />
-              ) : isHashLink(entry.href) ? (
-                <Link key={entry.label} to={entry.href} className={navLinkClass}>
-                  {entry.label}
-                </Link>
-              ) : (
-                <TopNavLink key={entry.label} to={entry.href}>
-                  {entry.label}
-                </TopNavLink>
-              ),
-            )}
-          </nav>
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-4">
+      <div
+        className={cn(
+          "mx-auto max-w-6xl rounded-2xl border backdrop-blur-xl backdrop-saturate-150 transition-[background-color,border-color,box-shadow] duration-300 ease-standard",
+          raised
+            ? "border-glass-border bg-glass-strong shadow-glass-float"
+            : "border-white/50 bg-white/45 shadow-[0_0_0_1px_rgb(148_163_184/0.08)]",
+        )}
+      >
+        <div className="flex h-14 items-center justify-between gap-6 pl-4 pr-2 sm:pl-5 sm:pr-3">
+          <div className="flex items-center gap-10">
+            <Logo />
+            <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
+              {marketingNavigation.map((entry) =>
+                "items" in entry ? (
+                  <NavMenu key={`${entry.label}-${key}`} label={entry.label} items={entry.items} />
+                ) : isHashLink(entry.href) ? (
+                  <Link key={entry.label} to={entry.href} className={navLinkClass}>
+                    {entry.label}
+                  </Link>
+                ) : (
+                  <TopNavLink key={entry.label} to={entry.href}>
+                    {entry.label}
+                  </TopNavLink>
+                ),
+              )}
+            </nav>
+          </div>
+          <div className="hidden items-center gap-2 lg:flex">
+            <AccountActions />
+          </div>
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link
+              to={user ? routes.app.root : routes.signup}
+              className={buttonVariants({ size: "sm", className: "hidden sm:inline-flex" })}
+            >
+              {user ? "Open app" : "Start Free"}
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+            >
+              {menuOpen ? <X /> : <Menu />}
+            </Button>
+          </div>
         </div>
-        <div className="hidden items-center gap-2 lg:flex">
-          <AccountActions />
-        </div>
-        <div className="flex items-center gap-2 lg:hidden">
-          <Link
-            to={user ? routes.app.root : routes.signup}
-            className={buttonVariants({ size: "sm", className: "hidden sm:inline-flex" })}
-          >
-            {user ? "Open app" : "Start Free"}
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-          >
-            {menuOpen ? <X /> : <Menu />}
-          </Button>
-        </div>
+        {menuOpen && <MobileMenu />}
       </div>
-      {menuOpen && <MobileMenu />}
     </header>
   );
 }
 
 function MarketingFooter() {
   return (
-    <footer className="border-t border-border bg-canvas" aria-label="Site footer">
+    <footer className="border-t border-hairline bg-white/50" aria-label="Site footer">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 py-14 md:grid-cols-6">
         <div className="col-span-2">
           <Logo />
@@ -257,7 +281,7 @@ export function MarketingLayout() {
   useScrollToHash();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="bg-ambient flex min-h-screen flex-col">
       <SkipLink />
       <MarketingHeader />
       <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 outline-none">

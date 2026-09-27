@@ -16,8 +16,8 @@ export function Section({
     <section
       id={id}
       className={cn(
-        "scroll-mt-16 py-20 sm:py-24",
-        tone === "canvas" ? "border-y border-border bg-canvas" : "bg-white",
+        "scroll-mt-24 py-20 sm:py-24",
+        tone === "canvas" ? "border-y border-hairline bg-white/35" : "",
         className,
       )}
     >

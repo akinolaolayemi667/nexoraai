@@ -44,7 +44,7 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[12vh]">
           <motion.div
-            className="absolute inset-0 bg-overlay"
+            className="absolute inset-0 bg-overlay backdrop-blur-[2px]"
             variants={fadeIn}
             {...motionStates}
             onClick={onClose}
@@ -57,7 +57,7 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
             aria-label="Command menu"
             variants={scaleIn}
             {...motionStates}
-            className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-white shadow-xl"
+            className="glass-overlay relative w-full max-w-xl overflow-hidden rounded-2xl"
           >
             <div className="flex items-center gap-3 border-b border-border px-4">
               <Search className="size-4 text-subtle" />

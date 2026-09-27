@@ -51,7 +51,7 @@ function IntegrationCard({ integration, status, lastSync, connecting, notified, 
           }
         }}
         aria-label={`${integration.name}, ${categoryLabel[integration.category]}, ${status === "coming_soon" ? "coming soon" : status}. View details`}
-        className="group flex w-full cursor-pointer flex-col rounded-lg border border-border bg-white p-5 shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-border-strong hover:shadow-md focus-visible:border-primary focus-visible:shadow-focus"
+        className="glass-card glass-hover group flex w-full cursor-pointer flex-col rounded-2xl p-5 outline-none focus-visible:border-primary focus-visible:shadow-focus"
       >
         <div className="flex items-start justify-between gap-3">
           <IntegrationLogo id={integration.id} name={integration.name} />
@@ -296,7 +296,7 @@ export default function IntegrationsPage() {
           <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Connect Your Business Stack.</h1>
           <p className="mt-1 text-base text-muted">Sync your CRM, messaging, payments and calendars with Nexora in a few clicks.</p>
         </div>
-        <dl className="grid shrink-0 grid-cols-3 divide-x divide-border rounded-lg border border-border bg-white shadow-xs">
+        <dl className="glass-card grid shrink-0 grid-cols-3 divide-x divide-hairline overflow-hidden rounded-2xl">
           {[
             { label: "Connected", value: summary.connected, filter: "connected" as const, dot: "bg-success" },
             { label: "Available", value: summary.available, filter: "available" as const, dot: "bg-primary" },

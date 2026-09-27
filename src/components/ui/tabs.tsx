@@ -70,7 +70,7 @@ export function Tabs({
         className={cn(
           "flex items-center",
           segmented
-            ? "scrollbar-none inline-flex max-w-full gap-0.5 overflow-x-auto rounded-md border border-border bg-sunken p-0.5"
+            ? "scrollbar-none inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg border border-hairline bg-slate-500/6 p-0.5 shadow-[inset_0_1px_2px_rgb(15_23_42/0.05)]"
             : "gap-5 border-b border-border",
         )}
       >
@@ -94,10 +94,8 @@ export function Tabs({
                 "relative inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium outline-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4",
                 segmented
                   ? cn(
-                      "h-7 shrink-0 rounded-sm px-3 focus-visible:shadow-focus",
-                      selected
-                        ? "bg-white text-ink shadow-xs ring-1 ring-border"
-                        : "text-muted hover:text-ink active:bg-white/60",
+                      "h-7 shrink-0 rounded-md px-3 focus-visible:shadow-focus",
+                      selected ? "text-ink" : "text-muted hover:bg-white/50 hover:text-ink active:bg-white/60",
                     )
                   : cn(
                       "h-10 rounded-xs focus-visible:shadow-focus",
@@ -105,12 +103,22 @@ export function Tabs({
                     ),
               )}
             >
-              {item.icon}
-              {item.label}
+              {segmented && selected && (
+                <motion.span
+                  layoutId={`${baseId}-pill`}
+                  className="absolute inset-0 rounded-md bg-white shadow-[0_1px_2px_rgb(15_23_42/0.08),0_2px_8px_-4px_rgb(37_99_235/0.25)] ring-1 ring-slate-900/5"
+                  transition={transitions.spring}
+                  aria-hidden
+                />
+              )}
+              <span className="relative inline-flex items-center gap-1.5">
+                {item.icon}
+                {item.label}
+              </span>
               {item.count !== undefined && (
                 <span
                   className={cn(
-                    "rounded-sm px-1.5 font-mono text-2xs tabular-nums",
+                    "relative rounded-sm px-1.5 font-mono text-2xs tabular-nums",
                     selected ? "bg-primary-soft text-primary-active" : "bg-sunken text-muted",
                   )}
                 >

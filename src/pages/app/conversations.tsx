@@ -188,10 +188,10 @@ export default function ConversationsPage() {
   const activeIdx = active && active.summary.suggestions.length ? (suggestionIdx[active.id] ?? 0) % active.summary.suggestions.length : 0;
 
   return (
-    <div className="flex min-h-0 flex-1 bg-white">
+    <div className="flex min-h-0 flex-1">
       <title>Inbox · NEXORA AI</title>
 
-      <aside className={cn("w-full min-w-0 shrink-0 flex-col border-r border-border bg-canvas md:flex md:w-80 xl:w-[22rem]", active ? "hidden" : "flex")}>
+        <aside className={cn("w-full min-w-0 shrink-0 flex-col border-r border-hairline bg-white/45 md:flex md:w-80 xl:w-[22rem]", active ? "hidden" : "flex")}>
         <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-border px-4">
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-ink">Conversations</h1>
@@ -252,7 +252,7 @@ export default function ConversationsPage() {
               <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto bg-canvas p-4 sm:p-6 xl:hidden">
                 <div className="mx-auto max-w-xl">
                   {pane === "customer" ? (
-                    <div className="rounded-lg border border-border bg-white p-4">
+                    <div className="glass-card rounded-2xl p-4">
                       <CustomerDetails conversation={active} />
                     </div>
                   ) : (

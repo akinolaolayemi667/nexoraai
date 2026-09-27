@@ -52,7 +52,7 @@ export function AppPanel({
     <div
       role="group"
       aria-label={label}
-      className={cn("overflow-hidden rounded-lg border border-border bg-white shadow-sm", className)}
+      className={cn("glass-card overflow-hidden rounded-xl", className)}
     >
       {children}
     </div>
@@ -80,12 +80,12 @@ export function FeatureCard({
   return (
     <article
       id={meta.id}
-      className={cn("flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm", className)}
+      className={cn("glass-card flex scroll-mt-24 flex-col overflow-hidden rounded-2xl", className)}
     >
       <div className="p-6 sm:p-7">
         <FeatureText meta={meta} />
       </div>
-      <div className="flex flex-1 flex-col border-t border-border bg-canvas p-3 sm:p-5 [&>*]:flex-1">{children}</div>
+      <div className="flex flex-1 flex-col border-t border-hairline bg-white/40 p-3 sm:p-5 [&>*]:flex-1">{children}</div>
     </article>
   );
 }
@@ -105,7 +105,7 @@ export function FeatureRow({
     <article
       id={meta.id}
       className={cn(
-        "grid scroll-mt-24 grid-cols-1 overflow-hidden rounded-xl border border-border bg-white shadow-sm lg:grid-cols-12",
+        "glass-card grid scroll-mt-24 grid-cols-1 overflow-hidden rounded-2xl lg:grid-cols-12",
         className,
       )}
     >

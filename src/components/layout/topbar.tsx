@@ -66,129 +66,131 @@ export function Topbar({
   const { title, crumbs } = useBreadcrumbs();
 
   return (
-    <header className="sticky top-0 z-30 flex h-topbar shrink-0 items-center gap-2 border-b border-border bg-white/90 px-3 backdrop-blur-md sm:px-6">
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        className="-ml-1 md:hidden"
-        onClick={onOpenMobileNav}
-        aria-label="Open navigation"
-      >
-        <Menu />
-      </Button>
-
-      <div className="flex min-w-0 items-center gap-2.5 lg:hidden">
-        <Link to={routes.app.root} className="shrink-0 rounded-md outline-none focus-visible:shadow-focus md:hidden" aria-label="NEXORA AI overview">
-          <LogoMark className="size-6" />
-        </Link>
-        <span className="truncate font-display text-md font-semibold text-ink">{title}</span>
-      </div>
-
-      <Breadcrumbs className="hidden lg:block" items={crumbs} />
-
-      <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
-        <button
-          type="button"
-          onClick={onOpenCommand}
-          className="hidden h-8 w-52 items-center gap-2 rounded-md border border-border bg-canvas px-2.5 text-sm text-subtle outline-none transition-[border-color,box-shadow,color] duration-150 hover:border-border-strong hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex xl:w-72"
+    <header className="sticky top-0 z-30 h-topbar shrink-0 bg-linear-to-b from-canvas via-canvas/70 to-transparent px-2 py-2 sm:px-3 lg:pr-4">
+      <div className="glass-strong flex h-12 items-center gap-2 rounded-2xl px-2.5 sm:px-4">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="-ml-1 md:hidden"
+          onClick={onOpenMobileNav}
+          aria-label="Open navigation"
         >
-          <Search className="size-3.5" aria-hidden />
-          <span className="flex-1 truncate text-left">Search or jump to…</span>
-          <kbd className="rounded-xs border border-border bg-white px-1.5 font-mono text-2xs text-muted">
-            {isMac ? "⌘K" : "Ctrl K"}
-          </kbd>
-        </button>
-        <Button variant="ghost" size="icon-sm" className="md:hidden" onClick={onOpenCommand} aria-label="Search">
-          <Search />
+          <Menu />
         </Button>
 
-        <NotificationsMenu />
-
-        <Dropdown
-          align="end"
-          width="w-60"
-          className="hidden sm:inline-flex"
-          items={[
-            {
-              label: "Documentation",
-              description: "Guides and API reference",
-              icon: <BookOpen />,
-              onSelect: () => toast({ title: "Docs open in a new tab once the help center launches." }),
-            },
-            {
-              label: "Keyboard shortcuts",
-              icon: <Keyboard />,
-              shortcut: "?",
-              onSelect: onOpenShortcuts,
-            },
-            {
-              label: "Contact support",
-              description: "Median reply under 2 hours",
-              icon: <LifeBuoy />,
-              onSelect: () =>
-                toast({ variant: "success", title: "Support request started", description: "We'll reply to your email shortly." }),
-            },
-            { label: "What's new", icon: <Gift />, onSelect: () => toast({ title: "You're on the latest release." }) },
-          ]}
-          trigger={({ open, ...props }) => (
-            <Button
-              {...props}
-              variant="ghost"
-              size="icon-sm"
-              className={cn(open && "bg-sunken/70 text-ink")}
-              aria-label="Help"
-            >
-              <HelpCircle />
-            </Button>
-          )}
-        />
-
-        <div className="mx-1.5 hidden h-5 w-px bg-border lg:block" aria-hidden />
-
-        <div className="hidden lg:flex">
-          <WorkspaceSwitcher workspaces={workspaces} current={workspace} onSwitch={onSwitchWorkspace} />
+        <div className="flex min-w-0 items-center gap-2.5 lg:hidden">
+          <Link to={routes.app.root} className="shrink-0 rounded-md outline-none focus-visible:shadow-focus md:hidden" aria-label="NEXORA AI overview">
+            <LogoMark className="size-6" />
+          </Link>
+          <span className="truncate font-display text-md font-semibold text-ink">{title}</span>
         </div>
 
-        <Dropdown
-          align="end"
-          header={
-            <div className="flex items-center gap-2.5">
-              <Avatar name={user.name} size="md" />
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-ink">{user.name}</p>
-                <p className="truncate text-xs text-muted">{user.email}</p>
+        <Breadcrumbs className="hidden lg:block" items={crumbs} />
+
+        <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+          <button
+            type="button"
+            onClick={onOpenCommand}
+            className="hidden h-8 w-52 items-center gap-2 rounded-lg border border-hairline bg-white/60 px-2.5 text-sm text-subtle shadow-[inset_0_1px_2px_rgb(15_23_42/0.04)] outline-none transition-[border-color,box-shadow,color,background-color] duration-150 hover:border-primary/25 hover:bg-white/90 hover:text-muted focus-visible:border-primary focus-visible:shadow-focus md:flex xl:w-72"
+          >
+            <Search className="size-3.5" aria-hidden />
+            <span className="flex-1 truncate text-left">Search anything…</span>
+            <kbd className="rounded-md border border-border bg-white px-1.5 font-mono text-2xs text-muted shadow-xs">
+              {isMac ? "⌘K" : "Ctrl K"}
+            </kbd>
+          </button>
+          <Button variant="ghost" size="icon-sm" className="md:hidden" onClick={onOpenCommand} aria-label="Search">
+            <Search />
+          </Button>
+
+          <NotificationsMenu />
+
+          <Dropdown
+            align="end"
+            width="w-60"
+            className="hidden sm:inline-flex"
+            items={[
+              {
+                label: "Documentation",
+                description: "Guides and API reference",
+                icon: <BookOpen />,
+                onSelect: () => toast({ title: "Docs open in a new tab once the help center launches." }),
+              },
+              {
+                label: "Keyboard shortcuts",
+                icon: <Keyboard />,
+                shortcut: "?",
+                onSelect: onOpenShortcuts,
+              },
+              {
+                label: "Contact support",
+                description: "Median reply under 2 hours",
+                icon: <LifeBuoy />,
+                onSelect: () =>
+                  toast({ variant: "success", title: "Support request started", description: "We'll reply to your email shortly." }),
+              },
+              { label: "What's new", icon: <Gift />, onSelect: () => toast({ title: "You're on the latest release." }) },
+            ]}
+            trigger={({ open, ...props }) => (
+              <Button
+                {...props}
+                variant="ghost"
+                size="icon-sm"
+                className={cn(open && "bg-sunken/70 text-ink")}
+                aria-label="Help"
+              >
+                <HelpCircle />
+              </Button>
+            )}
+          />
+
+          <div className="mx-1.5 hidden h-5 w-px bg-border lg:block" aria-hidden />
+
+          <div className="hidden lg:flex">
+            <WorkspaceSwitcher workspaces={workspaces} current={workspace} onSwitch={onSwitchWorkspace} />
+          </div>
+
+          <Dropdown
+            align="end"
+            header={
+              <div className="flex items-center gap-2.5">
+                <Avatar name={user.name} size="md" />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-ink">{user.name}</p>
+                  <p className="truncate text-xs text-muted">{user.email}</p>
+                </div>
               </div>
-            </div>
-          }
-          items={[
-            { label: "Profile", icon: <User />, onSelect: () => navigate(routes.app.settings) },
-            { label: "Settings", icon: <Settings />, onSelect: () => navigate(routes.app.settings) },
-            { label: "Billing", icon: <CreditCard />, onSelect: () => navigate(routes.app.billing) },
-            { type: "separator" },
-            { label: "Back to website", icon: <Globe />, onSelect: () => navigate(routes.home) },
-            { label: "Log out", icon: <LogOut />, danger: true, onSelect: signOut },
-          ]}
-          trigger={({ open, ...props }) => (
-            <button
-              type="button"
-              {...props}
-              className={cn(
-                "ml-0.5 flex items-center gap-1.5 rounded-full p-0.5 outline-none transition-colors duration-150 hover:bg-canvas focus-visible:shadow-focus sm:rounded-md sm:py-1 sm:pl-1 sm:pr-1.5",
-                open && "bg-canvas",
-              )}
-              aria-label={`Account menu for ${user.name}`}
-            >
-              <Avatar name={user.name} size="sm" status="online" />
-              <ChevronDown
+            }
+            items={[
+              { label: "Profile", icon: <User />, onSelect: () => navigate(routes.app.settings) },
+              { label: "Settings", icon: <Settings />, onSelect: () => navigate(routes.app.settings) },
+              { label: "Billing", icon: <CreditCard />, onSelect: () => navigate(routes.app.billing) },
+              { type: "separator" },
+              { label: "Back to website", icon: <Globe />, onSelect: () => navigate(routes.home) },
+              { label: "Log out", icon: <LogOut />, danger: true, onSelect: signOut },
+            ]}
+            trigger={({ open, ...props }) => (
+              <button
+                type="button"
+                {...props}
                 className={cn(
-                  "hidden size-3.5 text-subtle transition-transform duration-150 sm:block",
-                  open && "rotate-180",
+                  "ml-0.5 flex items-center gap-1.5 rounded-full p-0.5 outline-none transition-colors duration-150 hover:bg-canvas focus-visible:shadow-focus sm:rounded-md sm:py-1 sm:pl-1 sm:pr-1.5",
+                  open && "bg-canvas",
                 )}
-                aria-hidden
-              />
-            </button>
-          )}
-        />
+                aria-label={`Account menu for ${user.name}`}
+              >
+                <Avatar name={user.name} size="sm" status="online" />
+                <ChevronDown
+                  className={cn(
+                    "hidden size-3.5 text-subtle transition-transform duration-150 sm:block",
+                    open && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+            )}
+          />
+        </div>
       </div>
     </header>
   );

@@ -384,8 +384,8 @@ export default function PipelinePage() {
                 data-stage={stage.id}
                 aria-label={`${stage.label}: ${deals.length} deals, ${formatCurrency(total)}`}
                 className={cn(
-                  "flex w-[82vw] max-w-72 shrink-0 snap-start flex-col rounded-xl border bg-canvas transition-[border-color,box-shadow,background-color] duration-150 sm:w-72",
-                  isTarget ? "border-primary-border bg-primary-soft/20 shadow-focus" : "border-border",
+                  "flex w-[82vw] max-w-72 shrink-0 snap-start flex-col rounded-2xl border bg-white/40 shadow-glass transition-[border-color,box-shadow,background-color] duration-150 sm:w-72",
+                  isTarget ? "border-primary-border bg-primary-soft/30 shadow-focus" : "border-white/70",
                   highlight === stage.id && "border-primary shadow-focus",
                 )}
               >

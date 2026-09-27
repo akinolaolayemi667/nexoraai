@@ -9,7 +9,7 @@ export function Testimonials() {
       <Stagger inView className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
         {testimonials.map((item) => (
           <StaggerItem key={item.name}>
-            <figure className="flex h-full flex-col rounded-lg border border-border bg-white p-6 shadow-sm">
+            <figure className="glass-card glass-hover flex h-full flex-col rounded-2xl p-6">
               <div className="border-b border-border-subtle pb-5">
                 <p className="text-metric text-3xl font-semibold text-primary">{item.metric}</p>
                 <p className="mt-1 text-xs text-muted">{item.metricLabel}</p>

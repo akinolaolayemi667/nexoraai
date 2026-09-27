@@ -23,7 +23,7 @@ export function ConversationHeader({ conversation: c, myOwnerId, onBack, onAssig
   const ChannelIcon = channelIcon[c.channel];
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border bg-white px-3 sm:px-5">
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-hairline bg-white/75 px-3 backdrop-blur-md sm:px-5">
       <button
         type="button"
         onClick={onBack}
@@ -124,7 +124,7 @@ function MessageBubble({ message }: { message: InboxMessage }) {
   return (
     <div className={cn("flex gap-2.5", outbound && "flex-row-reverse")}>
       {ai ? (
-        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-white">
+        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-accent bg-gradient-ai text-white">
           <Sparkles className="size-3.5" aria-hidden />
         </span>
       ) : (
@@ -162,7 +162,7 @@ export function MessageThread({ conversation: c, now }: { conversation: InboxCon
 
   let lastDay = "";
   return (
-    <div ref={scrollRef} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto bg-white">
+    <div ref={scrollRef} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto bg-white/55">
       <div className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6">
         <div className="mb-5 flex flex-col items-center text-center">
           <span className="rounded-full border border-border bg-canvas px-3 py-1 text-xs font-medium text-ink">{c.subject}</span>
@@ -234,7 +234,7 @@ export function Composer({ conversation: c, value, onChange, phase, onGenerate, 
   const recipient = c.channel === "email" ? c.customer.email : c.channel === "chat" ? "live chat" : c.customer.phone;
 
   return (
-    <div className="shrink-0 border-t border-border bg-white px-3 pb-3 pt-2.5 sm:px-5 sm:pb-4">
+    <div className="shrink-0 border-t border-hairline bg-white/80 px-3 pb-3 pt-2.5 backdrop-blur-md sm:px-5 sm:pb-4">
       <div className="mx-auto w-full max-w-3xl">
         <div className={cn("rounded-lg border bg-white transition-shadow focus-within:border-primary focus-within:shadow-focus", busy ? "border-accent-border" : "border-border-strong")}>
           <div className="relative">

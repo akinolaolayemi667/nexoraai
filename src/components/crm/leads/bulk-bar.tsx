@@ -30,7 +30,7 @@ export function BulkBar({
           animate={{ opacity: 1, y: 0, x: "-50%" }}
           exit={{ opacity: 0, y: 16, x: "-50%" }}
           transition={{ type: "spring", stiffness: 420, damping: 34 }}
-          className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex max-w-[calc(100vw-1.5rem)] items-center gap-1 rounded-xl border border-ink/10 bg-ink p-1.5 pl-3 text-white shadow-xl md:bottom-6"
+          className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex max-w-[calc(100vw-1.5rem)] items-center gap-1 rounded-xl glass-dark bg-ink/85! p-1.5 pl-3 text-white md:bottom-6"
         >
           <span className="mr-1 whitespace-nowrap text-sm font-medium">
             <span className="font-mono tabular-nums">{formatNumber(count)}</span> selected

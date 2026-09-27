@@ -106,7 +106,7 @@ export default function SettingsPage() {
           {groups.map((g) => (
             <div key={g}>
               <p className="type-overline mb-2 px-1">{g}</p>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-white shadow-xs">
+              <ul className="glass-card divide-y divide-hairline overflow-hidden rounded-2xl">
                 {sections
                   .filter((s) => s.group === g)
                   .map((s) => (
@@ -218,7 +218,7 @@ export default function SettingsPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 16 }}
-                className="sticky bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-20 mt-6 flex items-center gap-3 rounded-lg border border-border bg-ink px-4 py-3 text-white shadow-lg md:bottom-5"
+                className="sticky bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-20 mt-6 flex items-center gap-3 rounded-xl glass-dark bg-ink/90! px-4 py-3 text-white md:bottom-5"
                 role="region"
                 aria-label="Unsaved changes"
               >

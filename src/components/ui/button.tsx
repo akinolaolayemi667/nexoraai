@@ -7,9 +7,9 @@ export type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon-xs" | "icon-sm" | "ic
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white shadow-xs hover:bg-primary-hover active:bg-primary-active focus-visible:shadow-focus",
+    "bg-primary bg-gradient-primary text-white shadow-[0_1px_2px_rgb(15_23_42/0.12),inset_0_1px_0_rgb(255_255_255/0.18)] hover:bg-primary-hover hover:shadow-glow hover:brightness-110 active:brightness-95 focus-visible:shadow-focus",
   secondary:
-    "border border-border bg-white text-ink shadow-xs hover:border-border-strong hover:bg-canvas active:bg-sunken focus-visible:border-primary focus-visible:shadow-focus",
+    "border border-border/90 bg-white/80 text-ink shadow-xs hover:border-border-strong hover:bg-white active:bg-sunken focus-visible:border-primary focus-visible:shadow-focus",
   ghost:
     "text-muted hover:bg-sunken/70 hover:text-ink active:bg-sunken focus-visible:bg-sunken/70 focus-visible:text-ink focus-visible:shadow-focus",
   danger:
@@ -36,7 +36,7 @@ export function buttonVariants({
   className,
 }: { variant?: ButtonVariant; size?: ButtonSize; className?: string } = {}) {
   return cn(
-    "relative inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap font-medium outline-none transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-standard active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-busy:cursor-progress [&_svg]:shrink-0",
+    "group/button relative inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap font-medium outline-none transition-[background-color,border-color,color,box-shadow,transform,filter] duration-200 ease-standard active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-busy:cursor-progress [&_svg]:shrink-0 [&_.lucide-arrow-right]:transition-transform [&_.lucide-arrow-right]:duration-200 hover:[&_.lucide-arrow-right]:translate-x-0.5",
     variant === "link" ? "rounded-sm text-sm" : sizes[size],
     variants[variant],
     className,

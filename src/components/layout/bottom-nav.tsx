@@ -14,7 +14,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+      className="glass-strong fixed inset-x-0 bottom-0 z-30 rounded-t-2xl border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(15_23_42/0.12)] md:hidden"
     >
       <ul className="grid h-14 grid-cols-5">
         {mobileNavigation.map((item) => {
@@ -37,7 +37,7 @@ export function BottomNav() {
                     <motion.span
                       layoutId={reduceMotion ? undefined : "bottom-nav-indicator"}
                       transition={transitions.spring}
-                      className="absolute inset-x-5 top-0 h-0.5 rounded-b-full bg-primary"
+                      className="absolute inset-x-5 top-0 h-0.5 rounded-b-full bg-gradient-primary shadow-[0_2px_8px_rgb(37_99_235/0.5)]"
                       aria-hidden
                     />
                   )}

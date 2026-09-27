@@ -190,7 +190,7 @@ export function DashboardPreview({ className }: { className?: string }) {
               chart={<Sparkline data={series.map((p) => p.current)} className="h-8 w-16" />}
             />
             <PreviewMetric
-              label="Leads"
+              label="New leads"
               icon={<Target />}
               value={<AnimatedNumber value={leads} format={(v) => formatNumber(Math.round(v))} />}
               footer={

@@ -38,7 +38,7 @@ function downloadInvoice(invoice: Invoice, company: string, email: string) {
 
 function Panel({ title, description, action, children, className }: { title: string; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("rounded-lg border border-border bg-white shadow-xs", className)}>
+    <section className={cn("glass-card overflow-hidden rounded-2xl", className)}>
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-3.5 sm:px-5">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-ink">{title}</h2>

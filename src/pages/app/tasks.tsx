@@ -439,7 +439,7 @@ export default function TasksPage() {
         />
       </section>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-border bg-white shadow-xs">
+      <div className="glass-card mt-4 overflow-hidden rounded-2xl">
         <div className="flex flex-col gap-3 border-b border-border p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="scrollbar-none -mx-1 overflow-x-auto px-1">
             <Tabs
